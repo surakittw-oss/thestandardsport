@@ -527,20 +527,27 @@ function F1Section({ font }) {
           </table>
         )}
         {tab==="constructors" && (
-          <div className="rsp-cons">
-            {F1_CONSTRUCTORS.map((c,i)=>(
-              <div key={c.pos} style={{ background:"var(--bg-card)", padding:"16px 20px", display:"flex", alignItems:"center", gap:16 }}>
-                <span style={{ fontFamily:"Space Grotesk,sans-serif", fontWeight:800, fontSize:20, color:i===0?"#ffa5f7":"var(--txt-4)", minWidth:36, textAlign:"center" }}>{c.pos}</span>
-                <div style={{ width:4, height:44, background:c.color, borderRadius:2, flexShrink:0 }}></div>
-                <div style={{ flex:1, minWidth:0 }}>
-                  <div style={{ fontFamily:"Space Grotesk,sans-serif", fontWeight:700, fontSize:14, color:"var(--txt)" }}>{c.name}</div>
-                  <div style={{ background:"var(--bdr)", height:4, borderRadius:2, overflow:"hidden", marginTop:8 }}>
-                    <div style={{ background:c.color, height:"100%", width:`${(c.pts/312)*100}%`, borderRadius:2 }}></div>
+          <div>
+            <div style={{ display:"flex", alignItems:"baseline", justifyContent:"space-between", marginBottom:14, flexWrap:"wrap", gap:6 }}>
+              <div style={{ fontFamily:"Space Grotesk,sans-serif", fontWeight:800, fontSize:16, letterSpacing:"0.02em", color:"var(--txt)", textTransform:"uppercase" }}>World Constructors' Championship</div>
+              <div style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:10, fontWeight:700, letterSpacing:"0.16em", color:"var(--txt-3)", textTransform:"uppercase" }}>Points after Spanish GP</div>
+            </div>
+            <div style={{ display:"flex", flexDirection:"column", gap:7 }}>
+              {F1_CONSTRUCTORS.map((c,i)=>(
+                <div key={c.pos} style={{ display:"grid", gridTemplateColumns:"52px 74px 1fr 84px", alignItems:"stretch", borderRadius:7, overflow:"hidden", minHeight:54, boxShadow:"0 1px 4px rgba(0,0,0,0.14)" }}>
+                  {/* Position */}
+                  <div style={{ display:"flex", alignItems:"center", justifyContent:"center", background:"#141416", color:i===0?"#ffa5f7":"#fff", fontFamily:"Space Grotesk,sans-serif", fontWeight:800, fontSize:22, lineHeight:1 }}>{c.pos}</div>
+                  {/* Team colour block */}
+                  <div style={{ background:`linear-gradient(135deg, ${c.color} 0%, ${c.color}bb 100%)` }} />
+                  {/* Team name */}
+                  <div style={{ display:"flex", alignItems:"center", padding:"0 22px", background:"#1b1b1d", backgroundImage:`linear-gradient(90deg, ${c.color}40 0%, transparent 42%)` }}>
+                    <span style={{ fontFamily:"Space Grotesk,sans-serif", fontWeight:800, fontStyle:"italic", fontSize:17, letterSpacing:"0.03em", color:"#fff", textTransform:"uppercase", textShadow:"0 1px 3px rgba(0,0,0,0.35)" }}>{c.name}</span>
                   </div>
+                  {/* Points */}
+                  <div style={{ display:"flex", alignItems:"center", justifyContent:"center", background:"#E8002D", color:"#fff", fontFamily:"Space Grotesk,sans-serif", fontWeight:800, fontSize:22, lineHeight:1, letterSpacing:"-0.01em" }}>{c.pts}</div>
                 </div>
-                <span style={{ fontFamily:"Space Grotesk,sans-serif", fontWeight:800, fontSize:18, minWidth:48, textAlign:"right", color:"var(--txt)" }}>{c.pts}</span>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         )}
       </div>
@@ -850,9 +857,9 @@ function YouTubeSection() {
 }
 
 function CategoryNav({ font }) {
-  const [active, setActive] = useS2("All");
+  const [active, setActive] = useS2("F1");
   const ff = font==="serif"?"Noto Serif Thai,serif":"Sarabun,sans-serif";
-  const cats = ["All","F1","Premier League","Thai League","Volleyball","Tennis","Basketball"];
+  const cats = ["F1"];
   return (
     <div style={{ background:"var(--bg)", borderBottom:"1px solid var(--bdr)", overflowX:"auto" }}>
       <div className="rsp-wrap" style={{ display:"flex", gap:4, overflowX:"auto" }}>
