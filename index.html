@@ -162,7 +162,8 @@ const IconPlay   = ({ size=56 }) => <div style={{ width:size, height:size, borde
 // Flag image from flagcdn.com
 const FlagImg = ({ code, size=20 }) => {
   const h = Math.round(size * 0.75);
-  return <img src={`https://flagcdn.com/${size}x${h}/${code}.png`} alt={code} style={{ width:size, height:h, verticalAlign:"middle", borderRadius:1 }} loading="lazy" />;
+  // Vector flags (crisp at any size) — flagcdn serves 4:3 SVGs
+  return <img src={`https://flagcdn.com/${code}.svg`} alt={code} style={{ width:size, height:h, objectFit:"cover", verticalAlign:"middle", borderRadius:2, boxShadow:"0 0 0 0.5px rgba(0,0,0,0.18)" }} loading="lazy" />;
 };
 
 // ── Data ──────────────────────────────────────────────────────────────────────
