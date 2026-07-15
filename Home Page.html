@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>THE STANDARD SPORT</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,300;0,400;0,600;0,700;0,800;1,400&family=Noto+Serif+Thai:wght@300;400;600;700;800&family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --bg:#ffffff; --bg-alt:#f4f4f4; --bg-card:#ffffff; --bg-row:#fafafa;
+      --txt:#0d0d0d; --txt-2:#555555; --txt-3:#888888; --txt-4:#bbbbbb;
+      --bdr:#e8e8e8; --bdr-2:#f0f0f0; --accent:#ffa5f7;
+    }
+    [data-theme="dark"] {
+      --bg:#111111; --bg-alt:#181818; --bg-card:#1c1c1c; --bg-row:#202020;
+      --txt:#efefef; --txt-2:#cccccc; --txt-3:#777777; --txt-4:#444444;
+      --bdr:#2a2a2a; --bdr-2:#242424;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: Sarabun, sans-serif; background: var(--bg); color: var(--txt); -webkit-font-smoothing: antialiased; transition: background .25s, color .25s; }
+    button { cursor: pointer; }
+    ::-webkit-scrollbar { width: 4px; background: var(--bg-alt); }
+    ::-webkit-scrollbar-thumb { background: #ffa5f7; }
+
+    /* ── Responsive layout ─────────────────────────────────────── */
+    .rsp-wrap  { max-width:1280px; margin:0 auto; padding:0 40px; }
+    .rsp-hero  { display:grid; grid-template-columns:1fr 360px; gap:48px; align-items:start; }
+    .rsp-hgrid { display:grid; grid-template-columns:7fr 3fr; gap:20px; }
+    .rsp-cal   { display:grid; grid-template-columns:repeat(2,1fr); gap:6px; }
+    .rsp-f1two { display:grid; grid-template-columns:1fr 1fr; gap:28px; }
+    .rsp-cons  { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
+    .rsp-news  { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
+    .rsp-ytmn  { display:grid; grid-template-columns:1.55fr 1fr; gap:28px; align-items:start; }
+    .rsp-ytbt  { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; margin-top:28px; }
+    .rsp-tbl   { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+    .nav-mob   { display:none; }
+    .nav-desk  { display:flex; }
+
+    @media (max-width:1024px) {
+      .rsp-wrap  { padding:0 24px; }
+      .rsp-hero  { grid-template-columns:1fr 280px; gap:28px; }
+      .rsp-ytmn  { grid-template-columns:1.1fr 1fr; }
+      .rsp-ytbt  { grid-template-columns:repeat(2,1fr); }
+    }
+    @media (max-width:768px) {
+      .rsp-wrap  { padding:0 16px; }
+      .rsp-hero  { grid-template-columns:1fr; }
+      .rsp-hgrid { grid-template-columns:1fr; }
+      .rsp-cal   { grid-template-columns:1fr; }
+      .rsp-f1two { grid-template-columns:1fr; }
+      .rsp-cons  { grid-template-columns:1fr; }
+      .rsp-news  { grid-template-columns:repeat(2,1fr); }
+      .rsp-ytmn  { grid-template-columns:1fr; }
+      .rsp-ytbt  { grid-template-columns:repeat(2,1fr); }
+      .nav-mob   { display:flex !important; }
+      .nav-desk  { display:none !important; }
+      .nav-desk.open { display:flex !important; flex-direction:column; position:absolute; top:100%; left:0; right:0;
+        background:var(--bg); border-bottom:2px solid var(--accent); z-index:200; padding:8px 0; box-shadow:0 8px 32px rgba(0,0,0,.12); }
+    }
+    @media (max-width:480px) {
+      .rsp-news  { grid-template-columns:1fr; }
+      .rsp-ytbt  { grid-template-columns:1fr; }
+      .rsp-cons  { grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+
+<!-- ① TWEAKS PANEL -->
+<script type="text/babel">
+const __TW = `.twk-panel{position:fixed;right:16px;bottom:16px;z-index:2147483646;width:272px;max-height:calc(100vh - 32px);display:flex;flex-direction:column;background:rgba(250,249,247,.88);color:#29261b;-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);border:.5px solid rgba(255,255,255,.6);border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.18);font:11.5px/1.4 ui-sans-serif,system-ui,sans-serif;overflow:hidden}
+.twk-hd{display:flex;align-items:center;justify-content:space-between;padding:10px 8px 10px 14px;cursor:move;user-select:none}
+.twk-hd b{font-size:12px;font-weight:600}.twk-x{appearance:none;border:0;background:transparent;color:rgba(41,38,27,.5);width:22px;height:22px;border-radius:6px;cursor:pointer;font-size:13px}
+.twk-x:hover{background:rgba(0,0,0,.07)}.twk-body{padding:2px 14px 14px;display:flex;flex-direction:column;gap:10px;overflow-y:auto;min-height:0}
+.twk-row{display:flex;flex-direction:column;gap:5px}.twk-row-h{flex-direction:row;align-items:center;justify-content:space-between;gap:10px}
+.twk-lbl{display:flex;justify-content:space-between;align-items:baseline;color:rgba(41,38,27,.7)}.twk-lbl>span:first-child{font-weight:500}
+.twk-sect{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:rgba(41,38,27,.4);padding:10px 0 0}.twk-sect:first-child{padding-top:0}
+.twk-field{appearance:none;width:100%;height:26px;padding:0 8px;border:.5px solid rgba(0,0,0,.1);border-radius:7px;background:rgba(255,255,255,.6);color:inherit;font:inherit;outline:none}
+select.twk-field{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='rgba(0,0,0,.5)' d='M0 0h10L5 6z'/></svg>");background-repeat:no-repeat;background-position:right 8px center;padding-right:22px}
+.twk-seg{position:relative;display:flex;padding:2px;border-radius:8px;background:rgba(0,0,0,.06);user-select:none}
+.twk-seg-thumb{position:absolute;top:2px;bottom:2px;border-radius:6px;background:rgba(255,255,255,.9);box-shadow:0 1px 2px rgba(0,0,0,.12);transition:left .15s,width .15s}
+.twk-seg button{position:relative;z-index:1;flex:1;border:0;background:transparent;color:inherit;font:inherit;font-weight:500;min-height:22px;border-radius:6px;cursor:pointer;padding:4px 6px;line-height:1.2}`;
+
+function useTweaks(d) {
+  const [v, sv] = React.useState(d);
+  const set = React.useCallback((k, val) => {
+    const e = typeof k === 'object' ? k : { [k]: val };
+    sv(p => ({ ...p, ...e }));
+    window.parent.postMessage({ type: '__edit_mode_set_keys', edits: e }, '*');
+  }, []);
+  return [v, set];
+}
+function TweaksPanel({ title='Tweaks', children }) {
+  const [open, setOpen] = React.useState(false);
+  const ref = React.useRef(null);
+  const off = React.useRef({ x: 16, y: 16 });
+  React.useEffect(() => {
+    const h = e => { if (e?.data?.type === '__activate_edit_mode') setOpen(true); else if (e?.data?.type === '__deactivate_edit_mode') setOpen(false); };
+    window.addEventListener('message', h);
+    window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+    return () => window.removeEventListener('message', h);
+  }, []);
+  const dismiss = () => { setOpen(false); window.parent.postMessage({ type: '__edit_mode_dismissed' }, '*'); };
+  const drag = e => {
+    const p = ref.current; if (!p) return;
+    const r = p.getBoundingClientRect(), sx = e.clientX, sy = e.clientY;
+    const sr = window.innerWidth - r.right, sb = window.innerHeight - r.bottom;
+    const mv = ev => { off.current = { x: sr-(ev.clientX-sx), y: sb-(ev.clientY-sy) }; p.style.right = off.current.x+'px'; p.style.bottom = off.current.y+'px'; };
+    const up = () => { window.removeEventListener('mousemove', mv); window.removeEventListener('mouseup', up); };
+    window.addEventListener('mousemove', mv); window.addEventListener('mouseup', up);
+  };
+  if (!open) return null;
+  return (<><style>{__TW}</style><div ref={ref} className="twk-panel" style={{ right: off.current.x, bottom: off.current.y }}><div className="twk-hd" onMouseDown={drag}><b>{title}</b><button className="twk-x" onMouseDown={e=>e.stopPropagation()} onClick={dismiss}>✕</button></div><div className="twk-body">{children}</div></div></>);
+}
+function TweakSection({ label }) { return <div className="twk-sect">{label}</div>; }
+function TweakRow({ label, children }) { return <div className="twk-row"><div className="twk-lbl"><span>{label}</span></div>{children}</div>; }
+function TweakRadio({ label, value, options, onChange }) {
+  const opts = options.map(o => typeof o === 'object' ? o : { value: o, label: o });
+  const idx = Math.max(0, opts.findIndex(o => o.value === value));
+  const n = opts.length;
+  return (<TweakRow label={label}><div className="twk-seg"><div className="twk-seg-thumb" style={{ left:`calc(2px + ${idx}*(100% - 4px)/${n})`, width:`calc((100% - 4px)/${n})` }}/>{opts.map(o => <button key={o.value} onClick={() => onChange(o.value)}>{o.label}</button>)}</div></TweakRow>);
+}
+function TweakSelect({ label, value, options, onChange }) {
+  return (<TweakRow label={label}><select className="twk-field" value={value} onChange={e=>onChange(e.target.value)}>{options.map(o=>{ const v=typeof o==='object'?o.value:o; const l=typeof o==='object'?o.label:o; return <option key={v} value={v}>{l}</option>; })}</select></TweakRow>);
+}
+Object.assign(window, { useTweaks, TweaksPanel, TweakSection, TweakRadio, TweakSelect });
+</script>
+
+<!-- ② ICONS + DATA + SECTION COMPONENTS -->
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+// ── SVG Icon Components ───────────────────────────────────────────────────────
+const IconSearch = () => <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>;
+const IconMoon   = () => <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>;
+const IconSun    = () => <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>;
+const IconTrophy = () => <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M6 2h12v6a6 6 0 0 1-12 0V2z"/><path d="M4 2v4a2 2 0 0 1-2 2v0a2 2 0 0 0 2 2h0M20 2v4a2 2 0 0 0 2 2v0a2 2 0 0 1-2 2h0"/><line x1="12" y1="14" x2="12" y2="17"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>;
+const IconYT     = () => <svg width="18" height="13" viewBox="0 0 18 13" fill="none"><rect width="18" height="13" rx="3" fill="#FF0000"/><path d="M7.5 4l5 2.5-5 2.5V4z" fill="#fff"/></svg>;
+const IconPlay   = ({ size=56 }) => <div style={{ width:size, height:size, borderRadius:"50%", background:"rgba(0,0,0,0.6)", display:"flex", alignItems:"center", justifyContent:"center" }}><svg width={size*0.4} height={size*0.4} viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg></div>;
+
+// Flag image from flagcdn.com
+const FlagImg = ({ code, size=18 }) => {
+  const h = Math.round(size * 0.75);
+  return <img src={`https://flagcdn.com/${size}x${h}/${code}.png`} alt={code} style={{ width:size, height:h, verticalAlign:"middle", borderRadius:1 }} loading="lazy" />;
+};
+
+// ── Data ──────────────────────────────────────────────────────────────────────
+const F1_DRIVERS = [
+  { pos:1,  name:"Lando Norris",    team:"McLaren",      code:"gb", pts:169, wins:4, color:"#FF8000" },
+  { pos:2,  name:"Charles Leclerc", team:"Ferrari",      code:"mc", pts:151, wins:3, color:"#E8002D" },
+  { pos:3,  name:"Oscar Piastri",   team:"McLaren",      code:"au", pts:143, wins:2, color:"#FF8000" },
+  { pos:4,  name:"Lewis Hamilton",  team:"Ferrari",      code:"gb", pts:118, wins:0, color:"#E8002D" },
+  { pos:5,  name:"Max Verstappen",  team:"Red Bull",     code:"nl", pts:107, wins:0, color:"#3671C6" },
+  { pos:6,  name:"George Russell",  team:"Mercedes",     code:"gb", pts:98,  wins:0, color:"#27F4D2" },
+  { pos:7,  name:"Carlos Sainz",    team:"Williams",     code:"es", pts:72,  wins:0, color:"#64C4FF" },
+  { pos:8,  name:"Fernando Alonso", team:"Aston Martin", code:"es", pts:55,  wins:0, color:"#358C75" },
+  { pos:9,  name:"Kimi Antonelli",  team:"Mercedes",     code:"it", pts:47,  wins:0, color:"#27F4D2" },
+  { pos:10, name:"Pierre Gasly",    team:"Alpine",       code:"fr", pts:28,  wins:0, color:"#FF87BC" },
+];
+const F1_CONSTRUCTORS = [
+  { pos:1, name:"McLaren",      pts:312, color:"#FF8000" },
+  { pos:2, name:"Ferrari",      pts:269, color:"#E8002D" },
+  { pos:3, name:"Mercedes",     pts:145, color:"#27F4D2" },
+  { pos:4, name:"Red Bull",     pts:124, color:"#3671C6" },
+  { pos:5, name:"Williams",     pts:85,  color:"#64C4FF" },
+  { pos:6, name:"Aston Martin", pts:78,  color:"#358C75" },
+  { pos:7, name:"Alpine",       pts:34,  color:"#FF87BC" },
+  { pos:8, name:"RB",           pts:21,  color:"#6692FF" },
+  { pos:9, name:"Haas",         pts:12,  color:"#B6BABD" },
+  { pos:10,name:"Kick Sauber",  pts:4,   color:"#52E252" },
+];
+const F1_CALENDAR = [
+  { rd:1,  code:"bh", name:"Bahrain GP",        date:"15 มี.ค.", winner:"Norris",   status:"done" },
+  { rd:2,  code:"sa", name:"Saudi Arabia GP",   date:"22 มี.ค.", winner:"Leclerc",  status:"done" },
+  { rd:3,  code:"au", name:"Australian GP",     date:"6 เม.ย.",  winner:"Norris",   status:"done" },
+  { rd:4,  code:"jp", name:"Japanese GP",       date:"13 เม.ย.", winner:"Piastri",  status:"done" },
+  { rd:5,  code:"cn", name:"Chinese GP",        date:"27 เม.ย.", winner:"Leclerc",  status:"done" },
+  { rd:6,  code:"us", name:"Miami GP",          date:"4 พ.ค.",   winner:"Norris",   status:"done" },
+  { rd:7,  code:"it", name:"Emilia Romagna GP", date:"18 พ.ค.",  winner:"Leclerc",  status:"done" },
+  { rd:8,  code:"mc", name:"Monaco GP",         date:"25 พ.ค.",  winner:"Hamilton", status:"done" },
+  { rd:9,  code:"es", name:"Spanish GP",        date:"1 มิ.ย.",  winner:"Norris",   status:"done" },
+  { rd:10, code:"ca", name:"Canadian GP",       date:"15 มิ.ย.", winner:null,       status:"next" },
+  { rd:11, code:"at", name:"Austrian GP",       date:"29 มิ.ย.", winner:null,       status:"upcoming" },
+  { rd:12, code:"gb", name:"British GP",        date:"6 ก.ค.",   winner:null,       status:"upcoming" },
+  { rd:13, code:"hu", name:"Hungarian GP",      date:"27 ก.ค.",  winner:null,       status:"upcoming" },
+  { rd:14, code:"be", name:"Belgian GP",        date:"3 ส.ค.",   winner:null,       status:"upcoming" },
+  { rd:15, code:"nl", name:"Dutch GP",          date:"31 ส.ค.",  winner:null,       status:"upcoming" },
+  { rd:16, code:"it", name:"Italian GP",        date:"7 ก.ย.",   winner:null,       status:"upcoming" },
+  { rd:17, code:"az", name:"Azerbaijan GP",     date:"21 ก.ย.",  winner:null,       status:"upcoming" },
+  { rd:18, code:"sg", name:"Singapore GP",      date:"5 ต.ค.",   winner:null,       status:"upcoming" },
+  { rd:19, code:"us", name:"United States GP",  date:"19 ต.ค.",  winner:null,       status:"upcoming" },
+  { rd:20, code:"mx", name:"Mexico GP",         date:"26 ต.ค.",  winner:null,       status:"upcoming" },
+  { rd:21, code:"br", name:"Brazilian GP",      date:"9 พ.ย.",   winner:null,       status:"upcoming" },
+  { rd:22, code:"ae", name:"Abu Dhabi GP",      date:"23 พ.ย.",  winner:null,       status:"upcoming" },
+];
+const F1_RESULTS = [
+  { pos:1, code:"gb", name:"L. Norris",     team:"McLaren",      time:"1:29:43.234", pts:25, color:"#FF8000" },
+  { pos:2, code:"mc", name:"C. Leclerc",    team:"Ferrari",      time:"+4.234s",     pts:18, color:"#E8002D" },
+  { pos:3, code:"au", name:"O. Piastri",    team:"McLaren",      time:"+8.567s",     pts:15, color:"#FF8000" },
+  { pos:4, code:"gb", name:"L. Hamilton",   team:"Ferrari",      time:"+15.123s",    pts:12, color:"#E8002D" },
+  { pos:5, code:"nl", name:"M. Verstappen", team:"Red Bull",     time:"+21.456s",    pts:10, color:"#3671C6" },
+  { pos:6, code:"gb", name:"G. Russell",    team:"Mercedes",     time:"+28.789s",    pts:8,  color:"#27F4D2" },
+  { pos:7, code:"es", name:"C. Sainz",      team:"Williams",     time:"+35.234s",    pts:6,  color:"#64C4FF" },
+  { pos:8, code:"es", name:"F. Alonso",     team:"Aston Martin", time:"+42.678s",    pts:4,  color:"#358C75" },
+  { pos:9, code:"it", name:"K. Antonelli",  team:"Mercedes",     time:"+49.123s",    pts:2,  color:"#27F4D2" },
+  { pos:10,code:"fr", name:"P. Gasly",      team:"Alpine",       time:"+56.789s",    pts:1,  color:"#FF87BC" },
+];
+const STANDINGS = {
+  premier: { label:"Premier League 2025/26", rows:[
+    {pos:1,name:"Arsenal",    p:38,w:28,d:6, l:4, gd:"+65",pts:90},
+    {pos:2,name:"Liverpool",  p:38,w:26,d:7, l:5, gd:"+58",pts:85},
+    {pos:3,name:"Chelsea",    p:38,w:24,d:8, l:6, gd:"+42",pts:80},
+    {pos:4,name:"Man City",   p:38,w:23,d:7, l:8, gd:"+38",pts:76},
+    {pos:5,name:"Tottenham",  p:38,w:20,d:9, l:9, gd:"+18",pts:69},
+    {pos:6,name:"Newcastle",  p:38,w:19,d:8, l:11,gd:"+12",pts:65},
+    {pos:7,name:"Aston Villa",p:38,w:18,d:8, l:12,gd:"+8", pts:62},
+    {pos:8,name:"Man United", p:38,w:16,d:9, l:13,gd:"0",  pts:57},
+    {pos:9,name:"Brighton",   p:38,w:15,d:10,l:13,gd:"+5", pts:55},
+    {pos:10,name:"West Ham",  p:38,w:14,d:9, l:15,gd:"-5", pts:51},
+  ]},
+  thai: { label:"Thai League 1 · 2026", rows:[
+    {pos:1,name:"บุรีรัมย์ ยูไนเต็ด",p:30,w:22,d:5,l:3, gd:"+48",pts:71},
+    {pos:2,name:"ชลบุรี เอฟซี",      p:30,w:18,d:8,l:4, gd:"+28",pts:62},
+    {pos:3,name:"เมืองทอง ยูไนเต็ด", p:30,w:17,d:7,l:6, gd:"+22",pts:58},
+    {pos:4,name:"ราชบุรี มิตรผล",     p:30,w:15,d:8,l:7, gd:"+12",pts:53},
+    {pos:5,name:"พอร์ต เอฟซี",        p:30,w:14,d:9,l:7, gd:"+9", pts:51},
+    {pos:6,name:"ขอนแก่น ยูไนเต็ด",   p:30,w:13,d:8,l:9, gd:"+4", pts:47},
+    {pos:7,name:"สุพรรณบุรี เอฟซี",   p:30,w:11,d:9,l:10,gd:"-2", pts:42},
+    {pos:8,name:"ราชประชา เอฟซี",     p:30,w:10,d:8,l:12,gd:"-8", pts:38},
+    {pos:9,name:"เชียงราย ยูไนเต็ด",  p:30,w:8, d:9,l:13,gd:"-15",pts:33},
+    {pos:10,name:"กรุงเทพ คริสเตียน", p:30,w:5, d:6,l:19,gd:"-38",pts:21},
+  ]},
+  laliga: { label:"La Liga 2025/26", rows:[
+    {pos:1,name:"Real Madrid",    p:38,w:27,d:7, l:4, gd:"+68",pts:88},
+    {pos:2,name:"Barcelona",      p:38,w:26,d:6, l:6, gd:"+55",pts:84},
+    {pos:3,name:"Atlético Madrid",p:38,w:22,d:9, l:7, gd:"+35",pts:75},
+    {pos:4,name:"Athletic Bilbao",p:38,w:19,d:8, l:11,gd:"+18",pts:65},
+    {pos:5,name:"Real Sociedad",  p:38,w:17,d:9, l:12,gd:"+10",pts:60},
+    {pos:6,name:"Villarreal",     p:38,w:16,d:8, l:14,gd:"+5", pts:56},
+    {pos:7,name:"Sevilla",        p:38,w:14,d:10,l:14,gd:"-2", pts:52},
+    {pos:8,name:"Valencia",       p:38,w:13,d:9, l:16,gd:"-8", pts:48},
+    {pos:9,name:"Real Betis",     p:38,w:12,d:11,l:15,gd:"-5", pts:47},
+    {pos:10,name:"Osasuna",       p:38,w:11,d:9, l:18,gd:"-18",pts:42},
+  ]},
+};
+const NEWS = [
+  { id:1, cat:"F1",         hot:true,  date:"1 มิ.ย. 2026",  author:"ภัทรพล สินพิมล",  bg:"url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&h=628&fit=crop&auto=format&q=80') center/cover no-repeat", title:"นอร์ริส ขยับช่องว่าง หลังคว้าชัย สเปน GP ยอดสะสม 169 แต้มนำโด่ง" },
+  { id:2, cat:"Football",   hot:false, date:"31 พ.ค. 2026",  author:"กมลชนก วัฒนา",    bg:"url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=1200&h=628&fit=crop&auto=format&q=80') center/cover no-repeat", title:"อาร์เซนอล คว้าแชมป์พรีเมียร์ลีก สมัยที่ 2 ติดต่อกัน จบฤดูกาล 90 แต้ม" },
+  { id:3, cat:"Thai League",hot:false, date:"31 พ.ค. 2026",  author:"ธนเดช ประทุม",     bg:"url('https://images.unsplash.com/photo-1553778263-73a83bab9b0c?w=1200&h=628&fit=crop&auto=format&q=80') center/cover no-repeat", title:"บุรีรัมย์ บดขยี้ เมืองทอง 3-1 ยืนจ่าฝูงไทยลีก ทิ้งห่าง 9 แต้ม" },
+  { id:4, cat:"Volleyball", hot:false, date:"30 พ.ค. 2026",  author:"พัชราภา โสภา",     bg:"url('https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?w=1200&h=628&fit=crop&auto=format&q=80') center/cover no-repeat", title:"สาวไทย พ่าย บราซิล 0-3 เซต VNL 2026 รอบแรก" },
+  { id:5, cat:"Tennis",     hot:false, date:"30 พ.ค. 2026",  author:"ชนาธิป รุ่งเรือง", bg:"url('https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=1200&h=628&fit=crop&auto=format&q=80') center/cover no-repeat", title:"ซิน บุกรอบ 8 คน โรลอง การ์รอส หวังแชมป์ Grand Slam สมัยที่ 3" },
+  { id:6, cat:"F1",         hot:false, date:"2 มิ.ย. 2026",  author:"ภัทรพล สินพิมล",  bg:"url('https://images.unsplash.com/photo-1541773367-7b6b68f7df39?w=1200&h=628&fit=crop&auto=format&q=80') center/cover no-repeat", title:"แฮมิลตัน เผย ชินรถ Ferrari แล้ว หวังโชว์ฟอร์มดี สนาม Canada" },
+];
+
+// ── Components ────────────────────────────────────────────────────────────────
+function CatTag({ label, hot }) {
+  return <span style={{ display:"inline-block", padding:"2px 9px", background:hot?"#ffa5f7":"#0d0d0d", color:hot?"#0d0d0d":"#fff", fontFamily:"Space Grotesk,sans-serif", fontWeight:700, fontSize:10, letterSpacing:"0.13em", textTransform:"uppercase" }}>{label}</span>;
+}
+function NewsCard({ item, font }) {
+  const ff = font==="serif"?"Noto Serif Thai,serif":"Sarabun,sans-serif";
+  const [hov, setHov] = useState(false);
+  return (
+    <div style={{ cursor:"pointer", transform:hov?"translateY(-3px)":"translateY(0)", transition:"transform 0.2s" }} onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)}>
+      <div style={{ position:"relative", paddingBottom:"52.33%", background:item.bg, marginBottom:14, overflow:"hidden" }}>
+        {item.hot && <span style={{ position:"absolute", top:10, left:10, zIndex:1, background:"#ffa5f7", color:"#0d0d0d", padding:"2px 8px", fontSize:9, fontWeight:800, fontFamily:"Space Grotesk", letterSpacing:"0.15em" }}>HOT</span>}
+      </div>
+      <CatTag label={item.cat} />
+      <h4 style={{ fontFamily:ff, fontWeight:700, fontSize:15, lineHeight:1.45, margin:"8px 0 6px", color:"var(--txt)", textWrap:"pretty" }}>{item.title}</h4>
+      <p style={{ fontFamily:"Sarabun,sans-serif", fontSize:12, color:"var(--txt-4)", margin:0 }}>{item.author} · {item.date}</p>
+    </div>
+  );
+}
+
+// ── Navbar ────────────────────────────────────────────────────────────────────
+function Navbar({ font, dark, onToggleDark }) {
+  const [active, setActive] = useState("Home");
+  const [menuOpen, setMenuOpen] = useState(false);
+  const ff = font==="serif"?"Noto Serif Thai,serif":"Sarabun,sans-serif";
+  const items = ["Home","Football","F1","Basketball","Volleyball","Tennis"];
+  const HamIcon = () => menuOpen
+    ? <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    : <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M3 12h18M3 6h18M3 18h18"/></svg>;
+  return (
+    <nav style={{ position:"sticky", top:0, zIndex:100, background:"var(--bg)", borderBottom:"1px solid var(--bdr)" }}>
+      {/* Top row */}
+      <div style={{ position:"relative", display:"flex", alignItems:"center", justifyContent:"space-between", padding:"12px 32px", minHeight:76 }}>
+        {/* Hamburger — mobile only */}
+        <button className="nav-mob" onClick={()=>setMenuOpen(o=>!o)}
+          style={{ background:"none", border:"1px solid var(--bdr)", padding:"8px 10px", color:"var(--txt-2)", display:"none", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+          <HamIcon />
+        </button>
+        {/* Logo — absolutely centered */}
+        <div style={{ position:"absolute", left:"50%", transform:"translateX(-50%)", display:"flex", flexDirection:"column", alignItems:"center", gap:3 }}>
+          <img src="uploads/pasted-1780834745382-0.png" style={{ height:60, width:60, objectFit:"cover", display:"block" }} alt="The Standard Sport" />
+          <div style={{ fontFamily:"Space Grotesk,sans-serif", fontWeight:800, fontSize:9, letterSpacing:"0.42em", color:"#ffa5f7", textTransform:"uppercase" }}>SPORT</div>
+        </div>
+        {/* Actions */}
+        <div style={{ display:"flex", gap:8, flexShrink:0, marginLeft:"auto" }}>
+          <button style={{ background:"none", border:"1px solid var(--bdr)", padding:"7px 14px", color:"var(--txt-2)", display:"flex", alignItems:"center", gap:6 }}>
+            <IconSearch />
+          </button>
+          <button onClick={onToggleDark}
+            style={{ background:"none", border:"1px solid var(--bdr)", padding:"7px 10px", color:"var(--txt-2)", display:"flex", alignItems:"center", justifyContent:"center", transition:"all 0.2s" }}
+            title={dark?"Light mode":"Dark mode"}>
+            {dark ? <IconSun /> : <IconMoon />}
+          </button>
+        </div>
+      </div>
+      {/* Nav items row */}
+      <div className={`nav-desk${menuOpen?" open":""}`}
+        style={{ justifyContent:"center", borderTop:"1px solid var(--bdr)", background:"var(--bg)" }}>
+        {items.map(item => (
+          <button key={item} onClick={()=>{ setActive(item); setMenuOpen(false); }} style={{
+            background:"none", border:"none", padding:"0 20px", height:44,
+            fontFamily:ff, fontWeight:600, fontSize:14,
+            color:active===item?"var(--txt)":"var(--txt-3)",
+            borderBottom:`2px solid ${active===item?"#ffa5f7":"transparent"}`,
+            transition:"all 0.15s", whiteSpace:"nowrap", cursor:"pointer",
+          }}>{item}</button>
+        ))}
+      </div>
+    </nav>
+  );
+}
+
+// ── Hero Full ─────────────────────────────────────────────────────────────────
+function HeroFull({ font }) {
+  const ff = font==="serif"?"Noto Serif Thai,serif":"Sarabun,sans-serif";
+  return (
+    <div style={{ position:"relative", minHeight:500, overflow:"hidden", background:"linear-gradient(150deg,#080808 0%,#10101a 50%,#0c0c14 100%)" }}>
+      <div style={{ position:"absolute", top:"-5%", right:"-2%", width:520, height:520, background:"radial-gradient(circle,rgba(255,165,247,0.10) 0%,transparent 60%)", pointerEvents:"none" }} />
+      <div style={{ position:"absolute", inset:0, pointerEvents:"none", backgroundImage:"linear-gradient(rgba(255,255,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.025) 1px,transparent 1px)", backgroundSize:"56px 56px" }} />
+      <div className="rsp-wrap" style={{ position:"relative", zIndex:1, padding:"52px 40px" }}><div className="rsp-hero">
+        <div>
+          <div style={{ display:"flex", gap:8, marginBottom:20, alignItems:"center" }}>
+            <CatTag label="F1" hot={true} />
+            <span style={{ fontFamily:"Space Grotesk,sans-serif", fontWeight:700, fontSize:10, letterSpacing:"0.18em", color:"rgba(255,165,247,0.6)" }}>SPANISH GP · ROUND 9/22</span>
+          </div>
+          <h1 style={{ fontFamily:ff, fontWeight:800, fontSize:46, lineHeight:1.2, color:"#fff", margin:"0 0 20px", textWrap:"pretty", maxWidth:580 }}>
+            นอร์ริส ขยับช่องว่าง<br/>หลังคว้าชัย สเปน GP<br/>ยอดสะสม <span style={{ color:"#ffa5f7" }}>169 แต้ม</span> นำโด่ง
+          </h1>
+          <p style={{ fontFamily:ff, fontSize:17, lineHeight:1.75, color:"rgba(255,255,255,0.6)", margin:"0 0 28px", maxWidth:520 }}>แลนโด้ นอร์ริส โชว์ฟอร์มยอดเยี่ยมบน Circuit de Catalunya นำทัพ McLaren คว้าชัยสมัยที่ 4 ของฤดูกาล 2026 ทิ้งห่างเลอแคลร์ 18 แต้มก่อนถึงสนาม Canada</p>
+          <div style={{ display:"flex", gap:12, alignItems:"center" }}>
+            <div style={{ width:34, height:34, borderRadius:"50%", background:"linear-gradient(135deg,#ffa5f7,#ff79c6)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:14, fontWeight:700, color:"#0d0d0d", flexShrink:0 }}>ภ</div>
+            <div>
+              <div style={{ fontFamily:"Space Grotesk,sans-serif", fontWeight:600, fontSize:12, color:"rgba(255,255,255,0.75)" }}>ภัทรพล สินพิมล</div>
+              <div style={{ fontFamily:"Sarabun,sans-serif", fontSize:12, color:"rgba(255,255,255,0.35)" }}>1 มิ.ย. 2026 · อ่าน 4 นาที</div>
+            </div>
+          </div>
+        </div>
+        <div style={{ borderLeft:"1px solid rgba(255,255,255,0.07)", paddingLeft:36 }}>
+          <div style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:9, letterSpacing:"0.22em", color:"rgba(255,255,255,0.28)", textTransform:"uppercase", marginBottom:18 }}>Latest</div>
+          {NEWS.slice(1,5).map((n,i) => (
+            <div key={n.id} style={{ paddingBottom:i<3?18:0, marginBottom:i<3?18:0, borderBottom:i<3?"1px solid rgba(255,255,255,0.06)":"none", cursor:"pointer", display:"flex", gap:12, alignItems:"flex-start" }}>
+              <div style={{ position:"relative", width:80, flexShrink:0 }}><div style={{ paddingBottom:"52.33%", background:n.bg }}></div></div>
+              <div style={{ flex:1, minWidth:0 }}>
+                <CatTag label={n.cat} />
+                <p style={{ fontFamily:ff, fontWeight:600, fontSize:13, color:"#fff", margin:"5px 0 3px", lineHeight:1.4 }}>{n.title}</p>
+                <p style={{ fontFamily:"Sarabun,sans-serif", fontSize:11, color:"rgba(255,255,255,0.3)", margin:0 }}>{n.date}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div></div>
+  );
+}
+
+// ── Hero Grid ─────────────────────────────────────────────────────────────────
+function HeroGrid({ font }) {
+  const ff = font==="serif"?"Noto Serif Thai,serif":"Sarabun,sans-serif";
+  return (
+    <div style={{ background:"var(--bg)", borderBottom:"1px solid var(--bdr)" }}>
+      <div className="rsp-wrap" style={{ padding:"28px 40px" }}><div className="rsp-hgrid">
+        <div style={{ cursor:"pointer" }}>
+          <div style={{ position:"relative", paddingBottom:"52.33%", background:NEWS[0].bg, overflow:"hidden" }}>
+            <div style={{ position:"absolute", inset:0, background:"linear-gradient(to top,rgba(0,0,0,0.82) 0%,rgba(0,0,0,0.15) 55%,transparent 100%)" }} />
+            <div style={{ position:"absolute", bottom:24, left:24, right:24 }}>
+              <CatTag label={NEWS[0].cat} hot={true} />
+              <h2 style={{ fontFamily:ff, fontWeight:800, fontSize:26, color:"#fff", margin:"8px 0 8px", lineHeight:1.3 }}>{NEWS[0].title}</h2>
+              <p style={{ fontFamily:"Sarabun,sans-serif", fontSize:13, color:"rgba(255,255,255,0.6)", margin:0 }}>{NEWS[0].author} · {NEWS[0].date}</p>
+            </div>
+          </div>
+        </div>
+        <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
+          {NEWS.slice(1,4).map((n,i) => (
+            <div key={n.id} style={{ display:"grid", gridTemplateColumns:"72px 1fr", gap:12, cursor:"pointer", paddingBottom:i<2?16:0, borderBottom:i<2?"1px solid var(--bdr)":"none" }}>
+              <div style={{ position:"relative", paddingBottom:"52.33%", background:n.bg, flexShrink:0 }}></div>
+              <div>
+                <CatTag label={n.cat} />
+                <p style={{ fontFamily:ff, fontWeight:700, fontSize:13, margin:"5px 0 3px", lineHeight:1.4, color:"var(--txt)" }}>{n.title}</p>
+                <p style={{ fontFamily:"Sarabun,sans-serif", fontSize:11, color:"var(--txt-4)", margin:0 }}>{n.date}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div></div>
+    </div>
+  );
+}
+
+// ── F1 Section ────────────────────────────────────────────────────────────────
+function F1Section({ font }) {
+  const [tab, setTab] = useState("calendar");
+  const ff = font==="serif"?"Noto Serif Thai,serif":"Sarabun,sans-serif";
+  const tabs = [{id:"calendar",label:"ตารางแข่ง"},{id:"results",label:"ผลล่าสุด"},{id:"drivers",label:"อันดับนักแข่ง"},{id:"constructors",label:"อันดับทีม"}];
+  const th = { fontFamily:"Space Grotesk,sans-serif", fontSize:10, fontWeight:700, letterSpacing:"0.12em", color:"var(--txt-3)", textTransform:"uppercase", padding:"10px 14px", textAlign:"left" };
+  return (
+    <div style={{ background:"var(--bg-alt)" }}>
+      <div style={{ background:"#0d0d0d", padding:"18px 40px", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+        <div style={{ display:"flex", alignItems:"center", gap:20 }}>
+          <img src="uploads/pasted-1780536628515-0.png" style={{ height:36, width:"auto", display:"block" }} alt="Formula 1" />
+          <div style={{ width:1, height:36, background:"rgba(255,255,255,0.15)" }}></div>
+          <div>
+            <div style={{ fontFamily:"Space Grotesk,sans-serif", fontWeight:700, fontSize:12, letterSpacing:"0.26em", color:"#fff", textTransform:"uppercase" }}>World Championship</div>
+            <div style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:11, letterSpacing:"0.1em", color:"rgba(255,255,255,0.38)" }}>Season 2026</div>
+          </div>
+        </div>
+        <span style={{ fontFamily:"Sarabun,sans-serif", fontSize:13, color:"rgba(255,255,255,0.38)" }}>ข้อมูลหลัง Spanish GP · Rd 9/22</span>
+      </div>
+      <div style={{ background:"#161616", padding:"20px 40px", display:"flex", alignItems:"center", gap:32, flexWrap:"wrap" }}>
+        <div>
+          <div style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:9, letterSpacing:"0.28em", color:"rgba(255,255,255,0.3)", textTransform:"uppercase", marginBottom:8 }}>NEXT RACE</div>
+          <div style={{ display:"flex", alignItems:"center", gap:12 }}>
+            <FlagImg code="ca" size={28} />
+            <div>
+              <div style={{ fontFamily:"Space Grotesk,sans-serif", fontWeight:700, fontSize:14, color:"#fff" }}>Canadian Grand Prix</div>
+              <div style={{ fontFamily:"Sarabun,sans-serif", fontSize:12, color:"rgba(255,255,255,0.4)" }}>Circuit Gilles Villeneuve · 15 มิ.ย. 2026</div>
+            </div>
+          </div>
+        </div>
+        <div style={{ width:1, height:44, background:"rgba(255,255,255,0.1)", flexShrink:0 }}></div>
+        <div style={{ display:"flex", gap:24 }}>
+          {[{n:"11",l:"วัน"},{n:"00",l:"ชั่วโมง"},{n:"00",l:"นาที"}].map(({n,l}) => (
+            <div key={l} style={{ textAlign:"center" }}>
+              <div style={{ fontFamily:"Space Grotesk,sans-serif", fontWeight:800, fontSize:38, color:"#ffa5f7", lineHeight:1, letterSpacing:"-0.02em" }}>{n}</div>
+              <div style={{ fontFamily:"Sarabun,sans-serif", fontSize:11, color:"rgba(255,255,255,0.32)", marginTop:4 }}>{l}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ marginLeft:"auto" }}>
+          <span style={{ fontFamily:"Space Grotesk,sans-serif", fontWeight:700, fontSize:10, letterSpacing:"0.14em", color:"#E8002D", border:"1px solid rgba(232,0,45,0.45)", padding:"5px 14px" }}>RD 10 / 22</span>
+        </div>
+      </div>
+      <div style={{ background:"var(--bg)", borderBottom:"1px solid var(--bdr)" }}>
+        <div style={{ maxWidth:1280, margin:"0 auto", padding:"0 40px", display:"flex" }}>
+          {tabs.map(t => (
+            <button key={t.id} onClick={()=>setTab(t.id)} style={{ background:"none", border:"none", cursor:"pointer", padding:"15px 22px", fontFamily:"Sarabun,sans-serif", fontWeight:600, fontSize:14, color:tab===t.id?"var(--txt)":"var(--txt-3)", borderBottom:`2px solid ${tab===t.id?"#ffa5f7":"transparent"}`, transition:"all 0.15s" }}>{t.label}</button>
+          ))}
+        </div>
+      </div>
+      <div style={{ maxWidth:1280, margin:"0 auto", padding:"28px 40px" }}>
+        {tab==="calendar" && (
+          <div className="rsp-cal">
+            {F1_CALENDAR.map(r => (
+              <div key={r.rd} style={{ background:"var(--bg-card)", padding:"11px 18px", display:"grid", gridTemplateColumns:"28px 26px 1fr auto 60px", gap:10, alignItems:"center", borderLeft:`3px solid ${r.status==="next"?"#ffa5f7":r.status==="done"?"#22c55e":"var(--bdr)"}`, opacity:r.status==="upcoming"?0.5:1 }}>
+                <span style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:10, color:"var(--txt-4)", fontWeight:600, textAlign:"center" }}>R{r.rd}</span>
+                <FlagImg code={r.code} size={20} />
+                <div>
+                  <div style={{ fontFamily:"Space Grotesk,sans-serif", fontWeight:600, fontSize:12, color:"var(--txt)" }}>{r.name}</div>
+                  {r.status==="next" && <div style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:9, letterSpacing:"0.1em", color:"#ffa5f7", fontWeight:700, marginTop:1 }}>NEXT</div>}
+                </div>
+                <span style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:11, color:"var(--txt-4)", textAlign:"right" }}>{r.date}</span>
+                <span style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:11, fontWeight:700, textAlign:"right", color:r.status==="next"?"#ffa5f7":"var(--txt)" }}>{r.winner||(r.status==="next"?"TBC":"—")}</span>
+              </div>
+            ))}
+          </div>
+        )}
+        {tab==="results" && (
+          <div>
+            <div style={{ display:"flex", alignItems:"center", gap:14, marginBottom:20, paddingBottom:16, borderBottom:"1px solid var(--bdr)" }}>
+              <FlagImg code="es" size={28} />
+              <div>
+                <div style={{ fontFamily:"Space Grotesk,sans-serif", fontWeight:700, fontSize:16, color:"var(--txt)" }}>Spanish Grand Prix — Circuit de Catalunya</div>
+                <div style={{ fontFamily:"Sarabun,sans-serif", fontSize:13, color:"var(--txt-3)" }}>1 มิถุนายน 2026 · Rd 9/22</div>
+              </div>
+            </div>
+            <div className="rsp-tbl"><table style={{ width:"100%", borderCollapse:"collapse" }}>
+              <thead><tr style={{ borderBottom:`2px solid var(--txt)` }}>{["POS","","นักแข่ง","ทีม","เวลา / ห่าง","แต้ม"].map((h,j)=><th key={j} style={{ ...th, textAlign:h==="แต้ม"?"right":"left", paddingBottom:10 }}>{h}</th>)}</tr></thead>
+              <tbody>
+                {F1_RESULTS.map((r,i)=>(
+                  <tr key={r.pos} style={{ borderBottom:"1px solid var(--bdr-2)", background:i%2===0?"var(--bg-card)":"var(--bg-row)" }}>
+                    <td style={{ fontFamily:"Space Grotesk,sans-serif", fontWeight:800, fontSize:15, padding:"12px 14px", color:r.pos===1?"#ffa5f7":"var(--txt)", width:40 }}>{r.pos}</td>
+                    <td style={{ padding:"12px 4px", width:24 }}><div style={{ width:3, height:22, background:r.color, borderRadius:1 }}></div></td>
+                    <td style={{ fontFamily:"Space Grotesk,sans-serif", fontWeight:600, fontSize:13, padding:"12px 14px", color:"var(--txt)" }}><FlagImg code={r.code} /> {r.name}</td>
+                    <td style={{ fontFamily:"Sarabun,sans-serif", fontSize:13, color:"var(--txt-3)", padding:"12px 14px" }}>{r.team}</td>
+                    <td style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:12, padding:"12px 14px", color:r.pos===1?"var(--txt)":"var(--txt-2)" }}>{r.time}</td>
+                    <td style={{ fontFamily:"Space Grotesk,sans-serif", fontWeight:700, fontSize:14, padding:"12px 14px", textAlign:"right", color:"var(--txt)" }}>{r.pts}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table></div>
+          </div>
+        )}
+        {tab==="drivers" && (
+          <table style={{ width:"100%", borderCollapse:"collapse" }}>
+            <thead><tr style={{ borderBottom:`2px solid var(--txt)` }}>{["POS","","นักแข่ง","ทีม","ชัย","คะแนน"].map((h,j)=><th key={j} style={{ ...th, textAlign:h==="คะแนน"?"right":"left", paddingBottom:10 }}>{h}</th>)}</tr></thead>
+            <tbody>
+              {F1_DRIVERS.map((d,i)=>(
+                <tr key={d.pos} style={{ borderBottom:"1px solid var(--bdr-2)", background:i%2===0?"var(--bg-card)":"var(--bg-row)" }}>
+                  <td style={{ fontFamily:"Space Grotesk,sans-serif", fontWeight:800, fontSize:15, padding:"12px 14px", color:d.pos===1?"#ffa5f7":"var(--txt)", width:40 }}>{d.pos}</td>
+                  <td style={{ padding:"12px 4px", width:24 }}><div style={{ width:3, height:22, background:d.color, borderRadius:1 }}></div></td>
+                  <td style={{ fontFamily:"Space Grotesk,sans-serif", fontWeight:600, fontSize:13, padding:"12px 14px", color:"var(--txt)" }}><FlagImg code={d.code} /> {d.name}</td>
+                  <td style={{ fontFamily:"Sarabun,sans-serif", fontSize:13, color:"var(--txt-3)", padding:"12px 14px" }}>{d.team}</td>
+                  <td style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:13, padding:"12px 14px", textAlign:"center", color:"var(--txt)" }}>{d.wins>0?<span style={{ display:"inline-flex", gap:4, alignItems:"center" }}><IconTrophy /> {d.wins}</span>:"—"}</td>
+                  <td style={{ padding:"12px 14px" }}>
+                    <div style={{ display:"flex", alignItems:"center", gap:10, justifyContent:"flex-end" }}>
+                      <div style={{ background:"var(--bdr)", height:4, width:80, borderRadius:2, overflow:"hidden", flexShrink:0 }}>
+                        <div style={{ background:d.color, height:"100%", width:`${(d.pts/169)*100}%`, borderRadius:2 }}></div>
+                      </div>
+                      <span style={{ fontFamily:"Space Grotesk,sans-serif", fontWeight:800, fontSize:14, minWidth:36, textAlign:"right", color:"var(--txt)" }}>{d.pts}</span>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+        {tab==="constructors" && (
+          <div className="rsp-cons">
+            {F1_CONSTRUCTORS.map((c,i)=>(
+              <div key={c.pos} style={{ background:"var(--bg-card)", padding:"16px 20px", display:"flex", alignItems:"center", gap:16 }}>
+                <span style={{ fontFamily:"Space Grotesk,sans-serif", fontWeight:800, fontSize:20, color:i===0?"#ffa5f7":"var(--txt-4)", minWidth:36, textAlign:"center" }}>{c.pos}</span>
+                <div style={{ width:4, height:44, background:c.color, borderRadius:2, flexShrink:0 }}></div>
+                <div style={{ flex:1, minWidth:0 }}>
+                  <div style={{ fontFamily:"Space Grotesk,sans-serif", fontWeight:700, fontSize:14, color:"var(--txt)" }}>{c.name}</div>
+                  <div style={{ background:"var(--bdr)", height:4, borderRadius:2, overflow:"hidden", marginTop:8 }}>
+                    <div style={{ background:c.color, height:"100%", width:`${(c.pts/312)*100}%`, borderRadius:2 }}></div>
+                  </div>
+                </div>
+                <span style={{ fontFamily:"Space Grotesk,sans-serif", fontWeight:800, fontSize:18, minWidth:48, textAlign:"right", color:"var(--txt)" }}>{c.pts}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── Football Standings ────────────────────────────────────────────────────────
+function FootballStandings({ font }) {
+  const ff = font==="serif"?"Noto Serif Thai,serif":"Sarabun,sans-serif";
+  const data = STANDINGS["premier"];
+  return (
+    <div style={{ padding:"48px 0", background:"var(--bg)" }}>
+      <div className="rsp-wrap">
+        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-end", marginBottom:24, flexWrap:"wrap", gap:16 }}>
+          <div>
+            <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:6 }}><div style={{ width:4, height:18, background:"#ffa5f7" }}></div><span style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:10, letterSpacing:"0.18em", color:"var(--txt-3)", textTransform:"uppercase" }}>Standings</span></div>
+            <h2 style={{ fontFamily:ff, fontWeight:800, fontSize:22, margin:0, color:"var(--txt)" }}>{data.label}</h2>
+          </div>
+        </div>
+        <table style={{ width:"100%", borderCollapse:"collapse" }}>
+          <thead>
+            <tr style={{ borderBottom:`2px solid var(--txt)` }}>
+              {["#","Team","P","W","D","L","GD","Pts"].map((h,j)=>(
+                <th key={j} style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:10, fontWeight:700, letterSpacing:"0.12em", color:"var(--txt-3)", textTransform:"uppercase", padding:"10px 12px", textAlign:j<=1?"left":"center" }}>{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {data.rows.map((t,i)=>(
+              <tr key={t.pos} style={{ borderBottom:"1px solid var(--bdr-2)", background:i%2===0?"var(--bg-card)":"var(--bg-row)", borderLeft:`3px solid ${i<4?"#ffa5f7":i>=data.rows.length-3?"#fca5a5":"transparent"}` }}>
+                <td style={{ fontFamily:"Space Grotesk,sans-serif", fontWeight:700, fontSize:13, padding:"12px 12px", textAlign:"center", color:i<4?"#ffa5f7":"var(--txt-4)", width:36 }}>{t.pos}</td>
+                <td style={{ fontFamily:ff, fontWeight:700, fontSize:14, padding:"12px 12px", color:"var(--txt)" }}>{t.name}</td>
+                {[t.p,t.w,t.d,t.l,t.gd,t.pts].map((v,j)=>(
+                  <td key={j} style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:j===5?14:12, fontWeight:j===5?800:400, textAlign:"center", padding:"12px 12px", color:j===5?"var(--txt)":"var(--txt-3)" }}>{v}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <div style={{ display:"flex", gap:20, marginTop:14, paddingTop:14, borderTop:"1px solid var(--bdr-2)" }}>
+          {[["#ffa5f7","Champions League"],["#fca5a5","Relegation"]].map(([col,label])=>(
+            <div key={label} style={{ display:"flex", gap:8, alignItems:"center" }}>
+              <div style={{ width:10, height:10, background:col }}></div>
+              <span style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:11, color:"var(--txt-4)" }}>{label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── News Grid ─────────────────────────────────────────────────────────────────
+function NewsGrid({ font }) {
+  return (
+    <div style={{ padding:"48px 0", background:"var(--bg-alt)" }}>
+      <div style={{ maxWidth:1280, margin:"0 auto", padding:"0 40px" }}>
+        <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:24 }}>
+          <div style={{ width:4, height:18, background:"#ffa5f7" }}></div>
+          <span style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:10, letterSpacing:"0.18em", color:"var(--txt-3)", textTransform:"uppercase" }}>Latest News</span>
+        </div>
+        <div className="rsp-news">
+          {NEWS.map(n=><NewsCard key={n.id} item={n} font={font} />)}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Footer ────────────────────────────────────────────────────────────────────
+// ── Social icon component ─────────────────────────────────────────────────────
+const SOCIALS = [
+  { label:"Instagram", href:"https://www.instagram.com/thestandardth/",
+    icon:<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4.5"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg> },
+  { label:"YouTube",   href:"https://www.youtube.com/@TheStandardTH",
+    icon:<svg viewBox="0 0 24 24" fill="currentColor"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58zM9.75 15.02V8.98L15.5 12l-5.75 3.02z"/></svg> },
+  { label:"TikTok",    href:"https://www.tiktok.com/@thestandardth",
+    icon:<svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V9.05a8.16 8.16 0 0 0 4.77 1.52V7.12a4.85 4.85 0 0 1-1-.43z"/></svg> },
+  { label:"Facebook",  href:"https://www.facebook.com/TheStandardTH",
+    icon:<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg> },
+  { label:"X / Twitter", href:"https://twitter.com/TheStandardTH",
+    icon:<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg> },
+  { label:"Line",      href:"https://line.me/ti/p/@thestandard",
+    icon:<svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg> },
+];
+
+function SocialBtn({ s }) {
+  const [hov, setHov] = React.useState(false);
+  return (
+    <a href={s.href} target="_blank" rel="noopener noreferrer" title={s.label}
+      style={{ display:"flex", alignItems:"center", justifyContent:"center",
+        width:36, height:36, borderRadius:"50%",
+        border:`1px solid ${hov?"#ffa5f7":"rgba(255,255,255,0.18)"}`,
+        color:hov?"#ffa5f7":"rgba(255,255,255,0.65)",
+        transition:"all 0.18s", flexShrink:0, textDecoration:"none" }}
+      onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)}>
+      <span style={{ width:15, height:15, display:"flex" }}>{s.icon}</span>
+    </a>
+  );
+}
+
+function Footer() {
+  return (
+    <footer style={{ background:"#0d0d0d", borderTop:"1px solid rgba(255,255,255,0.06)" }}>
+      {/* Main footer row */}
+      <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between",
+        padding:"28px 40px", gap:20, flexWrap:"wrap" }}>
+        {/* Brand */}
+        <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+          <img src="uploads/pasted-1780834745382-0.png" style={{ width:36, height:36, objectFit:"cover", display:"block" }} alt="" />
+          <div>
+            <div style={{ fontFamily:"Space Grotesk,sans-serif", fontWeight:800, fontSize:9, letterSpacing:"0.26em", color:"rgba(255,255,255,0.38)", textTransform:"uppercase" }}>THE STANDARD</div>
+            <div style={{ fontFamily:"Space Grotesk,sans-serif", fontWeight:800, fontSize:13, letterSpacing:"0.22em", color:"#ffa5f7", textTransform:"uppercase" }}>SPORT</div>
+          </div>
+        </div>
+        {/* Nav links */}
+        <div style={{ display:"flex", gap:24, flexWrap:"wrap" }}>
+          {["Football","F1","Volleyball","Tennis","About"].map(l=>(
+            <span key={l} style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:11, color:"rgba(255,255,255,0.35)", cursor:"pointer", letterSpacing:"0.05em" }}>{l}</span>
+          ))}
+        </div>
+        {/* Social icons */}
+        <div style={{ display:"flex", gap:8, alignItems:"center" }}>
+          {SOCIALS.map(s => <SocialBtn key={s.label} s={s} />)}
+        </div>
+      </div>
+      {/* Bottom bar */}
+      <div style={{ borderTop:"1px solid rgba(255,255,255,0.06)", padding:"14px 40px",
+        display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:10 }}>
+        <div style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:10, color:"rgba(255,255,255,0.18)", letterSpacing:"0.04em" }}>© 2026 The Standard Co., Ltd. All rights reserved.</div>
+        <div style={{ display:"flex", gap:20 }}>
+          {["Privacy Policy","Terms of Use","Contact"].map(t=>(
+            <span key={t} style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:10, color:"rgba(255,255,255,0.22)", letterSpacing:"0.04em", cursor:"pointer" }}>{t}</span>
+          ))}
+        </div>
+      </div>
+    </footer>
+  );
+}
+Object.assign(window, { Navbar, HeroFull, HeroGrid, F1Section, FootballStandings, NewsGrid, Footer, NewsCard, CatTag });
+</script>
+
+<!-- ③ MAIN APP + YOUTUBE -->
+<script type="text/babel">
+const { useState: useS2, useEffect: useE2 } = React;
+
+// ── YouTube data ─────────────────────────────────────────────────────────────
+const YT_VIDEOS = [
+  { id:"REPLACE_VIDEO_ID_1", cat:"F1",       title:"สรุปผล Spanish GP 2026 · นอร์ริส คว้าชัยสมัยที่ 4",        date:"1 มิ.ย. 2026",  dur:"8:42",  views:"124K", bg:"url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&h=628&fit=crop&auto=format&q=80') center/cover no-repeat" },
+  { id:"REPLACE_VIDEO_ID_2", cat:"F1",       title:"Monaco GP 2026 ไฮไลท์ · แฮมิลตัน คว้าชัยกับ Ferrari",     date:"25 พ.ค. 2026", dur:"12:15", views:"98K",  bg:"url('https://images.unsplash.com/photo-1475666675596-cca2035b3d79?w=1200&h=628&fit=crop&auto=format&q=80') center/cover no-repeat" },
+  { id:"REPLACE_VIDEO_ID_3", cat:"Football", title:"อาร์เซนอล คว้าแชมป์ Premier League ไฮไลท์และฉากฉลอง",    date:"31 พ.ค. 2026", dur:"15:30", views:"87K",  bg:"url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=1200&h=628&fit=crop&auto=format&q=80') center/cover no-repeat" },
+  { id:"REPLACE_VIDEO_ID_4", cat:"F1",       title:"F1 Season 2026 วิเคราะห์ใครจะคว้าแชมป์โลก",               date:"28 พ.ค. 2026", dur:"22:05", views:"210K", bg:"url('https://images.unsplash.com/photo-1541773367-7b6b68f7df39?w=1200&h=628&fit=crop&auto=format&q=80') center/cover no-repeat" },
+  { id:"REPLACE_VIDEO_ID_5", cat:"Tennis",   title:"Roland Garros 2026 ไฮไลท์รอบก่อน SF",                     date:"29 พ.ค. 2026", dur:"9:18",  views:"55K",  bg:"url('https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=1200&h=628&fit=crop&auto=format&q=80') center/cover no-repeat" },
+  { id:"REPLACE_VIDEO_ID_6", cat:"Football", title:"บุรีรัมย์ vs เมืองทอง 3-1 ไทยลีก สัปดาห์ที่ 24",          date:"31 พ.ค. 2026", dur:"7:44",  views:"43K",  bg:"url('https://images.unsplash.com/photo-1553778263-73a83bab9b0c?w=1200&h=628&fit=crop&auto=format&q=80') center/cover no-repeat" },
+];
+
+const YT_SHORTS = [
+  { id:"SHORT_ID_1", title:"นอร์ริส ฉลองชัย Spanish GP",          views:"2.1M", bg:"url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=711&fit=crop&auto=format&q=80') center/cover no-repeat" },
+  { id:"SHORT_ID_2", title:"แฮมิลตัน Pole Position ล่าสุด",       views:"1.4M", bg:"url('https://images.unsplash.com/photo-1475666675596-cca2035b3d79?w=400&h=711&fit=crop&auto=format&q=80') center/cover no-repeat" },
+  { id:"SHORT_ID_3", title:"บุรีรัมย์ ประตูสวย week 24",          views:"980K", bg:"url('https://images.unsplash.com/photo-1553778263-73a83bab9b0c?w=400&h=711&fit=crop&auto=format&q=80') center/cover no-repeat" },
+  { id:"SHORT_ID_4", title:"สาวไทย spike สวยใน VNL 2026",        views:"1.8M", bg:"url('https://images.unsplash.com/photo-1612872087720-bb876e2e67d1?w=400&h=711&fit=crop&auto=format&q=80') center/cover no-repeat" },
+  { id:"SHORT_ID_5", title:"Verstappen เลี้ยวเข้าพิทสุดเร็ว",     views:"3.2M", bg:"url('https://images.unsplash.com/photo-1541773367-7b6b68f7df39?w=400&h=711&fit=crop&auto=format&q=80') center/cover no-repeat" },
+  { id:"SHORT_ID_6", title:"ซินเสิร์ฟ ACE โรลอง การ์รอส",         views:"750K", bg:"url('https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&h=711&fit=crop&auto=format&q=80') center/cover no-repeat" },
+  { id:"SHORT_ID_7", title:"Leclerc Onboard สนาม Monaco",        views:"2.6M", bg:"url('https://images.unsplash.com/photo-1475666675596-cca2035b3d79?w=400&h=711&fit=crop&auto=format&q=80') center/cover no-repeat" },
+];
+
+// icon: YouTube Shorts lightning
+const IconShorts = () => (
+  <svg width="14" height="20" viewBox="0 0 24 34" fill="none">
+    <path d="M14 0L0 20h10L8 34 24 12h-10L14 0z" fill="currentColor"/>
+  </svg>
+);
+
+function VideoCard({ video }) {
+  const [hov, setHov] = useS2(false);
+  return (
+    <a href={`https://www.youtube.com/watch?v=${video.id}`} target="_blank" rel="noopener noreferrer"
+      style={{ textDecoration:"none", display:"block", opacity:hov?0.9:1, transition:"opacity 0.18s, transform 0.18s", transform:hov?"translateY(-2px)":"translateY(0)" }}
+      onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)}>
+      {/* 16:9 Thumbnail */}
+      <div style={{ position:"relative", paddingBottom:"52.33%", background:video.bg, overflow:"hidden", marginBottom:12 }}>
+        <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center" }}>
+          <IconPlay size={44} />
+        </div>
+        <div style={{ position:"absolute", bottom:8, right:8, background:"rgba(0,0,0,0.82)", padding:"2px 7px", fontFamily:"Space Grotesk,sans-serif", fontSize:10, fontWeight:700, color:"#fff", letterSpacing:"0.04em" }}>{video.dur}</div>
+        <div style={{ position:"absolute", top:8, left:8 }}>
+          <span style={{ display:"inline-block", padding:"2px 7px", background:"rgba(0,0,0,0.72)", color:"#fff", fontFamily:"Space Grotesk,sans-serif", fontSize:9, fontWeight:700, letterSpacing:"0.1em", textTransform:"uppercase" }}>{video.cat}</span>
+        </div>
+      </div>
+      <p style={{ fontFamily:"Sarabun,sans-serif", fontWeight:700, fontSize:14, lineHeight:1.45, color:"var(--txt)", margin:"0 0 5px", textWrap:"pretty" }}>{video.title}</p>
+      <p style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:11, color:"var(--txt-3)", margin:0 }}>{video.views} views · {video.date}</p>
+    </a>
+  );
+}
+
+function ShortCard({ video }) {
+  const [hov, setHov] = useS2(false);
+  return (
+    <a href={`https://www.youtube.com/shorts/${video.id}`} target="_blank" rel="noopener noreferrer"
+      style={{ textDecoration:"none", flexShrink:0, width:180, display:"block", opacity:hov?0.88:1, transition:"opacity 0.18s, transform 0.18s", transform:hov?"translateY(-2px)":"translateY(0)" }}
+      onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)}>
+      {/* 9:16 Vertical Thumbnail */}
+      <div style={{ position:"relative", width:"100%", paddingBottom:"177.78%", background:video.bg, overflow:"hidden", borderRadius:0, marginBottom:10 }}>
+        <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center" }}>
+          <div style={{ width:40, height:40, borderRadius:"50%", background:"rgba(0,0,0,0.55)", display:"flex", alignItems:"center", justifyContent:"center" }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
+          </div>
+        </div>
+        {/* Shorts badge */}
+        <div style={{ position:"absolute", top:8, left:8, background:"#FF0000", padding:"2px 7px 2px 5px", display:"flex", alignItems:"center", gap:4 }}>
+          <svg width="7" height="10" viewBox="0 0 24 34" fill="white"><path d="M14 0L0 20h10L8 34 24 12h-10L14 0z"/></svg>
+          <span style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:8, fontWeight:800, color:"#fff", letterSpacing:"0.08em" }}>SHORTS</span>
+        </div>
+        {/* Views */}
+        <div style={{ position:"absolute", bottom:0, left:0, right:0, background:"linear-gradient(to top,rgba(0,0,0,0.75) 0%,transparent 100%)", padding:"28px 10px 8px" }}>
+          <div style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:10, fontWeight:700, color:"rgba(255,255,255,0.85)", letterSpacing:"0.04em" }}>{video.views} views</div>
+        </div>
+      </div>
+      <p style={{ fontFamily:"Sarabun,sans-serif", fontWeight:700, fontSize:13, lineHeight:1.4, color:"var(--txt)", margin:0, textWrap:"pretty" }}>{video.title}</p>
+    </a>
+  );
+}
+
+// Section header shared
+function YTSectionHeader({ label, icon, title, href, hrefLabel="SEE ALL" }) {
+  return (
+    <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:24, flexWrap:"wrap", gap:12 }}>
+      <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+        <div style={{ width:4, height:18, background:"#FF0000" }}></div>
+        <span style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:9, letterSpacing:"0.2em", color:"var(--txt-3)", textTransform:"uppercase" }}>{label}</span>
+        {icon}
+        <span style={{ fontFamily:"Space Grotesk,sans-serif", fontWeight:700, fontSize:12, color:"var(--txt)", letterSpacing:"0.04em" }}>{title}</span>
+      </div>
+      <a href={href} target="_blank" rel="noopener noreferrer"
+        style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:11, fontWeight:700, color:"var(--txt-3)", textDecoration:"none", letterSpacing:"0.08em", display:"flex", alignItems:"center", gap:5 }}>
+        {hrefLabel}
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+  );
+}
+
+function YouTubeSection() {
+  return (
+    <div style={{ background:"var(--bg)", borderTop:"1px solid var(--bdr)" }}>
+      {/* ── Video Grid ── */}
+      <div style={{ padding:"48px 0 36px", borderBottom:"1px solid var(--bdr)" }}>
+        <div className="rsp-wrap">
+          <YTSectionHeader
+            label="Watch"
+            icon={<IconYT />}
+            title="THE STANDARD SPORT"
+            href="https://www.youtube.com/@TheStandardTH"
+          />
+          {/* 3-col + featured layout: featured big left, 3 small right */}
+          <div className="rsp-ytmn">
+            {/* Featured */}
+            <VideoCard video={YT_VIDEOS[0]} />
+            {/* Right 3-col list */}
+            <div style={{ display:"flex", flexDirection:"column", gap:20 }}>
+              {YT_VIDEOS.slice(1,4).map(v => (
+                <a key={v.id} href={`https://www.youtube.com/watch?v=${v.id}`} target="_blank" rel="noopener noreferrer"
+                  style={{ textDecoration:"none", display:"grid", gridTemplateColumns:"120px 1fr", gap:12, alignItems:"start" }}>
+                  <div style={{ position:"relative", paddingBottom:"52.33%", background:v.bg, overflow:"hidden" }}>
+                    <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center" }}><IconPlay size={28} /></div>
+                    <div style={{ position:"absolute", bottom:5, right:5, background:"rgba(0,0,0,0.82)", padding:"1px 5px", fontFamily:"Space Grotesk,sans-serif", fontSize:9, fontWeight:700, color:"#fff" }}>{v.dur}</div>
+                  </div>
+                  <div>
+                    <span style={{ display:"inline-block", padding:"1px 6px", background:"#0d0d0d", color:"#fff", fontFamily:"Space Grotesk,sans-serif", fontSize:8, fontWeight:700, letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:5 }}>{v.cat}</span>
+                    <p style={{ fontFamily:"Sarabun,sans-serif", fontWeight:700, fontSize:13, lineHeight:1.4, color:"var(--txt)", margin:"0 0 4px", textWrap:"pretty" }}>{v.title}</p>
+                    <p style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:10, color:"var(--txt-3)", margin:0 }}>{v.views}K · {v.date}</p>
+                  </div>
+                </a>
+              ))}
+            </div>
+          </div>
+          {/* Bottom row 3 more */}
+          <div className="rsp-ytbt">
+            {YT_VIDEOS.slice(3,6).map(v => <VideoCard key={v.id} video={v} />)}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Shorts ── */}
+      <div style={{ padding:"36px 0 48px" }}>
+        <div className="rsp-wrap">
+          <YTSectionHeader
+            label="Shorts"
+            icon={<span style={{ color:"#FF0000", display:"flex", alignItems:"center" }}><IconShorts /></span>}
+            title="THE STANDARD SPORT SHORTS"
+            href="https://www.youtube.com/@TheStandardTH/shorts"
+            hrefLabel="SEE ALL SHORTS"
+          />
+        </div>
+        {/* Horizontal scroll — bleeds to edges */}
+        <div style={{ overflowX:"auto", paddingBottom:8, scrollbarWidth:"none" }}
+          onMouseEnter={e=>e.currentTarget.style.cursor="grab"}
+          onMouseLeave={e=>e.currentTarget.style.cursor="default"}>
+          <div style={{ display:"flex", gap:16, paddingLeft:40, paddingRight:40, width:"max-content" }}>
+            {YT_SHORTS.map(s => <ShortCard key={s.id} video={s} />)}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CategoryNav({ font }) {
+  const [active, setActive] = useS2("All");
+  const ff = font==="serif"?"Noto Serif Thai,serif":"Sarabun,sans-serif";
+  const cats = ["All","F1","Premier League","Thai League","Volleyball","Tennis","Basketball"];
+  return (
+    <div style={{ background:"var(--bg)", borderBottom:"1px solid var(--bdr)", overflowX:"auto" }}>
+      <div className="rsp-wrap" style={{ display:"flex", gap:4, overflowX:"auto" }}>
+        {cats.map(c=>(
+          <button key={c} onClick={()=>setActive(c)} style={{ background:active===c?"#ffa5f7":"none", border:"none", cursor:"pointer", padding:"10px 18px", fontFamily:ff, fontWeight:600, fontSize:13, color:active===c?"#0d0d0d":"var(--txt-3)", whiteSpace:"nowrap", transition:"all 0.15s" }}>{c}</button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  const [t, setTweak] = window.useTweaks({ heroLayout:"full", fontStyle:"sans" });
+  const [dark, setDark] = useS2(() => {
+    try { const s=localStorage.getItem('theme'); if(s) return s==='dark'; } catch(e){}
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  });
+
+  useE2(() => {
+    document.documentElement.setAttribute('data-theme', dark ? 'dark' : '');
+    try { localStorage.setItem('theme', dark ? 'dark' : 'light'); } catch(e){}
+  }, [dark]);
+
+  return (
+    <div>
+      <window.Navbar font={t.fontStyle} dark={dark} onToggleDark={()=>setDark(d=>!d)} />
+      {t.heroLayout==="full" ? <window.HeroFull font={t.fontStyle} /> : <window.HeroGrid font={t.fontStyle} />}
+      <CategoryNav font={t.fontStyle} />
+      <window.F1Section font={t.fontStyle} />
+      <window.FootballStandings font={t.fontStyle} />
+      <window.NewsGrid font={t.fontStyle} />
+      <YouTubeSection />
+      <window.Footer />
+      <window.TweaksPanel title="Tweaks">
+        <window.TweakSection label="Hero Layout" />
+        <window.TweakRadio label="Style" value={t.heroLayout} options={["full","grid"]} onChange={v=>setTweak("heroLayout",v)} />
+        <window.TweakSection label="Typography" />
+        <window.TweakRadio label="Font" value={t.fontStyle} options={["sans","serif"]} onChange={v=>setTweak("fontStyle",v)} />
+
+      </window.TweaksPanel>
+    </div>
+  );
+}
+
+window.ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
