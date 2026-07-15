@@ -503,28 +503,33 @@ function F1Section({ font }) {
           </div>
         )}
         {tab==="drivers" && (
-          <table style={{ width:"100%", borderCollapse:"collapse" }}>
-            <thead><tr style={{ borderBottom:`2px solid var(--txt)` }}>{["POS","","นักแข่ง","ทีม","ชัย","คะแนน"].map((h,j)=><th key={j} style={{ ...th, textAlign:h==="คะแนน"?"right":"left", paddingBottom:10 }}>{h}</th>)}</tr></thead>
-            <tbody>
+          <div>
+            <div style={{ display:"flex", alignItems:"baseline", justifyContent:"space-between", marginBottom:14, flexWrap:"wrap", gap:6 }}>
+              <div style={{ fontFamily:"Space Grotesk,sans-serif", fontWeight:800, fontSize:16, letterSpacing:"0.02em", color:"var(--txt)", textTransform:"uppercase" }}>World Drivers' Championship</div>
+              <div style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:10, fontWeight:700, letterSpacing:"0.16em", color:"var(--txt-3)", textTransform:"uppercase" }}>Points after Spanish GP</div>
+            </div>
+            <div style={{ display:"flex", flexDirection:"column", gap:7 }}>
               {F1_DRIVERS.map((d,i)=>(
-                <tr key={d.pos} style={{ borderBottom:"1px solid var(--bdr-2)", background:i%2===0?"var(--bg-card)":"var(--bg-row)" }}>
-                  <td style={{ fontFamily:"Space Grotesk,sans-serif", fontWeight:800, fontSize:15, padding:"12px 14px", color:d.pos===1?"#ffa5f7":"var(--txt)", width:40 }}>{d.pos}</td>
-                  <td style={{ padding:"12px 4px", width:24 }}><div style={{ width:3, height:22, background:d.color, borderRadius:1 }}></div></td>
-                  <td style={{ fontFamily:"Space Grotesk,sans-serif", fontWeight:600, fontSize:13, padding:"12px 14px", color:"var(--txt)" }}><FlagImg code={d.code} /> {d.name}</td>
-                  <td style={{ fontFamily:"Sarabun,sans-serif", fontSize:13, color:"var(--txt-3)", padding:"12px 14px" }}>{d.team}</td>
-                  <td style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:13, padding:"12px 14px", textAlign:"center", color:"var(--txt)" }}>{d.wins>0?<span style={{ display:"inline-flex", gap:4, alignItems:"center" }}><IconTrophy /> {d.wins}</span>:"—"}</td>
-                  <td style={{ padding:"12px 14px" }}>
-                    <div style={{ display:"flex", alignItems:"center", gap:10, justifyContent:"flex-end" }}>
-                      <div style={{ background:"var(--bdr)", height:4, width:80, borderRadius:2, overflow:"hidden", flexShrink:0 }}>
-                        <div style={{ background:d.color, height:"100%", width:`${(d.pts/169)*100}%`, borderRadius:2 }}></div>
-                      </div>
-                      <span style={{ fontFamily:"Space Grotesk,sans-serif", fontWeight:800, fontSize:14, minWidth:36, textAlign:"right", color:"var(--txt)" }}>{d.pts}</span>
-                    </div>
-                  </td>
-                </tr>
+                <div key={d.pos} style={{ display:"grid", gridTemplateColumns:"52px 74px 1fr 84px", alignItems:"stretch", borderRadius:7, overflow:"hidden", minHeight:56, boxShadow:"0 1px 4px rgba(0,0,0,0.14)" }}>
+                  {/* Position */}
+                  <div style={{ display:"flex", alignItems:"center", justifyContent:"center", background:"#141416", color:i===0?"#ffa5f7":"#fff", fontFamily:"Space Grotesk,sans-serif", fontWeight:800, fontSize:22, lineHeight:1 }}>{d.pos}</div>
+                  {/* Team colour block + flag */}
+                  <div style={{ display:"flex", alignItems:"center", justifyContent:"center", background:`linear-gradient(135deg, ${d.color} 0%, ${d.color}bb 100%)` }}>
+                    <span style={{ display:"inline-flex", boxShadow:"0 1px 4px rgba(0,0,0,0.35)" }}><FlagImg code={d.code} size={24} /></span>
+                  </div>
+                  {/* Driver name + team */}
+                  <div style={{ display:"flex", flexDirection:"column", justifyContent:"center", padding:"0 22px", background:"#1b1b1d", backgroundImage:`linear-gradient(90deg, ${d.color}40 0%, transparent 42%)` }}>
+                    <span style={{ fontFamily:"Space Grotesk,sans-serif", fontWeight:800, fontStyle:"italic", fontSize:16, letterSpacing:"0.03em", color:"#fff", textTransform:"uppercase", textShadow:"0 1px 3px rgba(0,0,0,0.35)", lineHeight:1.1 }}>{d.name}</span>
+                    <span style={{ fontFamily:"Space Grotesk,sans-serif", fontWeight:600, fontSize:10.5, letterSpacing:"0.06em", color:"rgba(255,255,255,0.5)", textTransform:"uppercase", marginTop:3, display:"flex", alignItems:"center", gap:7 }}>
+                      {d.team}{d.wins>0 && <span style={{ display:"inline-flex", alignItems:"center", gap:3, color:"#ffcf6b" }}><IconTrophy /> {d.wins}</span>}
+                    </span>
+                  </div>
+                  {/* Points */}
+                  <div style={{ display:"flex", alignItems:"center", justifyContent:"center", background:"#E8002D", color:"#fff", fontFamily:"Space Grotesk,sans-serif", fontWeight:800, fontSize:22, lineHeight:1, letterSpacing:"-0.01em" }}>{d.pts}</div>
+                </div>
               ))}
-            </tbody>
-          </table>
+            </div>
+          </div>
         )}
         {tab==="constructors" && (
           <div>
