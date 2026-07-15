@@ -31,6 +31,8 @@
     /* ── Responsive layout ─────────────────────────────────────── */
     .rsp-wrap  { max-width:1280px; margin:0 auto; padding:0 40px; }
     .rsp-hero  { display:grid; grid-template-columns:1fr 360px; gap:48px; align-items:start; }
+    .rsp-lead  { display:grid; grid-template-columns:1.15fr 1fr; gap:40px; align-items:start; }
+    .rsp-lead-r{ display:grid; grid-template-columns:1fr 1fr; gap:30px 26px; }
     .rsp-hgrid { display:grid; grid-template-columns:7fr 3fr; gap:20px; }
     .rsp-cal   { display:grid; grid-template-columns:repeat(2,1fr); gap:6px; }
     .rsp-f1two { display:grid; grid-template-columns:1fr 1fr; gap:28px; }
@@ -45,12 +47,14 @@
     @media (max-width:1024px) {
       .rsp-wrap  { padding:0 24px; }
       .rsp-hero  { grid-template-columns:1fr 280px; gap:28px; }
+      .rsp-lead  { gap:28px; }
       .rsp-ytmn  { grid-template-columns:1.1fr 1fr; }
       .rsp-ytbt  { grid-template-columns:repeat(2,1fr); }
     }
     @media (max-width:768px) {
       .rsp-wrap  { padding:0 16px; }
       .rsp-hero  { grid-template-columns:1fr; }
+      .rsp-lead  { grid-template-columns:1fr; gap:32px; }
       .rsp-hgrid { grid-template-columns:1fr; }
       .rsp-cal   { grid-template-columns:1fr; }
       .rsp-f1two { grid-template-columns:1fr; }
@@ -65,6 +69,7 @@
     }
     @media (max-width:480px) {
       .rsp-news  { grid-template-columns:1fr; }
+      .rsp-lead-r{ grid-template-columns:1fr; gap:24px; }
       .rsp-ytbt  { grid-template-columns:1fr; }
       .rsp-cons  { grid-template-columns:1fr; }
     }
@@ -333,48 +338,41 @@ function Navbar({ font, dark, onToggleDark }) {
 // ── Hero Full ─────────────────────────────────────────────────────────────────
 function HeroFull({ font }) {
   const ff = font==="serif"?"Noto Serif Thai,serif":"Sarabun,sans-serif";
+  const lead = NEWS[0];
+  const side = NEWS.slice(1,5);
   return (
-    <div style={{ position:"relative", minHeight:500, overflow:"hidden", background:"linear-gradient(150deg,#080808 0%,#10101a 50%,#0c0c14 100%)" }}>
-      {/* Cover image of the lead story */}
-      <div style={{ position:"absolute", inset:0, background:NEWS[0].bg, pointerEvents:"none" }} />
-      {/* Dark overlay so text stays readable on top of the cover */}
-      <div style={{ position:"absolute", inset:0, background:"linear-gradient(100deg,rgba(8,8,8,0.96) 0%,rgba(8,8,10,0.88) 42%,rgba(10,10,16,0.72) 72%,rgba(12,12,20,0.82) 100%)", pointerEvents:"none" }} />
-      <div style={{ position:"absolute", inset:0, background:"linear-gradient(180deg,rgba(8,8,8,0.55) 0%,transparent 30%,transparent 65%,rgba(8,8,8,0.75) 100%)", pointerEvents:"none" }} />
-      <div style={{ position:"absolute", top:"-5%", right:"-2%", width:520, height:520, background:"radial-gradient(circle,rgba(255,165,247,0.10) 0%,transparent 60%)", pointerEvents:"none" }} />
-      <div style={{ position:"absolute", inset:0, pointerEvents:"none", backgroundImage:"linear-gradient(rgba(255,255,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.025) 1px,transparent 1px)", backgroundSize:"56px 56px" }} />
-      <div className="rsp-wrap" style={{ position:"relative", zIndex:1, padding:"52px 40px" }}><div className="rsp-hero">
-        <div>
-          <div style={{ display:"flex", gap:8, marginBottom:20, alignItems:"center" }}>
-            <CatTag label="F1" hot={true} />
-            <span style={{ fontFamily:"Space Grotesk,sans-serif", fontWeight:700, fontSize:10, letterSpacing:"0.18em", color:"rgba(255,165,247,0.6)" }}>SPANISH GP · ROUND 9/22</span>
+    <div style={{ background:"var(--bg)", borderBottom:"1px solid var(--bdr)" }}>
+      <div className="rsp-wrap" style={{ padding:"36px 40px 44px" }}><div className="rsp-lead">
+
+        {/* ── Lead story — big cover on top, headline below ── */}
+        <article style={{ cursor:"pointer" }}>
+          <div style={{ position:"relative", paddingBottom:"63%", background:lead.bg, overflow:"hidden", marginBottom:18 }}>
+            <span style={{ position:"absolute", top:12, left:12, background:"#ffa5f7", color:"#0d0d0d", padding:"3px 9px", fontFamily:"Space Grotesk,sans-serif", fontSize:10, fontWeight:800, letterSpacing:"0.14em", textTransform:"uppercase" }}>{lead.cat}</span>
           </div>
-          <h1 style={{ fontFamily:ff, fontWeight:800, fontSize:46, lineHeight:1.2, color:"#fff", margin:"0 0 20px", textWrap:"pretty", maxWidth:580 }}>
-            นอร์ริส ขยับช่องว่าง<br/>หลังคว้าชัย สเปน GP<br/>ยอดสะสม <span style={{ color:"#ffa5f7" }}>169 แต้ม</span> นำโด่ง
-          </h1>
-          <p style={{ fontFamily:ff, fontSize:17, lineHeight:1.75, color:"rgba(255,255,255,0.6)", margin:"0 0 28px", maxWidth:520 }}>แลนโด้ นอร์ริส โชว์ฟอร์มยอดเยี่ยมบน Circuit de Catalunya นำทัพ McLaren คว้าชัยสมัยที่ 4 ของฤดูกาล 2026 ทิ้งห่างเลอแคลร์ 18 แต้มก่อนถึงสนาม Canada</p>
-          <div style={{ display:"flex", gap:12, alignItems:"center" }}>
-            <div style={{ width:34, height:34, borderRadius:"50%", background:"linear-gradient(135deg,#ffa5f7,#ff79c6)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:14, fontWeight:700, color:"#0d0d0d", flexShrink:0 }}>ภ</div>
-            <div>
-              <div style={{ fontFamily:"Space Grotesk,sans-serif", fontWeight:600, fontSize:12, color:"rgba(255,255,255,0.75)" }}>ภัทรพล สินพิมล</div>
-              <div style={{ fontFamily:"Sarabun,sans-serif", fontSize:12, color:"rgba(255,255,255,0.35)" }}>1 มิ.ย. 2026 · อ่าน 4 นาที</div>
-            </div>
+          <h1 style={{ fontFamily:ff, fontWeight:800, fontSize:34, lineHeight:1.24, color:"var(--txt)", margin:"0 0 12px", textWrap:"pretty" }}>{lead.title}</h1>
+          <p style={{ fontFamily:ff, fontSize:16, lineHeight:1.7, color:"var(--txt-2)", margin:"0 0 12px" }}>แลนโด้ นอร์ริส โชว์ฟอร์มยอดเยี่ยมบน Circuit de Catalunya นำทัพ McLaren คว้าชัยสมัยที่ 4 ของฤดูกาล 2026 ทิ้งห่างเลอแคลร์ 18 แต้มก่อนถึงสนาม Canada</p>
+          <div style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:12, fontWeight:600 }}>
+            <span style={{ color:"#e0329e" }}>{lead.cat}</span>
+            <span style={{ color:"var(--txt-3)" }}> · {lead.author} · {lead.date}</span>
           </div>
-        </div>
-        <div style={{ borderLeft:"1px solid rgba(255,255,255,0.07)", paddingLeft:36 }}>
-          <div style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:9, letterSpacing:"0.22em", color:"rgba(255,255,255,0.28)", textTransform:"uppercase", marginBottom:18 }}>Latest</div>
-          {NEWS.slice(1,5).map((n,i) => (
-            <div key={n.id} style={{ paddingBottom:i<3?18:0, marginBottom:i<3?18:0, borderBottom:i<3?"1px solid rgba(255,255,255,0.06)":"none", cursor:"pointer", display:"flex", gap:12, alignItems:"flex-start" }}>
-              <div style={{ position:"relative", width:80, flexShrink:0 }}><div style={{ paddingBottom:"52.33%", background:n.bg }}></div></div>
-              <div style={{ flex:1, minWidth:0 }}>
-                <CatTag label={n.cat} />
-                <p style={{ fontFamily:ff, fontWeight:600, fontSize:13, color:"#fff", margin:"5px 0 3px", lineHeight:1.4 }}>{n.title}</p>
-                <p style={{ fontFamily:"Sarabun,sans-serif", fontSize:11, color:"rgba(255,255,255,0.3)", margin:0 }}>{n.date}</p>
+        </article>
+
+        {/* ── Secondary stories — 2×2 grid ── */}
+        <div className="rsp-lead-r">
+          {side.map(n => (
+            <article key={n.id} style={{ cursor:"pointer" }}>
+              <div style={{ position:"relative", paddingBottom:"56%", background:n.bg, overflow:"hidden", marginBottom:12 }} />
+              <h3 style={{ fontFamily:ff, fontWeight:700, fontSize:18, lineHeight:1.32, color:"var(--txt)", margin:"0 0 8px", textWrap:"pretty" }}>{n.title}</h3>
+              <div style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:11, fontWeight:600 }}>
+                <span style={{ color:"#e0329e" }}>{n.cat}</span>
+                <span style={{ color:"var(--txt-3)" }}> · {n.date}</span>
               </div>
-            </div>
+            </article>
           ))}
         </div>
-      </div>
-    </div></div>
+
+      </div></div>
+    </div>
   );
 }
 
