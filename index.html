@@ -205,6 +205,16 @@ const F1_CALENDAR = [
   { rd:21, code:"br", name:"Brazilian GP",      date:"9 พ.ย.",   winner:null,       status:"upcoming" },
   { rd:22, code:"ae", name:"Abu Dhabi GP",      date:"23 พ.ย.",  winner:null,       status:"upcoming" },
 ];
+const F1_NEXT_WEEKEND = {
+  name:"Canadian Grand Prix 2026", round:10, week:10, code:"ca", circuit:"Circuit Gilles Villeneuve",
+  sessions:[
+    { label:"PRACTICE 1", date:"13 มิ.ย. 2026", time:"21.30 - 22.30" },
+    { label:"PRACTICE 2", date:"13 มิ.ย. 2026", time:"01.00 - 02.00" },
+    { label:"PRACTICE 3", date:"14 มิ.ย. 2026", time:"21.30 - 22.30" },
+    { label:"QUALIFYING", date:"14 มิ.ย. 2026", time:"00.00 - 01.00" },
+    { label:"MAIN RACE",  date:"15 มิ.ย. 2026", time:"01.00", main:true },
+  ],
+};
 const F1_RESULTS = [
   { pos:1, code:"gb", name:"L. Norris",     team:"McLaren",      time:"1:29:43.234", pts:25, color:"#FF8000" },
   { pos:2, code:"mc", name:"C. Leclerc",    team:"Ferrari",      time:"+4.234s",     pts:18, color:"#E8002D" },
@@ -461,19 +471,47 @@ function F1Section({ font }) {
       </div>
       <div style={{ maxWidth:1280, margin:"0 auto", padding:"28px 40px" }}>
         {tab==="calendar" && (
-          <div className="rsp-cal">
-            {F1_CALENDAR.map(r => (
-              <div key={r.rd} style={{ background:"var(--bg-card)", padding:"11px 18px", display:"grid", gridTemplateColumns:"28px 26px 1fr auto 60px", gap:10, alignItems:"center", borderLeft:`3px solid ${r.status==="next"?"#ffa5f7":r.status==="done"?"#22c55e":"var(--bdr)"}`, opacity:r.status==="upcoming"?0.5:1 }}>
-                <span style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:10, color:"var(--txt-4)", fontWeight:600, textAlign:"center" }}>R{r.rd}</span>
-                <FlagImg code={r.code} size={20} />
-                <div>
-                  <div style={{ fontFamily:"Space Grotesk,sans-serif", fontWeight:600, fontSize:12, color:"var(--txt)" }}>{r.name}</div>
-                  {r.status==="next" && <div style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:9, letterSpacing:"0.1em", color:"#ffa5f7", fontWeight:700, marginTop:1 }}>NEXT</div>}
+          <div>
+            {/* ── Next race weekend schedule card ── */}
+            <div style={{ position:"relative", overflow:"hidden", borderRadius:14, padding:"28px 30px 30px", background:"linear-gradient(135deg,#4a0d18 0%,#6e1222 46%,#2a0810 100%)", boxShadow:"0 6px 26px rgba(0,0,0,0.28)" }}>
+              <div style={{ position:"absolute", top:"-30%", right:"-6%", width:360, height:360, background:"radial-gradient(circle,rgba(232,0,45,0.35) 0%,transparent 62%)", pointerEvents:"none" }} />
+              <div style={{ position:"relative", display:"flex", alignItems:"flex-start", justifyContent:"space-between", gap:16, marginBottom:24, flexWrap:"wrap" }}>
+                <div style={{ display:"flex", alignItems:"center", gap:16 }}>
+                  <span style={{ display:"inline-flex", boxShadow:"0 2px 8px rgba(0,0,0,0.4)" }}><FlagImg code={F1_NEXT_WEEKEND.code} size={40} /></span>
+                  <div>
+                    <div style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:9, fontWeight:800, letterSpacing:"0.3em", color:"rgba(255,255,255,0.55)", textTransform:"uppercase", marginBottom:7 }}>Schedule · สัปดาห์ที่ {F1_NEXT_WEEKEND.week}</div>
+                    <h3 style={{ fontFamily:"Space Grotesk,sans-serif", fontWeight:800, fontSize:26, color:"#fff", margin:0, lineHeight:1.08 }}>{F1_NEXT_WEEKEND.name}</h3>
+                    <div style={{ fontFamily:"Sarabun,sans-serif", fontSize:13, color:"rgba(255,255,255,0.6)", marginTop:5 }}>{F1_NEXT_WEEKEND.circuit}</div>
+                  </div>
                 </div>
-                <span style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:11, color:"var(--txt-4)", textAlign:"right" }}>{r.date}</span>
-                <span style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:11, fontWeight:700, textAlign:"right", color:r.status==="next"?"#ffa5f7":"var(--txt)" }}>{r.winner||(r.status==="next"?"TBC":"—")}</span>
+                <img src="uploads/pasted-1780536628515-0.png" style={{ height:26, width:"auto", opacity:0.95 }} alt="Formula 1" />
               </div>
-            ))}
+              <div className="rsp-cal">
+                {F1_NEXT_WEEKEND.sessions.map(s => (
+                  <div key={s.label} style={{ gridColumn:s.main?"1 / -1":"auto", background:"rgba(0,0,0,0.3)", border:`1px solid ${s.main?"rgba(232,0,45,0.55)":"rgba(255,255,255,0.09)"}`, borderRadius:10, padding:"15px 18px" }}>
+                    <span style={{ display:"inline-block", background:"#E8002D", color:"#fff", fontFamily:"Space Grotesk,sans-serif", fontSize:9.5, fontWeight:800, letterSpacing:"0.14em", textTransform:"uppercase", padding:"3px 10px", borderRadius:3, marginBottom:12 }}>{s.label}</span>
+                    <div style={{ fontFamily:"Space Grotesk,sans-serif", fontWeight:800, fontSize:20, color:"#ff5563", letterSpacing:"0.01em" }}>{s.date}</div>
+                    <div style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:13, color:"rgba(255,255,255,0.85)", marginTop:3 }}>{s.time} <span style={{ color:"rgba(255,255,255,0.4)", fontSize:11 }}>น.</span></div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            {/* ── Full season calendar ── */}
+            <div style={{ margin:"28px 0 14px", fontFamily:"Space Grotesk,sans-serif", fontSize:11, fontWeight:700, letterSpacing:"0.16em", color:"var(--txt-3)", textTransform:"uppercase" }}>ปฏิทินทั้งฤดูกาล · 2026</div>
+            <div className="rsp-cal">
+              {F1_CALENDAR.map(r => (
+                <div key={r.rd} style={{ background:"var(--bg-card)", padding:"11px 18px", display:"grid", gridTemplateColumns:"28px 26px 1fr auto 60px", gap:10, alignItems:"center", borderLeft:`3px solid ${r.status==="next"?"#ffa5f7":r.status==="done"?"#22c55e":"var(--bdr)"}`, opacity:r.status==="upcoming"?0.5:1 }}>
+                  <span style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:10, color:"var(--txt-4)", fontWeight:600, textAlign:"center" }}>R{r.rd}</span>
+                  <FlagImg code={r.code} size={20} />
+                  <div>
+                    <div style={{ fontFamily:"Space Grotesk,sans-serif", fontWeight:600, fontSize:12, color:"var(--txt)" }}>{r.name}</div>
+                    {r.status==="next" && <div style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:9, letterSpacing:"0.1em", color:"#ffa5f7", fontWeight:700, marginTop:1 }}>NEXT</div>}
+                  </div>
+                  <span style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:11, color:"var(--txt-4)", textAlign:"right" }}>{r.date}</span>
+                  <span style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:11, fontWeight:700, textAlign:"right", color:r.status==="next"?"#ffa5f7":"var(--txt)" }}>{r.winner||(r.status==="next"?"TBC":"—")}</span>
+                </div>
+              ))}
+            </div>
           </div>
         )}
         {tab==="results" && (
