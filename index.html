@@ -351,21 +351,12 @@ const NEWS = [
 ];
 
 // ── Components ────────────────────────────────────────────────────────────────
-// Brand lockup: pink ribbon S mark + THE STANDARD / PORT wordmark (S doubles as the S in SPORT).
-// Designed for dark surfaces — the wordmark is white.
+// Official THE STANDARD SPORT lockup (supplied artwork, transparent PNG).
+// White wordmark — only place it on dark surfaces.
 function LogoLockup({ height = 46 }) {
   return (
-    <div style={{ display:"flex", alignItems:"center", gap:height*0.16, userSelect:"none" }}>
-      <img src="uploads/logo-sport-mark.png" alt="THE STANDARD SPORT"
-        style={{ height, width:"auto", display:"block" }} />
-      <div style={{ display:"flex", flexDirection:"column", justifyContent:"center", gap:height*0.06 }}>
-        <span style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontWeight:700,
-          fontSize:height*0.17, letterSpacing:"0.06em", color:"#fff", lineHeight:1,
-          borderBottom:"1.5px solid #fff", paddingBottom:height*0.05, alignSelf:"flex-start" }}>THE STANDARD</span>
-        <span style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontWeight:700,
-          fontSize:height*0.52, letterSpacing:"0.01em", color:"#fff", lineHeight:1 }}>PORT</span>
-      </div>
-    </div>
+    <img src="uploads/logo-sport-lockup.png" alt="THE STANDARD SPORT"
+      style={{ height, width:"auto", display:"block", userSelect:"none" }} />
   );
 }
 // Editorial section header — red label left, boxed tag right (Dribbble-style archive layout)
@@ -423,7 +414,7 @@ function Navbar({ font, dark, onToggleDark }) {
         </button>
         {/* Logo — absolutely centered */}
         <div style={{ position:"absolute", left:"50%", transform:"translateX(-50%)" }}>
-          <LogoLockup height={46} />
+          <LogoLockup height={52} />
         </div>
         {/* Actions */}
         <div style={{ display:"flex", gap:8, flexShrink:0, marginLeft:"auto" }}>
@@ -958,7 +949,7 @@ function Footer() {
         </div>
         {/* Brand lockup */}
         <div style={{ marginTop:40, paddingTop:26, borderTop:"1px solid rgba(255,255,255,0.08)" }}>
-          <LogoLockup height={52} />
+          <LogoLockup height={58} />
         </div>
       </div>
       {/* Bottom bar */}
