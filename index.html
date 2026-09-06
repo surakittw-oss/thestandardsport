@@ -14,18 +14,18 @@
   <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
   <style>
     :root {
-      /* Editorial paper palette */
-      --bg:#f7f5f0; --bg-alt:#f1eee7; --bg-card:#fffefb; --bg-row:#f4f1ea;
-      --txt:#12110f; --txt-2:#4c4a45; --txt-3:#8b887f; --txt-4:#b5b1a6;
-      --bdr:#dcd8ce; --bdr-2:#e7e3d9;
-      --accent:#ffa5f7;      /* CI pink — fills, chips, dark surfaces */
-      --accent-ink:#d81b8f;  /* readable pink for text/rules on paper */
+      --bg:#ffffff; --bg-alt:#f6f6f6; --bg-card:#ffffff; --bg-row:#fafafa;
+      --txt:#0d0d0d; --txt-2:#4a4a4a; --txt-3:#8a8a8a; --txt-4:#b8b8b8;
+      --bdr:#e6e6e6; --bdr-2:#f1f1f1;
+      --accent:#ffa5f7;      /* CI pink — headline chips, fills, rules */
+      --on-accent:#0d0d0d;   /* text that sits on the CI pink */
+      --accent-ink:#d81b8f;  /* deeper pink for small text on white */
     }
     [data-theme="dark"] {
       --bg:#111111; --bg-alt:#181818; --bg-card:#1c1c1c; --bg-row:#202020;
-      --txt:#efefef; --txt-2:#cccccc; --txt-3:#777777; --txt-4:#444444;
+      --txt:#efefef; --txt-2:#cccccc; --txt-3:#8a8a8a; --txt-4:#5a5a5a;
       --bdr:#2a2a2a; --bdr-2:#242424;
-      --accent-ink:#ffa5f7;
+      --accent-ink:#ffa5f7;  /* pink reads well on dark — use it directly */
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
@@ -35,10 +35,11 @@
     ::-webkit-scrollbar-thumb { background: #ffa5f7; }
 
     /* ── Editorial system (label + hairline sections + display type) ─ */
-    .ed-label   { font-family:"Space Grotesk",sans-serif; font-size:10px; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:var(--accent-ink); }
+    /* CI heading chip — pink block, dark text (same lockup as the SPORT logo) */
+    .ed-label   { display:inline-block; background:var(--accent); color:var(--on-accent); font-family:"Space Grotesk",sans-serif; font-size:10px; font-weight:800; letter-spacing:.18em; text-transform:uppercase; padding:5px 12px; }
     .ed-tag     { font-family:"Space Grotesk",sans-serif; font-size:9px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--txt-3); border:1px solid var(--bdr); padding:3px 9px; white-space:nowrap; }
-    .ed-head    { display:flex; align-items:center; justify-content:space-between; gap:16px; padding-bottom:14px; margin-bottom:20px; border-bottom:1px solid var(--bdr); }
-    .ed-rule    { width:44px; height:3px; background:var(--accent-ink); }
+    .ed-head    { display:flex; align-items:center; justify-content:space-between; gap:16px; padding-bottom:14px; margin-bottom:20px; border-bottom:2px solid var(--accent); }
+    .ed-rule    { width:56px; height:4px; background:var(--accent); }
     .ed-display { font-family:"Space Grotesk",sans-serif; font-weight:800; text-transform:uppercase; line-height:.9; letter-spacing:-.025em; color:var(--txt); }
     .ed-lede    { font-size:17px; line-height:1.65; color:var(--txt-2); }
     .rsp-edhero { display:grid; grid-template-columns:1fr 1fr; gap:0; align-items:stretch; border:1px solid var(--bdr); background:var(--bg-card); }
@@ -832,18 +833,18 @@ function NewsGrid({ font }) {
             </div>
             <span style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:11, fontWeight:600, color:"#ffa5f7", cursor:"pointer", marginTop:16 }}>Explore more →</span>
           </div>
-          <div style={{ position:"relative", overflow:"hidden", background:"var(--accent-ink)", padding:"34px 32px", minHeight:190, display:"flex", flexDirection:"column", justifyContent:"space-between" }}>
+          <div style={{ position:"relative", overflow:"hidden", background:"#ffa5f7", padding:"34px 32px", minHeight:190, display:"flex", flexDirection:"column", justifyContent:"space-between" }}>
             <div>
-              <div style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:9.5, fontWeight:700, letterSpacing:".2em", color:"rgba(255,255,255,.6)", textTransform:"uppercase", marginBottom:16 }}>Road to</div>
-              <div className="ed-display" style={{ fontSize:34, color:"#fff", marginBottom:16 }}>Canada<br/>GP 2026</div>
+              <div style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:9.5, fontWeight:800, letterSpacing:".2em", color:"rgba(13,13,13,.55)", textTransform:"uppercase", marginBottom:16 }}>Road to</div>
+              <div className="ed-display" style={{ fontSize:34, color:"#0d0d0d", marginBottom:16 }}>Canada<br/>GP 2026</div>
               {[["Rd 10","Circuit Gilles Villeneuve"],["15 มิ.ย.","Main race · 01.00 น."]].map(([a,b]) => (
-                <div key={a} style={{ display:"flex", gap:12, alignItems:"baseline", borderTop:"1px solid rgba(255,255,255,.25)", padding:"7px 0" }}>
-                  <span style={{ fontFamily:"Space Grotesk,sans-serif", fontWeight:700, fontSize:12, color:"#fff", minWidth:58 }}>{a}</span>
-                  <span style={{ fontFamily:"Sarabun,sans-serif", fontSize:12, color:"rgba(255,255,255,.8)" }}>{b}</span>
+                <div key={a} style={{ display:"flex", gap:12, alignItems:"baseline", borderTop:"1px solid rgba(13,13,13,.2)", padding:"7px 0" }}>
+                  <span style={{ fontFamily:"Space Grotesk,sans-serif", fontWeight:800, fontSize:12, color:"#0d0d0d", minWidth:58 }}>{a}</span>
+                  <span style={{ fontFamily:"Sarabun,sans-serif", fontSize:12, color:"rgba(13,13,13,.72)" }}>{b}</span>
                 </div>
               ))}
             </div>
-            <span style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:11, fontWeight:600, color:"#fff", cursor:"pointer", marginTop:16 }}>ตารางแข่งทั้งหมด →</span>
+            <span style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:11, fontWeight:700, color:"#0d0d0d", cursor:"pointer", marginTop:16 }}>ตารางแข่งทั้งหมด →</span>
           </div>
         </div>
       </div>
