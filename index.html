@@ -52,7 +52,10 @@
     .ed-lede    { font-size:17px; line-height:1.65; color:var(--txt-2); }
     /* Cards are separated by soft shadow, not borders (infographic style) */
     .ed-card    { background:var(--bg-card); border-radius:10px; box-shadow:var(--sh-2); overflow:hidden; }
-    .rsp-edhero { display:grid; grid-template-columns:1fr 1fr; gap:0; align-items:stretch; background:var(--bg-card); border-radius:12px; box-shadow:var(--sh-2); overflow:hidden; }
+    /* Full-bleed hero: text column aligned to the page gutter, cover runs to the right edge */
+    .rsp-edhero    { display:grid; grid-template-columns:1.02fr 1fr; align-items:stretch; min-height:600px; background:var(--bg); }
+    .ed-hero-text  { display:flex; flex-direction:column; padding:34px 56px 44px max(40px, calc((100vw - 1280px)/2 + 40px)); }
+    .ed-hero-cover { background-size:cover; background-position:center; background-repeat:no-repeat; }
     .rsp-stats  { display:grid; grid-template-columns:repeat(4,1fr); background:var(--bg-card); border-radius:10px; box-shadow:var(--sh-2); overflow:hidden; }
     .rsp-stats > div { padding:20px 22px; border-right:1px solid var(--bdr-2); }
     .rsp-stats > div:last-child { border-right:none; }
@@ -69,7 +72,9 @@
       .rsp-foot  { grid-template-columns:repeat(2,1fr); gap:24px; }
     }
     @media (max-width:768px) {
-      .rsp-edhero { grid-template-columns:1fr; }
+      .rsp-edhero    { grid-template-columns:1fr; min-height:0; }
+      .ed-hero-cover { min-height:300px; order:-1; }
+      .ed-hero-text  { padding:26px 16px 34px; }
       .rsp-tl     { grid-template-columns:1fr; }
       .rsp-tl > div { border-right:none; border-bottom:1px solid var(--bdr); }
       .rsp-feat   { grid-template-columns:1fr; }
@@ -454,28 +459,29 @@ function HeroFull({ font }) {
   const side = NEWS.slice(1,5);
   return (
     <div style={{ background:"var(--bg)" }}>
-      <div className="rsp-wrap" style={{ padding:"14px 40px 44px" }}>
 
-        {/* Masthead note — mirrors the reference's small disclaimer line */}
-        <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:16, padding:"0 0 14px", flexWrap:"wrap" }}>
-          <span style={{ fontFamily:"Sarabun,sans-serif", fontSize:11, color:"var(--txt-3)", lineHeight:1.5 }}>
-            รายงานกีฬาอิสระ — ข้อมูลฤดูกาล 2026 อัปเดตหลัง Spanish GP
-          </span>
-          <span className="ed-tag">Season 2026 · Rd 9/22</span>
-        </div>
+      {/* ── Full-bleed editorial hero: display headline left, cover to the right edge ── */}
+      <div className="rsp-edhero">
+        <div className="ed-hero-text">
+          {/* Masthead note, as in the reference */}
+          <div style={{ display:"flex", alignItems:"flex-start", gap:9, marginBottom:"auto" }}>
+            <span style={{ flexShrink:0, width:15, height:15, borderRadius:"50%", border:"1px solid var(--txt-4)", color:"var(--txt-3)",
+              display:"flex", alignItems:"center", justifyContent:"center", fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:9, fontWeight:700, marginTop:1 }}>i</span>
+            <span style={{ fontFamily:"Sarabun,sans-serif", fontSize:11.5, color:"var(--txt-3)", lineHeight:1.55 }}>
+              รายงานกีฬาอิสระ —<br/>ข้อมูลฤดูกาล 2026 อัปเดตหลัง Spanish GP
+            </span>
+          </div>
 
-        {/* ── Editorial hero: giant display headline left, cover right ── */}
-        <div className="rsp-edhero">
-          <div style={{ padding:"44px 40px 40px", display:"flex", flexDirection:"column", justifyContent:"center" }}>
-            <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:22 }}>
+          <div style={{ padding:"38px 0" }}>
+            <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:22, flexWrap:"wrap" }}>
               <span className="ed-label">{lead.cat} · Spanish GP</span>
-              <span className="ed-tag">Hero</span>
+              <span className="ed-tag">Season 2026 · Rd 9/22</span>
             </div>
-            <h1 className="ed-display" style={{ fontSize:"clamp(38px,5vw,72px)", margin:"0 0 20px" }}>
+            <h1 className="ed-display" style={{ fontSize:"clamp(40px,5.6vw,84px)", margin:"0 0 22px" }}>
               Lando<br/>Norris
             </h1>
-            <div className="ed-rule" style={{ marginBottom:20 }} />
-            <p className="ed-lede" style={{ fontFamily:ff, margin:"0 0 14px", maxWidth:420 }}>
+            <div className="ed-rule" style={{ marginBottom:22 }} />
+            <p className="ed-lede" style={{ fontFamily:ff, margin:"0 0 16px", maxWidth:440 }}>
               ขยับช่องว่างหลังคว้าชัย สเปน GP<br/>ยอดสะสม 169 แต้ม นำโด่งสู่สนาม Canada
             </p>
             <div style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:12, fontWeight:600 }}>
@@ -483,11 +489,15 @@ function HeroFull({ font }) {
               <span style={{ color:"var(--txt-3)" }}> · {lead.author} · {lead.date}</span>
             </div>
           </div>
-          <div style={{ position:"relative", minHeight:340, background:lead.bg }} />
+          <span style={{ marginTop:"auto" }} />
         </div>
+        <div className="ed-hero-cover" style={{ background:lead.bg }} />
+      </div>
+
+      <div className="rsp-wrap" style={{ padding:"44px 40px" }}>
 
         {/* ── LATEST — lead story + 3 secondaries in hairline columns ── */}
-        <div style={{ marginTop:40 }}>
+        <div>
           <SectionHead label="Latest" tag="News" action="ดูข่าวทั้งหมด" />
           <div className="rsp-lead">
             <article style={{ cursor:"pointer" }}>
