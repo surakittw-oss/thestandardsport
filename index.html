@@ -14,14 +14,18 @@
   <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
   <style>
     :root {
-      --bg:#ffffff; --bg-alt:#f4f4f4; --bg-card:#ffffff; --bg-row:#fafafa;
-      --txt:#0d0d0d; --txt-2:#555555; --txt-3:#888888; --txt-4:#bbbbbb;
-      --bdr:#e8e8e8; --bdr-2:#f0f0f0; --accent:#ffa5f7;
+      /* Editorial paper palette */
+      --bg:#f7f5f0; --bg-alt:#f1eee7; --bg-card:#fffefb; --bg-row:#f4f1ea;
+      --txt:#12110f; --txt-2:#4c4a45; --txt-3:#8b887f; --txt-4:#b5b1a6;
+      --bdr:#dcd8ce; --bdr-2:#e7e3d9;
+      --accent:#ffa5f7;      /* CI pink — fills, chips, dark surfaces */
+      --accent-ink:#d81b8f;  /* readable pink for text/rules on paper */
     }
     [data-theme="dark"] {
       --bg:#111111; --bg-alt:#181818; --bg-card:#1c1c1c; --bg-row:#202020;
       --txt:#efefef; --txt-2:#cccccc; --txt-3:#777777; --txt-4:#444444;
       --bdr:#2a2a2a; --bdr-2:#242424;
+      --accent-ink:#ffa5f7;
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
@@ -29,6 +33,41 @@
     button { cursor: pointer; }
     ::-webkit-scrollbar { width: 4px; background: var(--bg-alt); }
     ::-webkit-scrollbar-thumb { background: #ffa5f7; }
+
+    /* ── Editorial system (label + hairline sections + display type) ─ */
+    .ed-label   { font-family:"Space Grotesk",sans-serif; font-size:10px; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:var(--accent-ink); }
+    .ed-tag     { font-family:"Space Grotesk",sans-serif; font-size:9px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--txt-3); border:1px solid var(--bdr); padding:3px 9px; white-space:nowrap; }
+    .ed-head    { display:flex; align-items:center; justify-content:space-between; gap:16px; padding-bottom:14px; margin-bottom:20px; border-bottom:1px solid var(--bdr); }
+    .ed-rule    { width:44px; height:3px; background:var(--accent-ink); }
+    .ed-display { font-family:"Space Grotesk",sans-serif; font-weight:800; text-transform:uppercase; line-height:.9; letter-spacing:-.025em; color:var(--txt); }
+    .ed-lede    { font-size:17px; line-height:1.65; color:var(--txt-2); }
+    .rsp-edhero { display:grid; grid-template-columns:1fr 1fr; gap:0; align-items:stretch; border:1px solid var(--bdr); background:var(--bg-card); }
+    .rsp-stats  { display:grid; grid-template-columns:repeat(4,1fr); border:1px solid var(--bdr); background:var(--bg-card); }
+    .rsp-stats > div { padding:20px 22px; border-right:1px solid var(--bdr); }
+    .rsp-stats > div:last-child { border-right:none; }
+    .rsp-tl     { display:grid; grid-template-columns:repeat(5,1fr); border:1px solid var(--bdr); background:var(--bg-card); }
+    .rsp-tl > div { padding:18px 20px; border-right:1px solid var(--bdr); }
+    .rsp-tl > div:last-child { border-right:none; }
+    .rsp-feat   { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .rsp-foot   { display:grid; grid-template-columns:repeat(4,1fr); gap:32px; }
+    @media (max-width:1024px) {
+      .rsp-stats { grid-template-columns:repeat(2,1fr); }
+      .rsp-stats > div:nth-child(2) { border-right:none; }
+      .rsp-stats > div:nth-child(-n+2) { border-bottom:1px solid var(--bdr); }
+      .rsp-tl    { grid-template-columns:repeat(2,1fr); }
+      .rsp-foot  { grid-template-columns:repeat(2,1fr); gap:24px; }
+    }
+    @media (max-width:768px) {
+      .rsp-edhero { grid-template-columns:1fr; }
+      .rsp-tl     { grid-template-columns:1fr; }
+      .rsp-tl > div { border-right:none; border-bottom:1px solid var(--bdr); }
+      .rsp-feat   { grid-template-columns:1fr; }
+    }
+    @media (max-width:480px) {
+      .rsp-stats { grid-template-columns:1fr; }
+      .rsp-stats > div { border-right:none; border-bottom:1px solid var(--bdr); }
+      .rsp-foot  { grid-template-columns:1fr; }
+    }
 
     /* ── Responsive layout ─────────────────────────────────────── */
     .rsp-wrap  { max-width:1280px; margin:0 auto; padding:0 40px; }
@@ -299,6 +338,18 @@ const NEWS = [
 ];
 
 // ── Components ────────────────────────────────────────────────────────────────
+// Editorial section header — red label left, boxed tag right (Dribbble-style archive layout)
+function SectionHead({ label, tag, action }) {
+  return (
+    <div className="ed-head">
+      <span className="ed-label">{label}</span>
+      <span style={{ display:"flex", alignItems:"center", gap:12 }}>
+        {action && <span style={{ fontFamily:"Sarabun,sans-serif", fontSize:12, color:"var(--txt-3)", cursor:"pointer" }}>{action} →</span>}
+        {tag && <span className="ed-tag">{tag}</span>}
+      </span>
+    </div>
+  );
+}
 function CatTag({ label, hot }) {
   return <span style={{ display:"inline-block", padding:"2px 9px", background:hot?"#ffa5f7":"#0d0d0d", color:hot?"#0d0d0d":"#fff", fontFamily:"Space Grotesk,sans-serif", fontWeight:700, fontSize:10, letterSpacing:"0.13em", textTransform:"uppercase" }}>{label}</span>;
 }
@@ -375,37 +426,114 @@ function HeroFull({ font }) {
   const lead = NEWS[0];
   const side = NEWS.slice(1,5);
   return (
-    <div style={{ background:"var(--bg)", borderBottom:"1px solid var(--bdr)" }}>
-      <div className="rsp-wrap" style={{ padding:"36px 40px 44px" }}><div className="rsp-lead">
+    <div style={{ background:"var(--bg)" }}>
+      <div className="rsp-wrap" style={{ padding:"14px 40px 44px" }}>
 
-        {/* ── Lead story — big cover on top, headline below ── */}
-        <article style={{ cursor:"pointer" }}>
-          <div style={{ position:"relative", paddingBottom:"63%", background:lead.bg, overflow:"hidden", marginBottom:18 }}>
-            <span style={{ position:"absolute", top:12, left:12, background:"#ffa5f7", color:"#0d0d0d", padding:"3px 9px", fontFamily:"Space Grotesk,sans-serif", fontSize:10, fontWeight:800, letterSpacing:"0.14em", textTransform:"uppercase" }}>{lead.cat}</span>
-          </div>
-          <h1 style={{ fontFamily:ff, fontWeight:800, fontSize:34, lineHeight:1.24, color:"var(--txt)", margin:"0 0 12px", textWrap:"pretty" }}>{lead.title}</h1>
-          <p style={{ fontFamily:ff, fontSize:16, lineHeight:1.7, color:"var(--txt-2)", margin:"0 0 12px" }}>แลนโด้ นอร์ริส โชว์ฟอร์มยอดเยี่ยมบน Circuit de Catalunya นำทัพ McLaren คว้าชัยสมัยที่ 4 ของฤดูกาล 2026 ทิ้งห่างเลอแคลร์ 18 แต้มก่อนถึงสนาม Canada</p>
-          <div style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:12, fontWeight:600 }}>
-            <span style={{ color:"#e0329e" }}>{lead.cat}</span>
-            <span style={{ color:"var(--txt-3)" }}> · {lead.author} · {lead.date}</span>
-          </div>
-        </article>
-
-        {/* ── Secondary stories — 2×2 grid ── */}
-        <div className="rsp-lead-r">
-          {side.map(n => (
-            <article key={n.id} style={{ cursor:"pointer" }}>
-              <div style={{ position:"relative", paddingBottom:"56%", background:n.bg, overflow:"hidden", marginBottom:12 }} />
-              <h3 style={{ fontFamily:ff, fontWeight:700, fontSize:18, lineHeight:1.32, color:"var(--txt)", margin:"0 0 8px", textWrap:"pretty" }}>{n.title}</h3>
-              <div style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:11, fontWeight:600 }}>
-                <span style={{ color:"#e0329e" }}>{n.cat}</span>
-                <span style={{ color:"var(--txt-3)" }}> · {n.date}</span>
-              </div>
-            </article>
-          ))}
+        {/* Masthead note — mirrors the reference's small disclaimer line */}
+        <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:16, padding:"0 0 14px", flexWrap:"wrap" }}>
+          <span style={{ fontFamily:"Sarabun,sans-serif", fontSize:11, color:"var(--txt-3)", lineHeight:1.5 }}>
+            รายงานกีฬาอิสระ — ข้อมูลฤดูกาล 2026 อัปเดตหลัง Spanish GP
+          </span>
+          <span className="ed-tag">Season 2026 · Rd 9/22</span>
         </div>
 
-      </div></div>
+        {/* ── Editorial hero: giant display headline left, cover right ── */}
+        <div className="rsp-edhero">
+          <div style={{ padding:"44px 40px 40px", display:"flex", flexDirection:"column", justifyContent:"center" }}>
+            <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:22 }}>
+              <span className="ed-label">{lead.cat} · Spanish GP</span>
+              <span className="ed-tag">Hero</span>
+            </div>
+            <h1 className="ed-display" style={{ fontSize:"clamp(38px,5vw,72px)", margin:"0 0 20px" }}>
+              Lando<br/>Norris
+            </h1>
+            <div className="ed-rule" style={{ marginBottom:20 }} />
+            <p className="ed-lede" style={{ fontFamily:ff, margin:"0 0 14px", maxWidth:420 }}>
+              ขยับช่องว่างหลังคว้าชัย สเปน GP<br/>ยอดสะสม 169 แต้ม นำโด่งสู่สนาม Canada
+            </p>
+            <div style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:12, fontWeight:600 }}>
+              <span style={{ color:"var(--accent-ink)" }}>{lead.cat}</span>
+              <span style={{ color:"var(--txt-3)" }}> · {lead.author} · {lead.date}</span>
+            </div>
+          </div>
+          <div style={{ position:"relative", minHeight:340, background:lead.bg, borderLeft:"1px solid var(--bdr)" }} />
+        </div>
+
+        {/* ── LATEST — lead story + 3 secondaries in hairline columns ── */}
+        <div style={{ marginTop:40 }}>
+          <SectionHead label="Latest" tag="News" action="ดูข่าวทั้งหมด" />
+          <div className="rsp-lead">
+            <article style={{ cursor:"pointer" }}>
+              <div style={{ position:"relative", paddingBottom:"58%", background:lead.bg, overflow:"hidden", marginBottom:16, border:"1px solid var(--bdr)" }} />
+              <h2 style={{ fontFamily:ff, fontWeight:800, fontSize:30, lineHeight:1.22, color:"var(--txt)", margin:"0 0 12px", textWrap:"pretty" }}>{lead.title}</h2>
+              <p style={{ fontFamily:ff, fontSize:15, lineHeight:1.7, color:"var(--txt-2)", margin:"0 0 12px" }}>แลนโด้ นอร์ริส โชว์ฟอร์มยอดเยี่ยมบน Circuit de Catalunya นำทัพ McLaren คว้าชัยสมัยที่ 4 ของฤดูกาล 2026 ทิ้งห่างเลอแคลร์ 18 แต้มก่อนถึงสนาม Canada</p>
+              <div style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:12, fontWeight:600 }}>
+                <span style={{ color:"var(--accent-ink)" }}>{lead.cat}</span>
+                <span style={{ color:"var(--txt-3)" }}> · {lead.author} · {lead.date}</span>
+              </div>
+            </article>
+            <div className="rsp-lead-r">
+              {side.map(n => (
+                <article key={n.id} style={{ cursor:"pointer" }}>
+                  <div style={{ position:"relative", paddingBottom:"56%", background:n.bg, overflow:"hidden", marginBottom:12, border:"1px solid var(--bdr)" }} />
+                  <h3 style={{ fontFamily:ff, fontWeight:700, fontSize:17, lineHeight:1.32, color:"var(--txt)", margin:"0 0 8px", textWrap:"pretty" }}>{n.title}</h3>
+                  <div style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:11, fontWeight:600 }}>
+                    <span style={{ color:"var(--accent-ink)" }}>{n.cat}</span>
+                    <span style={{ color:"var(--txt-3)" }}> · {n.date}</span>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* ── NUMBERS — season stat strip ── */}
+        <div style={{ marginTop:44 }}>
+          <SectionHead label="Numbers" tag="Stats" />
+          <div className="rsp-stats">
+            {[
+              { l:"RACES", n:"9", c:"จาก 22 สนาม" },
+              { l:"LEADER", n:"169", c:"แต้ม · นอร์ริส" },
+              { l:"GAP", n:"18", c:"แต้มห่างอันดับ 2" },
+              { l:"WINS", n:"4", c:"ชัยชนะฤดูกาลนี้" },
+            ].map(s => (
+              <div key={s.l}>
+                <div style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:9.5, fontWeight:700, letterSpacing:".18em", color:"var(--txt-3)", marginBottom:10 }}>{s.l}</div>
+                <div className="ed-display" style={{ fontSize:38, marginBottom:6 }}>{s.n}</div>
+                <div style={{ fontFamily:"Sarabun,sans-serif", fontSize:12, color:"var(--txt-3)" }}>{s.c}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{ display:"flex", justifyContent:"space-between", marginTop:10, fontFamily:"Sarabun,sans-serif", fontSize:11, color:"var(--txt-4)" }}>
+            <span>ทุกรายการ</span><span>อัปเดต 1 มิ.ย. 2026</span>
+          </div>
+        </div>
+
+        {/* ── SEASON TIMELINE ── */}
+        <div style={{ marginTop:44 }}>
+          <SectionHead label="Season Timeline" tag="Timeline" />
+          <div className="rsp-tl">
+            {[
+              { k:"OPENER",  t:"Bahrain",  d:"15 มี.ค.", s:"เปิดฤดูกาล นอร์ริสคว้าชัยแรก", done:true },
+              { k:"EUROPE",  t:"Monaco",   d:"25 พ.ค.", s:"แฮมิลตันชนะกับ Ferrari",     done:true },
+              { k:"LAST",    t:"Spanish",  d:"1 มิ.ย.",  s:"นอร์ริสนำ 169 แต้ม",          done:true },
+              { k:"NEXT",    t:"Canada",   d:"15 มิ.ย.", s:"สนามถัดไป Rd 10",            next:true },
+              { k:"FINALE",  t:"Abu Dhabi",d:"23 พ.ย.", s:"ตัดสินแชมป์โลก",             done:false },
+            ].map(e => (
+              <div key={e.k}>
+                <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:10 }}>
+                  <span style={{ width:8, height:8, borderRadius:"50%", background:e.next?"var(--accent-ink)":e.done?"var(--txt)":"var(--bdr)", flexShrink:0 }} />
+                  <span style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:9.5, fontWeight:700, letterSpacing:".16em", color:e.next?"var(--accent-ink)":"var(--txt-3)" }}>{e.k}</span>
+                </div>
+                <div style={{ fontFamily:"Space Grotesk,sans-serif", fontWeight:800, fontSize:15, color:"var(--txt)", marginBottom:2 }}>{e.t}</div>
+                <div style={{ fontFamily:"Sarabun,sans-serif", fontSize:11, color:"var(--txt-4)", marginBottom:6 }}>{e.d}</div>
+                <div style={{ fontFamily:"Sarabun,sans-serif", fontSize:12, color:"var(--txt-3)", lineHeight:1.5 }}>{e.s}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+      </div>
     </div>
   );
 }
@@ -687,12 +815,36 @@ function NewsGrid({ font }) {
   return (
     <div style={{ padding:"48px 0", background:"var(--bg-alt)" }}>
       <div style={{ maxWidth:1280, margin:"0 auto", padding:"0 40px" }}>
-        <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:24 }}>
-          <div style={{ width:4, height:18, background:"#ffa5f7" }}></div>
-          <span style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:10, letterSpacing:"0.18em", color:"var(--txt-3)", textTransform:"uppercase" }}>Latest News</span>
-        </div>
+        <SectionHead label="Archive" tag="All news" action="ดูทั้งหมด" />
         <div className="rsp-news">
           {NEWS.map(n=><NewsCard key={n.id} item={n} font={font} />)}
+        </div>
+
+        {/* ── Paired feature blocks — dark + accent, as in the reference ── */}
+        <div className="rsp-feat" style={{ marginTop:40 }}>
+          <div style={{ position:"relative", overflow:"hidden", background:"#0d0d0d", padding:"34px 32px", minHeight:190, display:"flex", flexDirection:"column", justifyContent:"space-between" }}>
+            <div>
+              <div style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:9.5, fontWeight:700, letterSpacing:".2em", color:"rgba(255,255,255,.42)", textTransform:"uppercase", marginBottom:16 }}>The car. The identity.</div>
+              <div className="ed-display" style={{ fontSize:56, color:"#fff", marginBottom:12 }}>81</div>
+              <p style={{ fontFamily:"Sarabun,sans-serif", fontSize:13, lineHeight:1.7, color:"rgba(255,255,255,.62)", maxWidth:300 }}>
+                ไม่ใช่แค่ตัวเลข แต่คือความทะเยอทะยาน ความเชื่อ และความรับผิดชอบที่จะสร้างแรงบันดาลใจ
+              </p>
+            </div>
+            <span style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:11, fontWeight:600, color:"#ffa5f7", cursor:"pointer", marginTop:16 }}>Explore more →</span>
+          </div>
+          <div style={{ position:"relative", overflow:"hidden", background:"var(--accent-ink)", padding:"34px 32px", minHeight:190, display:"flex", flexDirection:"column", justifyContent:"space-between" }}>
+            <div>
+              <div style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:9.5, fontWeight:700, letterSpacing:".2em", color:"rgba(255,255,255,.6)", textTransform:"uppercase", marginBottom:16 }}>Road to</div>
+              <div className="ed-display" style={{ fontSize:34, color:"#fff", marginBottom:16 }}>Canada<br/>GP 2026</div>
+              {[["Rd 10","Circuit Gilles Villeneuve"],["15 มิ.ย.","Main race · 01.00 น."]].map(([a,b]) => (
+                <div key={a} style={{ display:"flex", gap:12, alignItems:"baseline", borderTop:"1px solid rgba(255,255,255,.25)", padding:"7px 0" }}>
+                  <span style={{ fontFamily:"Space Grotesk,sans-serif", fontWeight:700, fontSize:12, color:"#fff", minWidth:58 }}>{a}</span>
+                  <span style={{ fontFamily:"Sarabun,sans-serif", fontSize:12, color:"rgba(255,255,255,.8)" }}>{b}</span>
+                </div>
+              ))}
+            </div>
+            <span style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:11, fontWeight:600, color:"#fff", cursor:"pointer", marginTop:16 }}>ตารางแข่งทั้งหมด →</span>
+          </div>
         </div>
       </div>
     </div>
@@ -734,26 +886,48 @@ function SocialBtn({ s }) {
 function Footer() {
   return (
     <footer style={{ background:"#0d0d0d", borderTop:"1px solid rgba(255,255,255,0.06)" }}>
-      {/* Main footer row */}
-      <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between",
-        padding:"28px 40px", gap:20, flexWrap:"wrap" }}>
-        {/* Brand */}
-        <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+      {/* ── Editorial 4-column footer ── */}
+      <div style={{ maxWidth:1280, margin:"0 auto", padding:"44px 40px 36px" }}>
+        <div className="rsp-foot">
+          {[
+            { h:"ARCHIVE", items:["ข่าวทั้งหมด","ผลการแข่งขัน","อันดับคะแนน","คลังภาพ"] },
+            { h:"EXPLORE", items:["F1 Index","ตารางแข่ง","สถิติฤดูกาล","วิดีโอ"] },
+          ].map(col => (
+            <div key={col.h}>
+              <div style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:9.5, fontWeight:700, letterSpacing:".2em", color:"#ffa5f7", textTransform:"uppercase", marginBottom:16 }}>{col.h}</div>
+              {col.items.map(i => (
+                <div key={i} style={{ fontFamily:"Sarabun,sans-serif", fontSize:13, color:"rgba(255,255,255,.5)", cursor:"pointer", marginBottom:9 }}>{i}</div>
+              ))}
+            </div>
+          ))}
+          <div>
+            <div style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:9.5, fontWeight:700, letterSpacing:".2em", color:"#ffa5f7", textTransform:"uppercase", marginBottom:16 }}>ABOUT</div>
+            <p style={{ fontFamily:"Sarabun,sans-serif", fontSize:13, lineHeight:1.75, color:"rgba(255,255,255,.5)", margin:"0 0 16px" }}>
+              THE STANDARD SPORT รายงานข่าวกีฬาไทยและต่างประเทศ เจาะลึกเบื้องหลังเกม ด้วยมาตรฐานเดียวกับที่เราให้กับทุกเรื่อง
+            </p>
+            <div style={{ display:"flex", gap:8, alignItems:"center", flexWrap:"wrap" }}>
+              {SOCIALS.map(s => <SocialBtn key={s.label} s={s} />)}
+            </div>
+          </div>
+          <div>
+            <div style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:9.5, fontWeight:700, letterSpacing:".2em", color:"#ffa5f7", textTransform:"uppercase", marginBottom:16 }}>STAY UPDATED</div>
+            <p style={{ fontFamily:"Sarabun,sans-serif", fontSize:13, lineHeight:1.7, color:"rgba(255,255,255,.5)", margin:"0 0 14px" }}>
+              รับข่าวและเรื่องเด่นล่าสุดส่งตรงถึงอีเมลคุณ
+            </p>
+            <div style={{ display:"flex", border:"1px solid rgba(255,255,255,.18)" }}>
+              <input type="email" placeholder="your@email.com" aria-label="อีเมล"
+                style={{ flex:1, minWidth:0, background:"transparent", border:"none", outline:"none", padding:"11px 13px", fontFamily:"Sarabun,sans-serif", fontSize:13, color:"#fff" }} />
+            </div>
+            <button style={{ width:"100%", marginTop:8, background:"#ffa5f7", color:"#0d0d0d", border:"none", padding:"11px 13px", fontFamily:"Space Grotesk,sans-serif", fontWeight:700, fontSize:11, letterSpacing:".16em", textTransform:"uppercase" }}>Subscribe</button>
+          </div>
+        </div>
+        {/* Brand lockup */}
+        <div style={{ display:"flex", alignItems:"center", gap:10, marginTop:40, paddingTop:24, borderTop:"1px solid rgba(255,255,255,0.08)" }}>
           <img src="uploads/pasted-1780834745382-0.png" style={{ width:36, height:36, objectFit:"cover", display:"block" }} alt="" />
           <div>
             <div style={{ fontFamily:"Space Grotesk,sans-serif", fontWeight:800, fontSize:9, letterSpacing:"0.26em", color:"rgba(255,255,255,0.38)", textTransform:"uppercase" }}>THE STANDARD</div>
             <div style={{ fontFamily:"Space Grotesk,sans-serif", fontWeight:800, fontSize:13, letterSpacing:"0.22em", color:"#ffa5f7", textTransform:"uppercase" }}>SPORT</div>
           </div>
-        </div>
-        {/* Nav links */}
-        <div style={{ display:"flex", gap:24, flexWrap:"wrap" }}>
-          {["Football","F1","Volleyball","Tennis","About"].map(l=>(
-            <span key={l} style={{ fontFamily:"Space Grotesk,sans-serif", fontSize:11, color:"rgba(255,255,255,0.35)", cursor:"pointer", letterSpacing:"0.05em" }}>{l}</span>
-          ))}
-        </div>
-        {/* Social icons */}
-        <div style={{ display:"flex", gap:8, alignItems:"center" }}>
-          {SOCIALS.map(s => <SocialBtn key={s.label} s={s} />)}
         </div>
       </div>
       {/* Bottom bar */}
@@ -769,7 +943,7 @@ function Footer() {
     </footer>
   );
 }
-Object.assign(window, { Navbar, HeroFull, HeroGrid, F1Section, FootballStandings, NewsGrid, Footer, NewsCard, CatTag });
+Object.assign(window, { Navbar, HeroFull, HeroGrid, F1Section, FootballStandings, NewsGrid, Footer, NewsCard, CatTag, SectionHead });
 </script>
 
 <!-- ③ MAIN APP + YOUTUBE -->
