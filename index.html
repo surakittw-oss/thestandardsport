@@ -45,13 +45,13 @@
     /* ── Editorial system (label + hairline sections + display type) ─ */
     /* CI heading chip — pink block, dark text (same lockup as the SPORT logo) */
     .ed-label   { display:inline-block; background:var(--accent); color:var(--on-accent); font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:10px; font-weight:800; letter-spacing:.18em; text-transform:uppercase; padding:5px 12px; }
-    .ed-tag     { font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:9px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--txt-3); border:1px solid var(--bdr); padding:3px 9px; white-space:nowrap; }
+    .ed-tag     { font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:10px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--txt-3); border:1px solid var(--bdr); padding:3px 9px; white-space:nowrap; }
     .ed-head    { display:flex; align-items:center; justify-content:space-between; gap:16px; padding-bottom:14px; margin-bottom:20px; border-bottom:2px solid var(--accent); }
     .ed-rule    { width:56px; height:4px; background:var(--accent); }
     .ed-display { font-family:"Chakra Petch","Space Grotesk",sans-serif; font-weight:800; text-transform:uppercase; line-height:.9; letter-spacing:-.025em; color:var(--txt); }
     .ed-lede    { font-size:17px; line-height:1.65; color:var(--txt-2); }
     /* Cards are separated by soft shadow, not borders (infographic style) */
-    .ed-card    { background:var(--bg-card); border-radius:10px; box-shadow:var(--sh-2); overflow:hidden; }
+    .ed-card    { background:var(--bg-card); box-shadow:var(--sh-2); overflow:hidden; }
     /* Full-bleed hero: the cover fills the whole band, headline sits on top of it */
     .rsp-edhero    { position:relative; min-height:620px; display:flex; overflow:hidden; background:#0b0b0d; }
     .ed-hero-cover { position:absolute; inset:0; background-size:cover !important; background-position:center !important; }
@@ -68,10 +68,10 @@
     .ed-hero-note span        { border-color:rgba(255,255,255,.4) !important; color:rgba(255,255,255,.6) !important; }
     .ed-hero-meta             { color:rgba(255,255,255,.55); }
     .ed-hero-meta b           { color:#ffa5f7; font-weight:600; }
-    .rsp-stats  { display:grid; grid-template-columns:repeat(4,1fr); background:var(--bg-card); border-radius:10px; box-shadow:var(--sh-2); overflow:hidden; }
+    .rsp-stats  { display:grid; grid-template-columns:repeat(4,1fr); background:var(--bg-card); box-shadow:var(--sh-2); overflow:hidden; }
     .rsp-stats > div { padding:20px 22px; border-right:1px solid var(--bdr-2); }
     .rsp-stats > div:last-child { border-right:none; }
-    .rsp-tl     { display:grid; grid-template-columns:repeat(5,1fr); background:var(--bg-card); border-radius:10px; box-shadow:var(--sh-2); overflow:hidden; }
+    .rsp-tl     { display:grid; grid-template-columns:repeat(5,1fr); background:var(--bg-card); box-shadow:var(--sh-2); overflow:hidden; }
     .rsp-tl > div { padding:18px 20px; border-right:1px solid var(--bdr-2); }
     .rsp-tl > div:last-child { border-right:none; }
     .rsp-feat   { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
@@ -114,6 +114,10 @@
     .rsp-poster      { display:flex; align-items:stretch; }
     .rsp-poster-rail { display:flex; align-items:center; justify-content:center; background:#E8002D; padding:20px 10px; flex-shrink:0; }
     .rsp-poster-word { writing-mode:vertical-rl; transform:rotate(180deg); font-family:"Chakra Petch","Space Grotesk",sans-serif; font-weight:800; font-size:56px; line-height:1; letter-spacing:0.04em; color:#fff; text-transform:uppercase; user-select:none; }
+    .f1-bar    { padding:18px 40px; }
+    .f1-tabs   { padding:0 40px; overflow-x:auto; scrollbar-width:none; }
+    .f1-tabs::-webkit-scrollbar { display:none; }
+    .f1-tabs button { flex:0 0 auto; }
     .f1-body   { max-width:1280px; margin:0 auto; padding:28px 40px; }
     .f1-poster-body { padding:26px 28px 28px; }
     .f1-row    { display:grid; grid-template-columns:52px 74px 1fr 84px; align-items:stretch; border-radius:7px; overflow:hidden; box-shadow:0 2px 6px rgba(0,0,0,.22), 0 8px 20px rgba(0,0,0,.18); transition:transform .16s, box-shadow .16s; }
@@ -127,7 +131,19 @@
       .rsp-poster      { flex-direction:column; }
       .rsp-poster-rail { padding:10px 18px; justify-content:flex-start; }
       .rsp-poster-word { writing-mode:horizontal-tb; transform:none; font-size:30px; }
+      .f1-bar    { padding:14px 16px; gap:10px; }
+      .f1-tabs   { padding:0 16px; }
       .f1-body   { padding:22px 16px; }
+      /* Let the championship lockup shrink instead of pushing the row wide */
+      .f1-bar-brand { gap:12px; }
+      .f1-bar-title { font-size:11px !important; letter-spacing:.12em !important; }
+      /* Micro-labels get unreadable on phones — bump them and ease the tracking */
+      .ed-label  { font-size:11px; letter-spacing:.14em; padding:5px 10px; }
+      .ed-tag    { font-size:10px; letter-spacing:.1em; }
+      .ed-head   { padding-bottom:12px; margin-bottom:16px; }
+      /* Comfortable touch targets on phones (44px guideline) */
+      nav button, .rsp-foot button { min-height:44px; }
+      nav .nav-mob, nav button[title] { min-width:44px; }
       .f1-poster-body { padding:18px 14px 20px; }
       .f1-row    { grid-template-columns:38px 46px 1fr 56px; }
       .f1-row .f1-name  { font-size:14px; }
@@ -401,7 +417,7 @@ function NewsCard({ item, font }) {
         transition:"transform .2s, box-shadow .2s" }}
       onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)}>
       <div style={{ position:"relative", paddingBottom:"52.33%", background:item.bg, overflow:"hidden" }}>
-        {item.hot && <span style={{ position:"absolute", top:10, left:10, zIndex:1, background:"#ffa5f7", color:"#0d0d0d", padding:"2px 8px", fontSize:9, fontWeight:700, fontFamily:"Chakra Petch,Space Grotesk,sans-serif", letterSpacing:"0.15em" }}>HOT</span>}
+        {item.hot && <span style={{ position:"absolute", top:10, left:10, zIndex:1, background:"#ffa5f7", color:"#0d0d0d", padding:"2px 8px", fontSize:10, fontWeight:700, fontFamily:"Chakra Petch,Space Grotesk,sans-serif", letterSpacing:"0.15em" }}>HOT</span>}
       </div>
       <div style={{ padding:"14px 16px 16px" }}>
         <CatTag label={item.cat} />
@@ -480,7 +496,7 @@ function HeroFull({ font }) {
           {/* Masthead note, as in the reference */}
           <div className="ed-hero-note" style={{ display:"flex", alignItems:"flex-start", gap:9, marginBottom:"auto" }}>
             <span style={{ flexShrink:0, width:15, height:15, borderRadius:"50%", border:"1px solid",
-              display:"flex", alignItems:"center", justifyContent:"center", fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:9, fontWeight:700, marginTop:1 }}>i</span>
+              display:"flex", alignItems:"center", justifyContent:"center", fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:10, fontWeight:700, marginTop:1 }}>i</span>
             <span style={{ fontFamily:"Sarabun,sans-serif", fontSize:11.5, lineHeight:1.55, color:"inherit" }}>
               รายงานกีฬาอิสระ —<br/>ข้อมูลฤดูกาล 2026 อัปเดตหลัง Spanish GP
             </span>
@@ -513,7 +529,7 @@ function HeroFull({ font }) {
           <SectionHead label="Latest" tag="News" action="ดูข่าวทั้งหมด" />
           <div className="rsp-lead">
             <article style={{ cursor:"pointer" }}>
-              <div style={{ position:"relative", paddingBottom:"58%", background:lead.bg, overflow:"hidden", marginBottom:16, borderRadius:10, boxShadow:"var(--sh-2)" }} />
+              <div style={{ position:"relative", paddingBottom:"58%", background:lead.bg, overflow:"hidden", marginBottom:16, boxShadow:"var(--sh-2)" }} />
               <h2 style={{ fontFamily:ff, fontWeight:800, fontSize:30, lineHeight:1.22, color:"var(--txt)", margin:"0 0 12px", textWrap:"pretty" }}>{lead.title}</h2>
               <p style={{ fontFamily:ff, fontSize:15, lineHeight:1.7, color:"var(--txt-2)", margin:"0 0 12px" }}>แลนโด้ นอร์ริส โชว์ฟอร์มยอดเยี่ยมบน Circuit de Catalunya นำทัพ McLaren คว้าชัยสมัยที่ 4 ของฤดูกาล 2026 ทิ้งห่างเลอแคลร์ 18 แต้มก่อนถึงสนาม Canada</p>
               <div style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:12, fontWeight:600 }}>
@@ -524,7 +540,7 @@ function HeroFull({ font }) {
             <div className="rsp-lead-r">
               {side.map(n => (
                 <article key={n.id} style={{ cursor:"pointer" }}>
-                  <div style={{ position:"relative", paddingBottom:"56%", background:n.bg, overflow:"hidden", marginBottom:12, borderRadius:8, boxShadow:"var(--sh-1)" }} />
+                  <div style={{ position:"relative", paddingBottom:"56%", background:n.bg, overflow:"hidden", marginBottom:12, boxShadow:"var(--sh-1)" }} />
                   <h3 style={{ fontFamily:ff, fontWeight:700, fontSize:17, lineHeight:1.32, color:"var(--txt)", margin:"0 0 8px", textWrap:"pretty" }}>{n.title}</h3>
                   <div style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:11, fontWeight:600 }}>
                     <span style={{ color:"var(--accent-ink)" }}>{n.cat}</span>
@@ -547,7 +563,7 @@ function HeroFull({ font }) {
               { l:"WINS", n:"4", c:"ชัยชนะฤดูกาลนี้" },
             ].map(s => (
               <div key={s.l}>
-                <div style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:9.5, fontWeight:700, letterSpacing:".18em", color:"var(--txt-3)", marginBottom:10 }}>{s.l}</div>
+                <div style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:10.5, fontWeight:700, letterSpacing:".18em", color:"var(--txt-3)", marginBottom:10 }}>{s.l}</div>
                 <div className="ed-display" style={{ fontSize:38, marginBottom:6 }}>{s.n}</div>
                 <div style={{ fontFamily:"Sarabun,sans-serif", fontSize:12, color:"var(--txt-3)" }}>{s.c}</div>
               </div>
@@ -572,7 +588,7 @@ function HeroFull({ font }) {
               <div key={e.k}>
                 <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:10 }}>
                   <span style={{ width:8, height:8, borderRadius:"50%", background:e.next?"var(--accent-ink)":e.done?"var(--txt)":"var(--bdr)", flexShrink:0 }} />
-                  <span style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:9.5, fontWeight:700, letterSpacing:".16em", color:e.next?"var(--accent-ink)":"var(--txt-3)" }}>{e.k}</span>
+                  <span style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:10.5, fontWeight:700, letterSpacing:".16em", color:e.next?"var(--accent-ink)":"var(--txt-3)" }}>{e.k}</span>
                 </div>
                 <div style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontWeight:800, fontSize:15, color:"var(--txt)", marginBottom:2 }}>{e.t}</div>
                 <div style={{ fontFamily:"Sarabun,sans-serif", fontSize:11, color:"var(--txt-4)", marginBottom:6 }}>{e.d}</div>
@@ -628,20 +644,20 @@ function F1Section({ font }) {
   const th = { fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:10, fontWeight:700, letterSpacing:"0.12em", color:"var(--txt-3)", textTransform:"uppercase", padding:"10px 14px", textAlign:"left" };
   return (
     <div style={{ background:"var(--bg-alt)" }}>
-      <div style={{ background:"#0d0d0d", padding:"18px 40px", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
-        <div style={{ display:"flex", alignItems:"center", gap:20 }}>
-          <img src="uploads/pasted-1780536628515-0.png" style={{ height:36, width:"auto", display:"block" }} alt="Formula 1" />
-          <div style={{ width:1, height:36, background:"rgba(255,255,255,0.15)" }}></div>
-          <div>
-            <div style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontWeight:700, fontSize:12, letterSpacing:"0.26em", color:"#fff", textTransform:"uppercase" }}>World Championship</div>
+      <div className="f1-bar" style={{ background:"#0d0d0d", display:"flex", alignItems:"center", justifyContent:"space-between", gap:14, flexWrap:"wrap" }}>
+        <div className="f1-bar-brand" style={{ display:"flex", alignItems:"center", gap:20, minWidth:0 }}>
+          <img src="uploads/pasted-1780536628515-0.png" style={{ height:36, width:"auto", display:"block", flexShrink:0 }} alt="Formula 1" />
+          <div style={{ width:1, height:36, background:"rgba(255,255,255,0.15)", flexShrink:0 }}></div>
+          <div style={{ minWidth:0 }}>
+            <div className="f1-bar-title" style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontWeight:700, fontSize:12, letterSpacing:"0.26em", color:"#fff", textTransform:"uppercase" }}>World Championship</div>
             <div style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:11, letterSpacing:"0.1em", color:"rgba(255,255,255,0.38)" }}>Season 2026</div>
           </div>
         </div>
         <span style={{ fontFamily:"Sarabun,sans-serif", fontSize:13, color:"rgba(255,255,255,0.38)" }}>ข้อมูลหลัง Spanish GP · Rd 9/22</span>
       </div>
-      <div style={{ background:"#161616", padding:"20px 40px", display:"flex", alignItems:"center", gap:32, flexWrap:"wrap" }}>
+      <div className="f1-bar" style={{ background:"#161616", display:"flex", alignItems:"center", gap:32, flexWrap:"wrap" }}>
         <div>
-          <div style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:9, letterSpacing:"0.28em", color:"rgba(255,255,255,0.3)", textTransform:"uppercase", marginBottom:8 }}>NEXT RACE</div>
+          <div style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:10, letterSpacing:"0.28em", color:"rgba(255,255,255,0.3)", textTransform:"uppercase", marginBottom:8 }}>NEXT RACE</div>
           <div style={{ display:"flex", alignItems:"center", gap:12 }}>
             <FlagImg code="ca" size={28} />
             <div>
@@ -664,7 +680,7 @@ function F1Section({ font }) {
         </div>
       </div>
       <div style={{ background:"var(--bg)", borderBottom:"1px solid var(--bdr)" }}>
-        <div style={{ maxWidth:1280, margin:"0 auto", padding:"0 40px", display:"flex" }}>
+        <div className="f1-tabs" style={{ maxWidth:1280, margin:"0 auto", display:"flex" }}>
           {tabs.map(t => (
             <button key={t.id} onClick={()=>setTab(t.id)} style={{ background:"none", border:"none", cursor:"pointer", padding:"15px 22px", fontFamily:"Sarabun,sans-serif", fontWeight:600, fontSize:14, color:tab===t.id?"var(--txt)":"var(--txt-3)", borderBottom:`2px solid ${tab===t.id?"#ffa5f7":"transparent"}`, transition:"all 0.15s" }}>{t.label}</button>
           ))}
@@ -682,7 +698,7 @@ function F1Section({ font }) {
                 <div style={{ display:"flex", alignItems:"center", gap:16 }}>
                   <span style={{ display:"inline-flex", boxShadow:"0 2px 8px rgba(0,0,0,0.4)" }}><FlagImg code={F1_NEXT_WEEKEND.code} size={40} /></span>
                   <div>
-                    <div style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:9, fontWeight:800, letterSpacing:"0.3em", color:"rgba(255,255,255,0.55)", textTransform:"uppercase", marginBottom:7 }}>Schedule · สัปดาห์ที่ {F1_NEXT_WEEKEND.week}</div>
+                    <div style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:10, fontWeight:800, letterSpacing:"0.3em", color:"rgba(255,255,255,0.55)", textTransform:"uppercase", marginBottom:7 }}>Schedule · สัปดาห์ที่ {F1_NEXT_WEEKEND.week}</div>
                     <h3 style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontWeight:800, fontSize:26, color:"#fff", margin:0, lineHeight:1.08 }}>{F1_NEXT_WEEKEND.name}</h3>
                     <div style={{ fontFamily:"Sarabun,sans-serif", fontSize:13, color:"rgba(255,255,255,0.6)", marginTop:5 }}>{F1_NEXT_WEEKEND.circuit}</div>
                   </div>
@@ -692,7 +708,7 @@ function F1Section({ font }) {
               <div className="rsp-cal">
                 {F1_NEXT_WEEKEND.sessions.map(s => (
                   <div key={s.label} style={{ gridColumn:s.main?"1 / -1":"auto", background:"rgba(0,0,0,0.3)", border:`1px solid ${s.main?"rgba(232,0,45,0.55)":"rgba(255,255,255,0.09)"}`, borderRadius:10, padding:"15px 18px" }}>
-                    <span style={{ display:"inline-block", background:"#E8002D", color:"#fff", fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:9.5, fontWeight:800, letterSpacing:"0.14em", textTransform:"uppercase", padding:"3px 10px", borderRadius:3, marginBottom:12 }}>{s.label}</span>
+                    <span style={{ display:"inline-block", background:"#E8002D", color:"#fff", fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:10.5, fontWeight:800, letterSpacing:"0.14em", textTransform:"uppercase", padding:"3px 10px", borderRadius:3, marginBottom:12 }}>{s.label}</span>
                     <div style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontWeight:800, fontSize:20, color:"#ff5563", letterSpacing:"0.01em" }}>{s.date}</div>
                     <div style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:13, color:"rgba(255,255,255,0.85)", marginTop:3 }}>{s.time} <span style={{ color:"rgba(255,255,255,0.4)", fontSize:11 }}>น.</span></div>
                   </div>
@@ -709,7 +725,7 @@ function F1Section({ font }) {
                   <FlagImg code={r.code} size={20} />
                   <div>
                     <div style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontWeight:600, fontSize:12, color:"var(--txt)" }}>{r.name}</div>
-                    {r.status==="next" && <div style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:9, letterSpacing:"0.1em", color:"#ffa5f7", fontWeight:700, marginTop:1 }}>NEXT</div>}
+                    {r.status==="next" && <div style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:10, letterSpacing:"0.1em", color:"#ffa5f7", fontWeight:700, marginTop:1 }}>NEXT</div>}
                   </div>
                   <span style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:11, color:"var(--txt-4)", textAlign:"right" }}>{r.date}</span>
                   <span style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:11, fontWeight:700, textAlign:"right", color:r.status==="next"?"#ffa5f7":"var(--txt)" }}>{r.winner||(r.status==="next"?"TBC":"—")}</span>
@@ -873,7 +889,7 @@ function NewsGrid({ font }) {
         <div className="rsp-feat" style={{ marginTop:40 }}>
           <div style={{ position:"relative", overflow:"hidden", background:"#0d0d0d", padding:"34px 32px", minHeight:190, display:"flex", flexDirection:"column", justifyContent:"space-between" }}>
             <div>
-              <div style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:9.5, fontWeight:700, letterSpacing:".2em", color:"rgba(255,255,255,.42)", textTransform:"uppercase", marginBottom:16 }}>The car. The identity.</div>
+              <div style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:10.5, fontWeight:700, letterSpacing:".2em", color:"rgba(255,255,255,.42)", textTransform:"uppercase", marginBottom:16 }}>The car. The identity.</div>
               <div className="ed-display" style={{ fontSize:56, color:"#fff", marginBottom:12 }}>81</div>
               <p style={{ fontFamily:"Sarabun,sans-serif", fontSize:13, lineHeight:1.7, color:"rgba(255,255,255,.62)", maxWidth:300 }}>
                 ไม่ใช่แค่ตัวเลข แต่คือความทะเยอทะยาน ความเชื่อ และความรับผิดชอบที่จะสร้างแรงบันดาลใจ
@@ -883,7 +899,7 @@ function NewsGrid({ font }) {
           </div>
           <div style={{ position:"relative", overflow:"hidden", background:"#ffa5f7", padding:"34px 32px", minHeight:190, display:"flex", flexDirection:"column", justifyContent:"space-between" }}>
             <div>
-              <div style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:9.5, fontWeight:800, letterSpacing:".2em", color:"rgba(13,13,13,.55)", textTransform:"uppercase", marginBottom:16 }}>Road to</div>
+              <div style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:10.5, fontWeight:800, letterSpacing:".2em", color:"rgba(13,13,13,.55)", textTransform:"uppercase", marginBottom:16 }}>Road to</div>
               <div className="ed-display" style={{ fontSize:34, color:"#0d0d0d", marginBottom:16 }}>Canada<br/>GP 2026</div>
               {[["Rd 10","Circuit Gilles Villeneuve"],["15 มิ.ย.","Main race · 01.00 น."]].map(([a,b]) => (
                 <div key={a} style={{ display:"flex", gap:12, alignItems:"baseline", borderTop:"1px solid rgba(13,13,13,.2)", padding:"7px 0" }}>
@@ -943,14 +959,14 @@ function Footer() {
             { h:"EXPLORE", items:["F1 Index","ตารางแข่ง","สถิติฤดูกาล","วิดีโอ"] },
           ].map(col => (
             <div key={col.h}>
-              <div style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:9.5, fontWeight:700, letterSpacing:".2em", color:"#ffa5f7", textTransform:"uppercase", marginBottom:16 }}>{col.h}</div>
+              <div style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:10.5, fontWeight:700, letterSpacing:".2em", color:"#ffa5f7", textTransform:"uppercase", marginBottom:16 }}>{col.h}</div>
               {col.items.map(i => (
                 <div key={i} style={{ fontFamily:"Sarabun,sans-serif", fontSize:13, color:"rgba(255,255,255,.5)", cursor:"pointer", marginBottom:9 }}>{i}</div>
               ))}
             </div>
           ))}
           <div>
-            <div style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:9.5, fontWeight:700, letterSpacing:".2em", color:"#ffa5f7", textTransform:"uppercase", marginBottom:16 }}>ABOUT</div>
+            <div style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:10.5, fontWeight:700, letterSpacing:".2em", color:"#ffa5f7", textTransform:"uppercase", marginBottom:16 }}>ABOUT</div>
             <p style={{ fontFamily:"Sarabun,sans-serif", fontSize:13, lineHeight:1.75, color:"rgba(255,255,255,.5)", margin:"0 0 16px" }}>
               THE STANDARD SPORT รายงานข่าวกีฬาไทยและต่างประเทศ เจาะลึกเบื้องหลังเกม ด้วยมาตรฐานเดียวกับที่เราให้กับทุกเรื่อง
             </p>
@@ -959,7 +975,7 @@ function Footer() {
             </div>
           </div>
           <div>
-            <div style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:9.5, fontWeight:700, letterSpacing:".2em", color:"#ffa5f7", textTransform:"uppercase", marginBottom:16 }}>STAY UPDATED</div>
+            <div style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:10.5, fontWeight:700, letterSpacing:".2em", color:"#ffa5f7", textTransform:"uppercase", marginBottom:16 }}>STAY UPDATED</div>
             <p style={{ fontFamily:"Sarabun,sans-serif", fontSize:13, lineHeight:1.7, color:"rgba(255,255,255,.5)", margin:"0 0 14px" }}>
               รับข่าวและเรื่องเด่นล่าสุดส่งตรงถึงอีเมลคุณ
             </p>
@@ -1035,7 +1051,7 @@ function VideoCard({ video }) {
         </div>
         <div style={{ position:"absolute", bottom:8, right:8, background:"rgba(0,0,0,0.82)", padding:"2px 7px", fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:10, fontWeight:700, color:"#fff", letterSpacing:"0.04em" }}>{video.dur}</div>
         <div style={{ position:"absolute", top:8, left:8 }}>
-          <span style={{ display:"inline-block", padding:"2px 7px", background:"rgba(0,0,0,0.72)", color:"#fff", fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:9, fontWeight:700, letterSpacing:"0.1em", textTransform:"uppercase" }}>{video.cat}</span>
+          <span style={{ display:"inline-block", padding:"2px 7px", background:"rgba(0,0,0,0.72)", color:"#fff", fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:10, fontWeight:700, letterSpacing:"0.1em", textTransform:"uppercase" }}>{video.cat}</span>
         </div>
       </div>
       <p style={{ fontFamily:"Sarabun,sans-serif", fontWeight:700, fontSize:14, lineHeight:1.45, color:"var(--txt)", margin:"0 0 5px", textWrap:"pretty" }}>{video.title}</p>
@@ -1060,7 +1076,7 @@ function ShortCard({ video }) {
         {/* Shorts badge */}
         <div style={{ position:"absolute", top:8, left:8, background:"#FF0000", padding:"2px 7px 2px 5px", display:"flex", alignItems:"center", gap:4 }}>
           <svg width="7" height="10" viewBox="0 0 24 34" fill="white"><path d="M14 0L0 20h10L8 34 24 12h-10L14 0z"/></svg>
-          <span style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:8, fontWeight:800, color:"#fff", letterSpacing:"0.08em" }}>SHORTS</span>
+          <span style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:10, fontWeight:800, color:"#fff", letterSpacing:"0.08em" }}>SHORTS</span>
         </div>
         {/* Views */}
         <div style={{ position:"absolute", bottom:0, left:0, right:0, background:"linear-gradient(to top,rgba(0,0,0,0.75) 0%,transparent 100%)", padding:"28px 10px 8px" }}>
@@ -1078,7 +1094,7 @@ function YTSectionHeader({ label, icon, title, href, hrefLabel="SEE ALL" }) {
     <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:24, flexWrap:"wrap", gap:12 }}>
       <div style={{ display:"flex", alignItems:"center", gap:10 }}>
         <div style={{ width:4, height:18, background:"#FF0000" }}></div>
-        <span style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:9, letterSpacing:"0.2em", color:"var(--txt-3)", textTransform:"uppercase" }}>{label}</span>
+        <span style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:10, letterSpacing:"0.2em", color:"var(--txt-3)", textTransform:"uppercase" }}>{label}</span>
         {icon}
         <span style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontWeight:700, fontSize:12, color:"var(--txt)", letterSpacing:"0.04em" }}>{title}</span>
       </div>
@@ -1114,10 +1130,10 @@ function YouTubeSection() {
                   style={{ textDecoration:"none", display:"grid", gridTemplateColumns:"120px 1fr", gap:12, alignItems:"start" }}>
                   <div style={{ position:"relative", paddingBottom:"52.33%", background:v.bg, overflow:"hidden" }}>
                     <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center" }}><IconPlay size={28} /></div>
-                    <div style={{ position:"absolute", bottom:5, right:5, background:"rgba(0,0,0,0.82)", padding:"1px 5px", fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:9, fontWeight:700, color:"#fff" }}>{v.dur}</div>
+                    <div style={{ position:"absolute", bottom:5, right:5, background:"rgba(0,0,0,0.82)", padding:"1px 5px", fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:10, fontWeight:700, color:"#fff" }}>{v.dur}</div>
                   </div>
                   <div>
-                    <span style={{ display:"inline-block", padding:"1px 6px", background:"#0d0d0d", color:"#fff", fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:8, fontWeight:700, letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:5 }}>{v.cat}</span>
+                    <span style={{ display:"inline-block", padding:"1px 6px", background:"#0d0d0d", color:"#fff", fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:10, fontWeight:700, letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:5 }}>{v.cat}</span>
                     <p style={{ fontFamily:"Sarabun,sans-serif", fontWeight:700, fontSize:13, lineHeight:1.4, color:"var(--txt)", margin:"0 0 4px", textWrap:"pretty" }}>{v.title}</p>
                     <p style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:10, color:"var(--txt-3)", margin:0 }}>{v.views}K · {v.date}</p>
                   </div>
