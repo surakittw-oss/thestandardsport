@@ -46,7 +46,9 @@
     /* 1. Cover zoom on hover — frame stays square, image moves inside */
     .zoom-frame { overflow:hidden; }
     .zoom-img   { position:absolute; inset:0; transition:transform .55s cubic-bezier(.2,.6,.2,1); will-change:transform; }
-    .zoom-frame:hover .zoom-img, .ed-card:hover .zoom-img { transform:scale(1.07); }
+    .zoom-frame:hover .zoom-img, .news-item:hover .zoom-img, article:hover .zoom-img { transform:scale(1.07); }
+    .news-item:hover h3, article:hover h2, article:hover h3 { color:var(--accent-ink); }
+    .news-item h3, article h2, article h3 { transition:color .18s ease; }
     /* 2. Scroll reveal */
     .reveal     { opacity:0; transform:translateY(18px); transition:opacity .6s ease, transform .6s cubic-bezier(.2,.6,.2,1); }
     .reveal.in  { opacity:1; transform:none; }
@@ -60,7 +62,7 @@
     /* Respect users who ask for less motion */
     @media (prefers-reduced-motion: reduce) {
       .zoom-img, .reveal { transition:none !important; }
-      .zoom-frame:hover .zoom-img, .ed-card:hover .zoom-img { transform:none; }
+      .zoom-frame:hover .zoom-img, .news-item:hover .zoom-img, article:hover .zoom-img { transform:none; }
       .reveal { opacity:1; transform:none; }
       .streak { display:none; }
       .f1-row, .ed-card { transition:none !important; }
@@ -434,22 +436,18 @@ function CatTag({ label, hot }) {
 }
 function NewsCard({ item, font }) {
   const ff = font==="serif"?"Noto Serif Thai,serif":"Sarabun,sans-serif";
-  const [hov, setHov] = useState(false);
   return (
-    <div className="ed-card" style={{ cursor:"pointer", display:"flex", flexDirection:"column",
-        transform:hov?"translateY(-3px)":"translateY(0)", boxShadow:hov?"var(--sh-hi)":"var(--sh-2)",
-        transition:"transform .2s, box-shadow .2s" }}
-      onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)}>
-      <div className="zoom-frame" style={{ position:"relative", paddingBottom:"52.33%" }}>
+    <article className="news-item" style={{ cursor:"pointer" }}>
+      <div className="zoom-frame" style={{ position:"relative", paddingBottom:"56%", marginBottom:12, boxShadow:"var(--sh-1)" }}>
         <div className="zoom-img" style={{ background:item.bg }} />
         {item.hot && <span style={{ position:"absolute", top:10, left:10, zIndex:1, background:"#ffa5f7", color:"#0d0d0d", padding:"2px 8px", fontSize:10, fontWeight:700, fontFamily:"Chakra Petch,Space Grotesk,sans-serif", letterSpacing:"0.15em" }}>HOT</span>}
       </div>
-      <div style={{ padding:"14px 16px 16px" }}>
-        <CatTag label={item.cat} />
-        <h4 style={{ fontFamily:ff, fontWeight:700, fontSize:15, lineHeight:1.45, margin:"8px 0 6px", color:"var(--txt)", textWrap:"pretty" }}>{item.title}</h4>
-        <p style={{ fontFamily:"Sarabun,sans-serif", fontSize:12, color:"var(--txt-4)", margin:0 }}>{item.author} · {item.date}</p>
+      <h3 style={{ fontFamily:ff, fontWeight:700, fontSize:17, lineHeight:1.32, color:"var(--txt)", margin:"0 0 8px", textWrap:"pretty" }}>{item.title}</h3>
+      <div style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:11, fontWeight:600 }}>
+        <span style={{ color:"var(--accent-ink)" }}>{item.cat}</span>
+        <span style={{ color:"var(--txt-3)" }}> · {item.author} · {item.date}</span>
       </div>
-    </div>
+    </article>
   );
 }
 
