@@ -4,6 +4,23 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>THE STANDARD SPORT</title>
+  <!-- Access gate: run before anything paints, so a visitor with no
+       verified session never sees a flash of the real page. Mirrors the
+       same "no-flash" pattern used for dark-mode init on the WP plugin. -->
+  <script>
+    (function () {
+      try {
+        var raw = localStorage.getItem('tsdGate');
+        var s = raw ? JSON.parse(raw) : null;
+        var ok = s && typeof s.email === 'string' && s.exp > Date.now() &&
+          s.email.toLowerCase().endsWith('@thestandard.co');
+        if (!ok) document.documentElement.classList.add('tsd-locked');
+      } catch (e) {
+        document.documentElement.classList.add('tsd-locked');
+      }
+    })();
+  </script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
   <link rel="icon" type="image/png" href="uploads/favicon.png">
   <link rel="apple-touch-icon" href="uploads/apple-touch-icon.png">
   <meta name="theme-color" content="#0d0d0d">
@@ -41,6 +58,23 @@
     button { cursor: pointer; }
     ::-webkit-scrollbar { width: 4px; background: var(--bg-alt); }
     ::-webkit-scrollbar-thumb { background: #ffa5f7; }
+
+    /* ── Access gate ─────────────────────────────────────────────── */
+    html.tsd-locked #root { display: none; }
+    #tsd-gate { display: none; position: fixed; inset: 0; z-index: 999999; background: var(--bg);
+      align-items: center; justify-content: center; flex-direction: column; gap: 16px; padding: 24px; text-align: center; }
+    html.tsd-locked #tsd-gate { display: flex; }
+    /* The lockup is a white mark made for the black menu bar — it needs a
+       dark plate behind it or it vanishes on the light gate background. */
+    #tsd-gate-logo { background: #0d0d0d; padding: 16px 26px; margin-bottom: 4px; }
+    #tsd-gate-logo img { height: 34px; width: auto; display: block; }
+    #tsd-gate p { color: var(--txt-2); font-size: 14px; line-height: 1.6; max-width: 320px; }
+    #tsd-gate-err { color: #d81b8f; font-size: 13px; display: none; max-width: 320px; }
+    #tsd-logout { display: none; position: fixed; right: 14px; bottom: 14px; z-index: 999998;
+      font-family: "Chakra Petch","Space Grotesk",sans-serif; font-size: 10px; font-weight: 700;
+      letter-spacing: .12em; text-transform: uppercase; color: var(--txt-3); background: var(--bg-card);
+      box-shadow: var(--sh-1); border: 1px solid var(--bdr); padding: 7px 12px; }
+    html:not(.tsd-locked) #tsd-logout { display: block; }
 
     /* ── Motion ──────────────────────────────────────────────────── */
     /* 1. Cover zoom on hover — frame stays square, image moves inside */
@@ -211,6 +245,118 @@
   </style>
 </head>
 <body>
+
+<!-- Access gate UI + logic. Plain JS on purpose — it must run without
+     waiting for the Babel/React scripts below to load and transform. -->
+<div id="tsd-gate">
+  <div id="tsd-gate-logo"><img src="uploads/logo-sport-lockup.png" alt="THE STANDARD SPORT"></div>
+  <p>หน้านี้จำกัดการเข้าถึงเฉพาะอีเมล @thestandard.co<br>กรุณาเข้าสู่ระบบด้วย Google เพื่อดูเนื้อหา</p>
+  <div id="tsd-gate-btn"></div>
+  <p id="tsd-gate-err"></p>
+</div>
+<button id="tsd-logout" onclick="tsdLogout()">ออกจากระบบ</button>
+
+<script>
+(function () {
+  var CLIENT_ID = '854069548103-d459etq30iidinjm5u0pcj0p746o3q9h.apps.googleusercontent.com';
+  var ALLOWED_HD = 'thestandard.co';
+
+  function b64urlToBytes(b64url) {
+    var b64 = b64url.replace(/-/g, '+').replace(/_/g, '/');
+    b64 += '='.repeat((4 - (b64.length % 4)) % 4);
+    var bin = atob(b64);
+    var bytes = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return bytes;
+  }
+  function b64urlToJson(b64url) {
+    return JSON.parse(new TextDecoder().decode(b64urlToBytes(b64url)));
+  }
+
+  // Verifies the id_token's RS256 signature against Google's own public
+  // keys (no secret involved — this is exactly what a server would check,
+  // just run in the browser with Web Crypto instead). This stops a forged
+  // token from being accepted; it does NOT stop someone with devtools
+  // access from just deleting the gate outright — no purely client-side
+  // check can, since the real page is already sitting in their browser.
+  // Good enough to keep the site out of casual/search-engine reach; not a
+  // substitute for real server-side auth if this ever holds sensitive data.
+  async function verifyGoogleIdToken(idToken) {
+    var parts = idToken.split('.');
+    if (parts.length !== 3) throw new Error('malformed token');
+    var header = b64urlToJson(parts[0]);
+    var payload = b64urlToJson(parts[1]);
+
+    var jwks = await fetch('https://www.googleapis.com/oauth2/v3/certs').then(function (r) { return r.json(); });
+    var jwk = jwks.keys.find(function (k) { return k.kid === header.kid; });
+    if (!jwk) throw new Error('unknown signing key');
+
+    var key = await crypto.subtle.importKey(
+      'jwk', jwk, { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' }, false, ['verify']
+    );
+    var data = new TextEncoder().encode(parts[0] + '.' + parts[1]);
+    var sig = b64urlToBytes(parts[2]);
+    var valid = await crypto.subtle.verify('RSASSA-PKCS1-v1_5', key, sig, data);
+    if (!valid) throw new Error('bad signature');
+
+    var now = Math.floor(Date.now() / 1000);
+    if (payload.exp < now) throw new Error('expired');
+    if (payload.aud !== CLIENT_ID) throw new Error('wrong audience');
+    if (payload.iss !== 'https://accounts.google.com' && payload.iss !== 'accounts.google.com') {
+      throw new Error('wrong issuer');
+    }
+    return payload;
+  }
+
+  function showError(msg) {
+    var el = document.getElementById('tsd-gate-err');
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+
+  window.tsdHandleCredential = async function (response) {
+    document.getElementById('tsd-gate-err').style.display = 'none';
+    try {
+      var payload = await verifyGoogleIdToken(response.credential);
+      var email = typeof payload.email === 'string' ? payload.email : '';
+      var domainOk = payload.email_verified === true &&
+        (payload.hd === ALLOWED_HD || email.toLowerCase().endsWith('@' + ALLOWED_HD));
+      if (!domainOk) {
+        showError('เข้าถึงได้เฉพาะอีเมล @' + ALLOWED_HD + ' เท่านั้น (บัญชีนี้คือ ' + (email || 'ไม่ทราบ') + ')');
+        return;
+      }
+      localStorage.setItem('tsdGate', JSON.stringify({
+        email: email,
+        exp: Date.now() + 7 * 24 * 60 * 60 * 1000,
+      }));
+      document.documentElement.classList.remove('tsd-locked');
+    } catch (e) {
+      showError('ยืนยันตัวตนกับ Google ไม่สำเร็จ กรุณาลองใหม่');
+    }
+  };
+
+  window.tsdLogout = function () {
+    localStorage.removeItem('tsdGate');
+    location.reload();
+  };
+
+  (function initButton() {
+    if (!window.google || !google.accounts || !google.accounts.id) {
+      setTimeout(initButton, 150); // gsi/client loads with async/defer
+      return;
+    }
+    google.accounts.id.initialize({
+      client_id: CLIENT_ID,
+      callback: window.tsdHandleCredential,
+      hd: ALLOWED_HD, // UI hint only — pre-filters the account chooser
+    });
+    google.accounts.id.renderButton(document.getElementById('tsd-gate-btn'), {
+      theme: 'outline', size: 'large', text: 'signin_with', shape: 'pill',
+    });
+  })();
+})();
+</script>
+
 <div id="root"></div>
 
 <!-- ① TWEAKS PANEL -->
