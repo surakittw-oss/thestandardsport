@@ -5,10 +5,10 @@
  * claim — the one thing here an attacker cannot forge.
  */
 import { jwtVerify, SignJWT, createRemoteJWKSet } from 'jose';
+import { getEnv, MissingEnvError, envErrorResponse } from './_env.js';
 
 export const config = { runtime: 'edge' };
 
-const ALLOWED_HD = process.env.ALLOWED_HD || 'thestandard.co';
 const GOOGLE_JWKS = createRemoteJWKSet(
   new URL('https://www.googleapis.com/oauth2/v3/certs')
 );
@@ -20,11 +20,19 @@ function safePath(path) {
 }
 
 export default async function handler(request) {
+  let env;
+  try {
+    env = getEnv();
+  } catch (err) {
+    if (err instanceof MissingEnvError) return envErrorResponse(err);
+    throw err;
+  }
+
   const url = new URL(request.url);
   const code = url.searchParams.get('code');
   const stateToken = url.searchParams.get('state');
   const error = url.searchParams.get('error');
-  const secret = new TextEncoder().encode(process.env.SESSION_SECRET);
+  const secret = new TextEncoder().encode(env.SESSION_SECRET);
 
   if (error || !code || !stateToken) {
     return new Response('เข้าสู่ระบบไม่สำเร็จ (ถูกยกเลิกหรือคำขอไม่ถูกต้อง)', {
@@ -47,8 +55,8 @@ export default async function handler(request) {
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams({
       code,
-      client_id: process.env.GOOGLE_CLIENT_ID,
-      client_secret: process.env.GOOGLE_CLIENT_SECRET,
+      client_id: env.GOOGLE_CLIENT_ID,
+      client_secret: env.GOOGLE_CLIENT_SECRET,
       redirect_uri: redirectUri,
       grant_type: 'authorization_code',
     }),
@@ -67,7 +75,7 @@ export default async function handler(request) {
   try {
     const { payload } = await jwtVerify(tokenData.id_token, GOOGLE_JWKS, {
       issuer: ['https://accounts.google.com', 'accounts.google.com'],
-      audience: process.env.GOOGLE_CLIENT_ID,
+      audience: env.GOOGLE_CLIENT_ID,
     });
     claims = payload;
   } catch {
@@ -79,16 +87,16 @@ export default async function handler(request) {
   // `hd` is only present on Workspace-issued tokens. Fall back to a plain
   // domain check on the (verified) email so a Workspace account that for
   // any reason omits `hd` doesn't get let in by accident.
-  const domainOk = claims.hd === ALLOWED_HD || email.toLowerCase().endsWith('@' + ALLOWED_HD);
+  const domainOk = claims.hd === env.ALLOWED_HD || email.toLowerCase().endsWith('@' + env.ALLOWED_HD);
 
   if (!emailVerified || !domainOk) {
     return new Response(
-      `เข้าถึงได้เฉพาะอีเมล @${ALLOWED_HD} เท่านั้น (บัญชีนี้คือ ${email || 'ไม่ทราบ'})`,
+      `เข้าถึงได้เฉพาะอีเมล @${env.ALLOWED_HD} เท่านั้น (บัญชีนี้คือ ${email || 'ไม่ทราบ'})`,
       { status: 403 }
     );
   }
 
-  const session = await new SignJWT({ email, hd: ALLOWED_HD })
+  const session = await new SignJWT({ email, hd: env.ALLOWED_HD })
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
     .setExpirationTime('7d')
