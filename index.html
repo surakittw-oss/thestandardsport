@@ -183,7 +183,11 @@
     .f1-row    { display:grid; grid-template-columns:52px 74px 1fr 84px; align-items:stretch; border-radius:7px; overflow:hidden; box-shadow:0 2px 6px rgba(0,0,0,.22), 0 8px 20px rgba(0,0,0,.18); transition:transform .16s, box-shadow .16s; }
     .f1-row:hover { transform:translateY(-1px); box-shadow:0 4px 10px rgba(0,0,0,.26), 0 14px 30px rgba(0,0,0,.24); }
     /* Angled rank block, as on the printed standings graphic */
-    .f1-row .f1-pos { clip-path:polygon(0 0, 100% 0, calc(100% - 9px) 100%, 0 100%); padding-right:6px; }
+    /* --slant matches the WordPress skin: a bold wedge, not a corner nip. The
+       row needs its own dark ground too — the clip cuts a notch out of the
+       position tile, and with nothing behind it the page showed through. */
+    .f1-row { background:#141416; }
+    .f1-row .f1-pos { --slant:20px; clip-path:polygon(0 0, 100% 0, calc(100% - var(--slant)) 100%, 0 100%); padding-right:calc(6px + var(--slant) * .25); }
     .f1-row .f1-name  { font-size:17px; }
     .f1-row .f1-sub   { font-size:10.5px; }
     .f1-row .f1-pos, .f1-row .f1-pts { font-size:22px; }
@@ -241,6 +245,101 @@
       .rsp-lead-r{ grid-template-columns:1fr; gap:24px; }
       .rsp-ytbt  { grid-template-columns:1fr; }
       .rsp-cons  { grid-template-columns:1fr; }
+    }
+    /* ── Standings band ─────────────────────────────────────────
+       Ported from the WordPress SPORT skin. The scoreboard is the one part of
+       the page that is not an article, so it gets its own ground: a dark strip
+       running the full width of the window, broadcast-graphic style. */
+    .sb-zone   { --sb-band:#0d0d0d; background:var(--sb-band); color:#fff;
+                 border-top:3px solid #ffa5f7; margin-top:44px; }
+    /* Dark mode already has a dark page, so the band needs a drawn edge to
+       stay a distinct block rather than melting into the background. */
+    [data-theme="dark"] .sb-zone { --sb-band:#000; border-bottom:1px solid #262626; }
+    .sb-inner  { max-width:1280px; margin:0 auto; padding:30px 40px 40px; }
+    /* Eyebrow, not headline — the league name below it carries the section. */
+    .sb-head   { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:22px; }
+    .sb-chip   { display:inline-block; background:#ffa5f7; color:#0d0d0d; padding:5px 12px;
+                 font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:10px; font-weight:800;
+                 letter-spacing:.18em; text-transform:uppercase; }
+    .sb-tag    { font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:10px; font-weight:700;
+                 letter-spacing:.16em; text-transform:uppercase; color:rgba(255,255,255,.62);
+                 border:1px solid rgba(255,255,255,.26); padding:3px 9px; white-space:nowrap; }
+    /* League name + tabs ride together and stay put under the masthead while a
+       long table scrolls by. --sb-nav-h is the masthead's own height. */
+    .sb-bar    { position:sticky; top:var(--sb-nav-h,122px); z-index:30; background:var(--sb-band);
+                 padding:10px 0 0; margin-bottom:4px; }
+    .sb-title  { font-family:"Chakra Petch","Space Grotesk",sans-serif; font-weight:800; text-transform:uppercase;
+                 font-size:clamp(22px,3vw,34px); line-height:1.1; letter-spacing:-.01em; color:#fff; margin:0;
+                 display:flex; align-items:center; gap:14px; }
+    /* Same wedge as the rank numbers and the tabs, so the heading reads as part
+       of one graphic set instead of a plain line of type. */
+    .sb-title::before { content:""; flex:0 0 auto; width:20px; height:26px; background:#ffa5f7;
+                 clip-path:polygon(0 0,100% 0,68% 100%,0 100%); }
+    /* Left-aligned, sharing the heading's edge directly above them. */
+    .sb-tabs   { display:flex; gap:3px; margin:10px 0 18px; border-bottom:1px solid rgba(255,255,255,.16);
+                 overflow-x:auto; scrollbar-width:thin; scrollbar-color:#ffa5f7 transparent; }
+    .sb-tabs::-webkit-scrollbar { height:3px; }
+    .sb-tabs::-webkit-scrollbar-thumb { background:#ffa5f7; }
+    /* Folder tabs: straight on the left, cut away on the right, so the gap
+       between two of them reads as one diagonal. */
+    .sb-tab    { --slant:18px; flex:0 0 auto; border:0; cursor:pointer;
+                 padding:11px calc(14px + var(--slant)) 11px 20px; background:#1f1f24; color:rgba(255,255,255,.62);
+                 clip-path:polygon(0 0, calc(100% - var(--slant)) 0, 100% 100%, 0 100%);
+                 font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:12px; font-weight:800;
+                 letter-spacing:.1em; text-transform:uppercase; white-space:nowrap;
+                 transition:background .15s, color .15s; }
+    .sb-tab:hover     { background:#2b2b32; color:#fff; }
+    .sb-tab.is-active { background:#ffa5f7; color:#0d0d0d; }
+    /* clip-path would slice an outline off, so the focus ring is drawn inside. */
+    .sb-tab:focus-visible { outline:none; box-shadow:inset 0 0 0 2px #fff; }
+    .sb-note   { font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:11px; font-weight:700;
+                 letter-spacing:.1em; text-transform:uppercase; color:rgba(255,255,255,.55);
+                 margin:0 auto 14px; max-width:720px; }
+    .sb-tblwrap{ overflow-x:auto; -webkit-overflow-scrolling:touch;
+                 scrollbar-width:thin; scrollbar-color:#ffa5f7 transparent; }
+    .sb-tblwrap::-webkit-scrollbar { height:6px; }
+    .sb-tblwrap::-webkit-scrollbar-thumb { background:#ffa5f7; border-radius:3px; }
+    /* Sized by its contents, not stretched to the container: width:100% on a
+       desktop inflates a short-columned league table to the full width and
+       pulls the numbers into widely spaced islands. */
+    .sb-tbl    { width:auto; border-collapse:collapse; min-width:min(100%,720px); margin:0 auto; }
+    .sb-tbl th { font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:11px; font-weight:800;
+                 letter-spacing:.14em; text-transform:uppercase; color:rgba(255,255,255,.8);
+                 text-align:right; padding:0 10px 10px; border-bottom:2px solid #ffa5f7; white-space:nowrap; }
+    .sb-tbl th:first-child, .sb-tbl th.is-name { text-align:left; }
+    .sb-tbl td { font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:13px; color:rgba(255,255,255,.78);
+                 text-align:right; padding:11px 10px; border-bottom:1px solid rgba(255,255,255,.12); white-space:nowrap; }
+    .sb-tbl td:first-child { text-align:left; font-weight:800; color:#fff; width:46px; padding-left:12px; }
+    .sb-tbl td.sb-name     { text-align:left; font-weight:800; color:#fff; white-space:normal; }
+    .sb-tbl td:last-child  { font-weight:800; color:#fff; }
+    .sb-tbl tbody tr:hover td { background:rgba(255,255,255,.06); }
+    .sb-cell   { display:inline-flex; align-items:center; gap:8px; }
+    .sb-crest  { width:26px; height:26px; object-fit:contain; flex:0 0 auto; display:block; }
+    /* A club with no crest on file gets a monogram rather than a ragged gap. */
+    .sb-mono   { width:26px; height:26px; flex:0 0 auto; display:flex; align-items:center; justify-content:center;
+                 background:rgba(255,255,255,.1); color:rgba(255,255,255,.65);
+                 font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:11px; font-weight:800; }
+    @media (max-width:768px) {
+      .sb-inner { padding:24px 16px 32px; }
+      /* On a phone the masthead already owns its height; adding a bar on top
+         would spend a quarter of the screen on chrome. */
+      .sb-bar   { position:static; }
+      /* Tighter gutters buy back nearly a column's worth of width. */
+      .sb-tbl th, .sb-tbl td { padding-left:7px; padding-right:7px; }
+      /*
+       * Scrolling a league table sideways used to carry the club name off-screen
+       * with everything else, leaving a row of bare numbers with nothing to say
+       * whose they were. Position and club freeze against the left edge instead.
+       */
+      .sb-tbl.is-ranked th:nth-child(1), .sb-tbl.is-ranked td:nth-child(1),
+      .sb-tbl.is-ranked th:nth-child(2), .sb-tbl.is-ranked td:nth-child(2) {
+        position:sticky; z-index:2; background:var(--sb-band); }
+      .sb-tbl.is-ranked th:nth-child(1), .sb-tbl.is-ranked td:nth-child(1) {
+        left:0; width:34px; padding-left:0; padding-right:4px; }
+      /* Same 34px the column beside it is pinned to — the two must agree or the
+         club name sits on top of the position. */
+      .sb-tbl.is-ranked th:nth-child(2), .sb-tbl.is-ranked td:nth-child(2) {
+        left:34px; box-shadow:1px 0 0 rgba(255,255,255,.14); }
     }
   </style>
 </head>
@@ -511,15 +610,15 @@ const F1_RESULTS = [
 ];
 const STANDINGS = {
   premier: { label:"Premier League 2025/26", rows:[
-    {pos:1,name:"Arsenal",    p:38,w:28,d:6, l:4, gd:"+65",pts:90},
-    {pos:2,name:"Liverpool",  p:38,w:26,d:7, l:5, gd:"+58",pts:85},
-    {pos:3,name:"Chelsea",    p:38,w:24,d:8, l:6, gd:"+42",pts:80},
-    {pos:4,name:"Man City",   p:38,w:23,d:7, l:8, gd:"+38",pts:76},
-    {pos:5,name:"Tottenham",  p:38,w:20,d:9, l:9, gd:"+18",pts:69},
-    {pos:6,name:"Newcastle",  p:38,w:19,d:8, l:11,gd:"+12",pts:65},
-    {pos:7,name:"Aston Villa",p:38,w:18,d:8, l:12,gd:"+8", pts:62},
-    {pos:8,name:"Man United", p:38,w:16,d:9, l:13,gd:"0",  pts:57},
-    {pos:9,name:"Brighton",   p:38,w:15,d:10,l:13,gd:"+5", pts:55},
+    {pos:1,name:"Arsenal",    p:38,w:28,d:6, l:4, gd:"+65",pts:90,logo:"https://crests.football-data.org/57.png"},
+    {pos:2,name:"Liverpool",  p:38,w:26,d:7, l:5, gd:"+58",pts:85,logo:"https://crests.football-data.org/64.png"},
+    {pos:3,name:"Chelsea",    p:38,w:24,d:8, l:6, gd:"+42",pts:80,logo:"https://crests.football-data.org/61.png"},
+    {pos:4,name:"Man City",   p:38,w:23,d:7, l:8, gd:"+38",pts:76,logo:"https://crests.football-data.org/65.png"},
+    {pos:5,name:"Tottenham",  p:38,w:20,d:9, l:9, gd:"+18",pts:69,logo:"https://crests.football-data.org/73.png"},
+    {pos:6,name:"Newcastle",  p:38,w:19,d:8, l:11,gd:"+12",pts:65,logo:"https://crests.football-data.org/67.png"},
+    {pos:7,name:"Aston Villa",p:38,w:18,d:8, l:12,gd:"+8", pts:62,logo:"https://crests.football-data.org/58.png"},
+    {pos:8,name:"Man United", p:38,w:16,d:9, l:13,gd:"0",  pts:57,logo:"https://crests.football-data.org/66.png"},
+    {pos:9,name:"Brighton",   p:38,w:15,d:10,l:13,gd:"+5", pts:55,logo:"https://crests.football-data.org/397.png"},
     {pos:10,name:"West Ham",  p:38,w:14,d:9, l:15,gd:"-5", pts:51},
   ]},
   thai: { label:"Thai League 1 · 2026", rows:[
@@ -950,7 +1049,7 @@ function F1Section({ font }) {
               {F1_DRIVERS.map((d,i)=>(
                 <div key={d.pos} className="f1-row" style={{ minHeight:56 }}>
                   {/* Position */}
-                  <div className="f1-pos" style={{ display:"flex", alignItems:"center", justifyContent:"center", background:"#141416", color:i===0?"#ffa5f7":"#fff", fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontWeight:800, lineHeight:1 }}>{d.pos}</div>
+                  <div className="f1-pos" style={{ display:"flex", alignItems:"center", justifyContent:"center", background:i===0?"#ffa5f7":"#141416", color:i===0?"#0d0d0d":"#fff", fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontWeight:800, lineHeight:1 }}>{d.pos}</div>
                   {/* Team colour block + flag */}
                   <div style={{ display:"flex", alignItems:"center", justifyContent:"center", background:`linear-gradient(135deg, ${d.color} 0%, ${d.color}bb 100%)` }}>
                     <span style={{ display:"inline-flex", boxShadow:"0 1px 4px rgba(0,0,0,0.35)" }}><FlagImg code={d.code} size={24} /></span>
@@ -983,7 +1082,7 @@ function F1Section({ font }) {
               {F1_CONSTRUCTORS.map((c,i)=>(
                 <div key={c.pos} className="f1-row" style={{ minHeight:54 }}>
                   {/* Position */}
-                  <div className="f1-pos" style={{ display:"flex", alignItems:"center", justifyContent:"center", background:"#141416", color:i===0?"#ffa5f7":"#fff", fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontWeight:800, lineHeight:1 }}>{c.pos}</div>
+                  <div className="f1-pos" style={{ display:"flex", alignItems:"center", justifyContent:"center", background:i===0?"#ffa5f7":"#141416", color:i===0?"#0d0d0d":"#fff", fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontWeight:800, lineHeight:1 }}>{c.pos}</div>
                   {/* Team colour block */}
                   <div style={{ background:`linear-gradient(135deg, ${c.color} 0%, ${c.color}bb 100%)` }} />
                   {/* Team name */}
@@ -1003,46 +1102,86 @@ function F1Section({ font }) {
   );
 }
 
-// ── Football Standings ────────────────────────────────────────────────────────
-function FootballStandings({ font }) {
+// ── Standings band ────────────────────────────────────────────────────────────
+// The scoreboard treatment built for the WordPress SPORT skin, brought across:
+// a full-bleed dark band, folder tabs per league, a table sized to its own
+// contents and centred, club crests, points-driven ordering, and a frozen
+// position/club pair once a phone has to scroll the stats sideways.
+function StandingsBand({ font }) {
   const ff = font==="serif"?"Noto Serif Thai,serif":"Sarabun,sans-serif";
-  const data = STANDINGS["premier"];
+  const leagues = Object.keys(STANDINGS);
+  const [tab, setTab] = useState(leagues[0]);
+  const data = STANDINGS[tab];
+
+  // Ordered by points and renumbered, rather than trusting the order the rows
+  // were typed in — the same rule the WordPress tables use, so a score edited
+  // after a match can never leave the positions disagreeing with the points
+  // beside them. Ties keep their original order.
+  const rows = data.rows
+    .map((r, i) => ({ ...r, _i:i }))
+    .sort((a, b) => (b.pts - a.pts) || (a._i - b._i))
+    .map((r, i) => ({ ...r, pos:i + 1 }));
+
+  const cols = ["Rank", "Club", "P", "W", "D", "L", "GD", "Pts"];
+
+  // Crests are drawn only for a league that actually has some. A league with
+  // none would otherwise get a column of grey monogram tiles — more noise than
+  // the ragged gap they were meant to tidy up. Inside a league that does have
+  // crests, the odd club still missing one keeps its monogram.
+  const hasCrests = rows.some(r => r.logo);
+
   return (
-    <div style={{ padding:"48px 0", background:"var(--bg)" }}>
-      <div className="rsp-wrap">
-        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-end", marginBottom:24, flexWrap:"wrap", gap:16 }}>
-          <div>
-            <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:6 }}><div style={{ width:4, height:18, background:"#ffa5f7" }}></div><span style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:10, letterSpacing:"0.18em", color:"var(--txt-3)", textTransform:"uppercase" }}>Standings</span></div>
-            <h2 style={{ fontFamily:ff, fontWeight:800, fontSize:22, margin:0, color:"var(--txt)" }}>{data.label}</h2>
+    <div className="sb-zone">
+      <div className="sb-inner">
+        <div className="sb-head">
+          <span className="sb-chip">Standings</span>
+          <span className="sb-tag">Sport</span>
+        </div>
+
+        <div className="sb-bar">
+          <h2 className="sb-title">{data.label}</h2>
+          <div className="sb-tabs" role="tablist" aria-label="Standings">
+            {leagues.map(k => (
+              <button key={k} type="button" role="tab"
+                      aria-selected={tab===k ? "true" : "false"}
+                      tabIndex={tab===k ? 0 : -1}
+                      className={"sb-tab" + (tab===k ? " is-active" : "")}
+                      onClick={()=>setTab(k)}>
+                {STANDINGS[k].label}
+              </button>
+            ))}
           </div>
         </div>
-        <table style={{ width:"100%", borderCollapse:"collapse" }}>
-          <thead>
-            <tr style={{ borderBottom:`2px solid var(--txt)` }}>
-              {["#","Team","P","W","D","L","GD","Pts"].map((h,j)=>(
-                <th key={j} style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:10, fontWeight:700, letterSpacing:"0.12em", color:"var(--txt-3)", textTransform:"uppercase", padding:"10px 12px", textAlign:j<=1?"left":"center" }}>{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {data.rows.map((t,i)=>(
-              <tr key={t.pos} style={{ borderBottom:"1px solid var(--bdr-2)", background:i%2===0?"var(--bg-card)":"var(--bg-row)", borderLeft:`3px solid ${i<4?"#ffa5f7":i>=data.rows.length-3?"#fca5a5":"transparent"}` }}>
-                <td style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontWeight:700, fontSize:13, padding:"12px 12px", textAlign:"center", color:i<4?"#ffa5f7":"var(--txt-4)", width:36 }}>{t.pos}</td>
-                <td style={{ fontFamily:ff, fontWeight:700, fontSize:14, padding:"12px 12px", color:"var(--txt)" }}>{t.name}</td>
-                {[t.p,t.w,t.d,t.l,t.gd,t.pts].map((v,j)=>(
-                  <td key={j} style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:j===5?14:12, fontWeight:j===5?800:400, textAlign:"center", padding:"12px 12px", color:j===5?"var(--txt)":"var(--txt-3)" }}>{v}</td>
+
+        <p className="sb-note">ตารางคะแนน</p>
+
+        <div className="sb-tblwrap">
+          <table className="sb-tbl is-ranked">
+            <thead>
+              <tr>
+                {cols.map((c, j) => (
+                  <th key={c} className={j===1 ? "is-name" : undefined}>{c}</th>
                 ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
-        <div style={{ display:"flex", gap:20, marginTop:14, paddingTop:14, borderTop:"1px solid var(--bdr-2)" }}>
-          {[["#ffa5f7","Champions League"],["#fca5a5","Relegation"]].map(([col,label])=>(
-            <div key={label} style={{ display:"flex", gap:8, alignItems:"center" }}>
-              <div style={{ width:10, height:10, background:col }}></div>
-              <span style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:11, color:"var(--txt-4)" }}>{label}</span>
-            </div>
-          ))}
+            </thead>
+            <tbody>
+              {rows.map(t => (
+                <tr key={t.name} className="reveal">
+                  <td>{t.pos}</td>
+                  <td className="sb-name" style={{ fontFamily:ff }}>
+                    <span className="sb-cell">
+                      {hasCrests && (t.logo
+                        ? <img className="sb-crest" src={t.logo} alt="" width="26" height="26" loading="lazy" decoding="async" />
+                        : <span className="sb-mono" aria-hidden="true">{t.name.trim().charAt(0)}</span>)}
+                      <span>{t.name}</span>
+                    </span>
+                  </td>
+                  {[t.p, t.w, t.d, t.l, t.gd].map((v, j) => <td key={j}>{v}</td>)}
+                  <td><span data-count={t.pts}>0</span></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -1178,7 +1317,7 @@ function Footer() {
     </footer>
   );
 }
-Object.assign(window, { Navbar, HeroFull, HeroGrid, F1Section, FootballStandings, NewsGrid, Footer, NewsCard, CatTag, SectionHead, LogoLockup });
+Object.assign(window, { Navbar, HeroFull, HeroGrid, F1Section, StandingsBand, NewsGrid, Footer, NewsCard, CatTag, SectionHead, LogoLockup });
 </script>
 
 <!-- ③ MAIN APP + YOUTUBE -->
@@ -1429,6 +1568,7 @@ function App() {
       {t.heroLayout==="full" ? <window.HeroFull font={t.fontStyle} /> : <window.HeroGrid font={t.fontStyle} />}
       <CategoryNav font={t.fontStyle} />
       <window.F1Section font={t.fontStyle} />
+      <window.StandingsBand font={t.fontStyle} />
       <window.NewsGrid font={t.fontStyle} />
       <YouTubeSection />
       <window.Footer />
