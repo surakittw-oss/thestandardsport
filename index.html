@@ -107,6 +107,17 @@
     .ed-label   { display:inline-block; background:var(--accent); color:var(--on-accent); font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:10px; font-weight:800; letter-spacing:.18em; text-transform:uppercase; padding:5px 12px; }
     .ed-tag     { font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:10px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--txt-3); border:1px solid var(--bdr); padding:3px 9px; white-space:nowrap; }
     .ed-head    { display:flex; align-items:center; justify-content:space-between; gap:16px; padding-bottom:14px; margin-bottom:20px; border-bottom:2px solid var(--accent); }
+    .ed-head-all { font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:11px; font-weight:700; letter-spacing:.08em; color:var(--txt-3); white-space:nowrap; text-decoration:none; }
+    .ed-head-all:hover { color:var(--accent-ink); }
+    .ed-tags   { display:flex; flex-wrap:wrap; gap:8px; }
+    .ed-tags a { display:inline-flex; align-items:center; gap:7px; min-height:34px; padding:0 13px;
+                 border:1px solid var(--bdr); font-family:"Chakra Petch","Space Grotesk",sans-serif;
+                 font-size:12px; font-weight:600; letter-spacing:.06em; text-transform:uppercase;
+                 color:var(--txt-2); text-decoration:none;
+                 transition:background .16s, color .16s, border-color .16s; }
+    .ed-tags a:hover   { background:var(--accent); color:var(--on-accent); border-color:var(--accent); }
+    .ed-tags a i       { font-style:normal; font-size:10px; color:var(--txt-3); }
+    .ed-tags a:hover i { color:var(--on-accent); opacity:.65; }
     .ed-rule    { width:56px; height:4px; background:var(--accent); }
     .ed-display { font-family:"Chakra Petch","Space Grotesk",sans-serif; font-weight:800; text-transform:uppercase; line-height:.9; letter-spacing:-.025em; color:var(--txt); }
     .ed-lede    { font-size:17px; line-height:1.65; color:var(--txt-2); }
@@ -115,9 +126,12 @@
     /* Full-bleed hero: the cover fills the whole band, headline sits on top of it */
     .rsp-edhero    { position:relative; min-height:620px; display:flex; overflow:hidden; background:#0b0b0d; }
     .ed-hero-cover { position:absolute; inset:0; background-size:cover !important; background-position:center !important; }
+    /* Bottom-weighted rather than a flat wash: a wash dark enough for the
+       headline also buried the photograph, so the darkness is concentrated
+       where the text sits and the top of the cover comes back. */
     .ed-hero-scrim { position:absolute; inset:0; background:
-        linear-gradient(90deg, rgba(8,8,10,.95) 0%, rgba(8,8,10,.88) 32%, rgba(8,8,10,.55) 58%, rgba(8,8,10,.18) 100%),
-        linear-gradient(180deg, rgba(8,8,10,.55) 0%, transparent 26%, transparent 70%, rgba(8,8,10,.6) 100%); }
+        linear-gradient(90deg, rgba(8,8,10,.78) 0%, rgba(8,8,10,.62) 32%, rgba(8,8,10,.28) 58%, rgba(8,8,10,.08) 100%),
+        linear-gradient(180deg, rgba(8,8,10,.10) 0%, transparent 28%, rgba(8,8,10,.38) 58%, rgba(8,8,10,.76) 100%); }
     .ed-hero-text  { position:relative; z-index:1; display:flex; flex-direction:column; width:100%; max-width:1280px;
                      padding:34px 56px 44px max(40px, calc((100vw - 1280px)/2 + 40px)); }
     /* Hero copy always sits on the darkened cover, so it stays light in both themes */
@@ -145,7 +159,7 @@
     }
     @media (max-width:768px) {
       .rsp-edhero    { min-height:520px; }
-      .ed-hero-scrim { background:linear-gradient(180deg, rgba(8,8,10,.72) 0%, rgba(8,8,10,.45) 34%, rgba(8,8,10,.82) 100%); }
+      .ed-hero-scrim { background:linear-gradient(180deg, rgba(8,8,10,.58) 0%, rgba(8,8,10,.30) 32%, rgba(8,8,10,.55) 58%, rgba(8,8,10,.90) 100%); }
       .ed-hero-text  { padding:24px 16px 32px; }
       .rsp-tl     { grid-template-columns:1fr; }
       .rsp-tl > div { border-right:none; border-bottom:1px solid var(--bdr); }
@@ -159,6 +173,20 @@
 
     /* ── Responsive layout ─────────────────────────────────────── */
     .rsp-wrap  { max-width:1280px; margin:0 auto; padding:0 40px; }
+    /* One page, one rhythm — the WordPress .tsd-wrap-flow. Sections used to sit
+       on alternating bands, which made each look like a separate widget. */
+    .rsp-flow  { padding-top:44px; padding-bottom:44px; }
+    .rsp-flow > *          { margin-top:44px; }
+    .rsp-flow > :first-child { margin-top:0; }
+    /* Shorts strip: scrolls in the column, not edge to edge, with the accent
+       carried into the scrollbar so the rail reads as part of the design. */
+    .sh-strip  { display:flex; gap:16px; overflow-x:auto; padding-bottom:14px;
+                 scrollbar-width:thin; scrollbar-color:var(--accent) transparent; }
+    .sh-strip::-webkit-scrollbar { height:6px; }
+    .sh-strip::-webkit-scrollbar-track { background:transparent; }
+    .sh-strip::-webkit-scrollbar-thumb { background:var(--accent); border-radius:3px; }
+    .sh-strip::-webkit-scrollbar-thumb:hover { background:var(--accent-ink); }
+    .sh-card   { flex:0 0 168px; }
     .rsp-hero  { display:grid; grid-template-columns:1fr 360px; gap:48px; align-items:start; }
     .rsp-lead  { display:grid; grid-template-columns:1.15fr 1fr; gap:40px; align-items:start; }
     .rsp-lead-r{ display:grid; grid-template-columns:1fr 1fr; gap:30px 26px; }
@@ -226,6 +254,9 @@
     }
     @media (max-width:768px) {
       .rsp-wrap  { padding:0 16px; }
+      .rsp-flow  { padding-top:28px; padding-bottom:28px; }
+      .rsp-flow > * { margin-top:28px; }
+      .sh-card   { flex-basis:142px; }
       .rsp-hero  { grid-template-columns:1fr; }
       .rsp-lead  { grid-template-columns:1fr; gap:32px; }
       .rsp-hgrid { grid-template-columns:1fr; }
@@ -288,7 +319,7 @@
     .ar-share button:hover { border-color:var(--accent); color:var(--accent-ink); }
 
     .ar-lead   { margin:28px 0; }
-    .ar-lead-img { display:block; width:100%; padding-bottom:52.3%; background-size:cover; background-position:center; }
+    .ar-lead-img { display:block; width:100%; padding-bottom:52.3%; /* house cover 1200x628 */ background-size:cover; background-position:center; }
     .ar-lead figcaption, .ar-body figcaption { font-size:12px; color:var(--txt-3); line-height:1.6; margin-top:10px; }
 
     .ar-body   { max-width:44em; }
@@ -808,26 +839,40 @@ function LogoLockup({ height = 46 }) {
   );
 }
 // Editorial section header — red label left, boxed tag right (Dribbble-style archive layout)
-function SectionHead({ label, tag, action }) {
+function SectionHead({ label, tag, action, actionHref }) {
+  const act = action && (actionHref
+    ? <a href={actionHref} target="_blank" rel="noopener noreferrer" className="ed-head-all">{action} →</a>
+    : <span className="ed-head-all" style={{ cursor:"pointer" }}>{action} →</span>);
   return (
     <div className="ed-head">
       <span className="ed-label">{label}</span>
       <span style={{ display:"flex", alignItems:"center", gap:12 }}>
-        {action && <span style={{ fontFamily:"Sarabun,sans-serif", fontSize:12, color:"var(--txt-3)", cursor:"pointer" }}>{action} →</span>}
+        {act}
         {tag && <span className="ed-tag">{tag}</span>}
       </span>
     </div>
   );
 }
+// One chip everywhere: CI pink with dark text. The black variant this used to
+// carry read as a different kind of label rather than the same one.
+// The frame takes the picture's own shape instead of a fixed ratio. Fixed
+// frames looked tidy but trimmed ~10% off the house 1200x628 cover; these
+// backgrounds carry their dimensions in the URL, so read them from there.
+function coverRatio(bg, fallback) {
+  const w = /[?&]w=(\d+)/.exec(bg || ""), h = /[?&]h=(\d+)/.exec(bg || "");
+  if (!w || !h) { return (fallback || 56) + "%"; }
+  return (Math.round((+h[1] / +w[1]) * 1000) / 10) + "%";
+}
+
 function CatTag({ label, hot }) {
-  return <span style={{ display:"inline-block", padding:"2px 9px", background:hot?"#ffa5f7":"#0d0d0d", color:hot?"#0d0d0d":"#fff", fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontWeight:700, fontSize:10, letterSpacing:"0.13em", textTransform:"uppercase" }}>{label}</span>;
+  return <span style={{ display:"inline-block", padding:"2px 9px", background:"#ffa5f7", color:"#0d0d0d", fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontWeight:700, fontSize:10, letterSpacing:"0.13em", textTransform:"uppercase" }}>{label}</span>;
 }
 function NewsCard({ item, font, onOpen }) {
   const ff = font==="serif"?"Noto Serif Thai,serif":"Sarabun,sans-serif";
   return (
     <article className="news-item" style={{ cursor:"pointer" }}
              onClick={onOpen ? () => onOpen(item) : undefined}>
-      <div className="zoom-frame" style={{ position:"relative", paddingBottom:"56%", marginBottom:12, boxShadow:"var(--sh-1)" }}>
+      <div className="zoom-frame" style={{ position:"relative", paddingBottom:coverRatio(item.bg, 56), marginBottom:12, boxShadow:"var(--sh-1)" }}>
         <div className="zoom-img" style={{ background:item.bg }} />
         {item.hot && <span style={{ position:"absolute", top:10, left:10, zIndex:1, background:"#ffa5f7", color:"#0d0d0d", padding:"2px 8px", fontSize:10, fontWeight:700, fontFamily:"Chakra Petch,Space Grotesk,sans-serif", letterSpacing:"0.15em" }}>HOT</span>}
       </div>
@@ -906,16 +951,9 @@ function HeroFull({ font }) {
         <div className="ed-hero-scrim" />
         <div className="streak" />
         <div className="ed-hero-text">
-          {/* Masthead note, as in the reference */}
-          <div className="ed-hero-note" style={{ display:"flex", alignItems:"flex-start", gap:9, marginBottom:"auto" }}>
-            <span style={{ flexShrink:0, width:15, height:15, borderRadius:"50%", border:"1px solid",
-              display:"flex", alignItems:"center", justifyContent:"center", fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:10, fontWeight:700, marginTop:1 }}>i</span>
-            <span style={{ fontFamily:"Sarabun,sans-serif", fontSize:11.5, lineHeight:1.55, color:"inherit" }}>
-              รายงานกีฬาอิสระ —<br/>ข้อมูลฤดูกาล 2026 อัปเดตหลัง Spanish GP
-            </span>
-          </div>
-
-          <div style={{ padding:"38px 0" }}>
+          {/* marginTop:auto keeps the headline pinned to the bottom of the hero —
+              the note that used to do that job with marginBottom:auto is gone. */}
+          <div style={{ marginTop:"auto", padding:"38px 0" }}>
             <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:22, flexWrap:"wrap" }}>
               <span className="ed-label">{lead.cat} · Spanish GP</span>
               <span className="ed-tag">Season 2026 · Rd 9/22</span>
@@ -937,12 +975,15 @@ function HeroFull({ font }) {
 
       <div className="rsp-wrap" style={{ padding:"44px 40px" }}>
 
+        {/* Tag strip first, as in the WordPress running order. */}
+        {window.CategoryNav && <window.CategoryNav />}
+
         {/* ── LATEST — lead story + 3 secondaries in hairline columns ── */}
-        <div>
-          <SectionHead label="Latest" tag="News" action="ดูข่าวทั้งหมด" />
+        <div style={{ marginTop:44 }}>
+          <SectionHead label="Latest" action="ดูข่าวทั้งหมด" />
           <div className="rsp-lead">
             <article style={{ cursor:"pointer" }}>
-              <div className="zoom-frame" style={{ position:"relative", paddingBottom:"58%", marginBottom:16, boxShadow:"var(--sh-2)" }}>
+              <div className="zoom-frame" style={{ position:"relative", paddingBottom:coverRatio(lead.bg, 58), marginBottom:16, boxShadow:"var(--sh-2)" }}>
                 <div className="zoom-img" style={{ background:lead.bg }} />
               </div>
               <h2 style={{ fontFamily:ff, fontWeight:800, fontSize:30, lineHeight:1.22, color:"var(--txt)", margin:"0 0 12px", textWrap:"pretty" }}>{lead.title}</h2>
@@ -955,7 +996,7 @@ function HeroFull({ font }) {
             <div className="rsp-lead-r">
               {side.map(n => (
                 <article key={n.id} style={{ cursor:"pointer" }}>
-                  <div className="zoom-frame" style={{ position:"relative", paddingBottom:"56%", marginBottom:12, boxShadow:"var(--sh-1)" }}>
+                  <div className="zoom-frame" style={{ position:"relative", paddingBottom:coverRatio(n.bg, 56), marginBottom:12, boxShadow:"var(--sh-1)" }}>
                     <div className="zoom-img" style={{ background:n.bg }} />
                   </div>
                   <h3 style={{ fontFamily:ff, fontWeight:700, fontSize:17, lineHeight:1.32, color:"var(--txt)", margin:"0 0 8px", textWrap:"pretty" }}>{n.title}</h3>
@@ -971,7 +1012,7 @@ function HeroFull({ font }) {
 
         {/* ── NUMBERS — season stat strip ── */}
         <div style={{ marginTop:44 }}>
-          <SectionHead label="Numbers" tag="Stats" />
+          <SectionHead label="Numbers" />
           <div className="rsp-stats">
             {[
               { l:"RACES", n:"9", c:"จาก 22 สนาม" },
@@ -993,7 +1034,7 @@ function HeroFull({ font }) {
 
         {/* ── SEASON TIMELINE ── */}
         <div style={{ marginTop:44 }}>
-          <SectionHead label="Season Timeline" tag="Timeline" />
+          <SectionHead label="Season Timeline" />
           <div className="rsp-tl">
             {[
               { k:"OPENER",  t:"Bahrain",  d:"15 มี.ค.", s:"เปิดฤดูกาล นอร์ริสคว้าชัยแรก", done:true },
@@ -1539,9 +1580,9 @@ function StandingsBand({ font }) {
 // ── News Grid ─────────────────────────────────────────────────────────────────
 function NewsGrid({ font, onOpen }) {
   return (
-    <div style={{ padding:"48px 0", background:"var(--bg-alt)" }}>
-      <div style={{ maxWidth:1280, margin:"0 auto", padding:"0 40px" }}>
-        <SectionHead label="Archive" tag="All news" action="ดูทั้งหมด" />
+    <section>
+      <div>
+        <SectionHead label="Archive" action="ดูทั้งหมด" />
         <div className="rsp-news">
           {NEWS.map(n=><div key={n.id} className="reveal"><NewsCard item={n} font={font} onOpen={onOpen} /></div>)}
         </div>
@@ -1573,38 +1614,38 @@ function NewsGrid({ font, onOpen }) {
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 }
 
 // ── Footer ────────────────────────────────────────────────────────────────────
 // ── Social icon component ─────────────────────────────────────────────────────
 const SOCIALS = [
-  { label:"Instagram", href:"https://www.instagram.com/thestandardth/",
-    icon:<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4.5"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg> },
-  { label:"YouTube",   href:"https://www.youtube.com/@thestandardsport",
-    icon:<svg viewBox="0 0 24 24" fill="currentColor"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58zM9.75 15.02V8.98L15.5 12l-5.75 3.02z"/></svg> },
-  { label:"TikTok",    href:"https://www.tiktok.com/@thestandardth",
-    icon:<svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V9.05a8.16 8.16 0 0 0 4.77 1.52V7.12a4.85 4.85 0 0 1-1-.43z"/></svg> },
-  { label:"Facebook",  href:"https://www.facebook.com/TheStandardTH",
-    icon:<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg> },
-  { label:"X / Twitter", href:"https://twitter.com/TheStandardTH",
-    icon:<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg> },
-  { label:"Line",      href:"https://line.me/ti/p/@thestandard",
-    icon:<svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg> },
+  { label:"Facebook",  href:"https://www.facebook.com/thestandardsport",
+    icon:<svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 8.2h-2a1 1 0 0 0-1 1v2.3h3l-.45 3.1H12.5V22h-3.1v-7.4H7.2v-3.1h2.2V9.2A4.1 4.1 0 0 1 13.5 5h2z"/></svg> },
+  { label:"Instagram", href:"https://www.instagram.com/thestandardsport",
+    icon:<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9"><rect x="3.2" y="3.2" width="17.6" height="17.6" rx="5"/><circle cx="12" cy="12" r="4.1"/><circle cx="17.2" cy="6.9" r="1.25" fill="currentColor" stroke="none"/></svg> },
+  { label:"X",         href:"https://x.com/STANDARDsportth",
+    icon:<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.4 3.4h4.2l4.1 5.6 4.7-5.6h2.3l-6 7.1 6.4 8.7h-4.2l-4.4-6-5 6H4.2l6.4-7.6z"/></svg> },
+  { label:"TikTok",    href:"https://www.tiktok.com/@thestandardsport",
+    icon:<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M14.1 3.2v10.2a3.4 3.4 0 1 1-2.9-3.36"/><path d="M14.1 3.2c.35 2.5 1.95 4.1 4.6 4.35"/></svg> },
 ];
 
+// Square, not circular: everything else in this design has hard corners, and a
+// row of circles reads as a different system bolted on.
 function SocialBtn({ s }) {
   const [hov, setHov] = React.useState(false);
   return (
     <a href={s.href} target="_blank" rel="noopener noreferrer" title={s.label}
+      aria-label={s.label}
       style={{ display:"flex", alignItems:"center", justifyContent:"center",
-        width:36, height:36, borderRadius:"50%",
-        border:`1px solid ${hov?"#ffa5f7":"rgba(255,255,255,0.18)"}`,
-        color:hov?"#ffa5f7":"rgba(255,255,255,0.65)",
+        width:42, height:42,
+        background:hov?"#ffa5f7":"none",
+        border:`1px solid ${hov?"#ffa5f7":"rgba(255,255,255,0.22)"}`,
+        color:hov?"#0d0d0d":"rgba(255,255,255,0.72)",
         transition:"all 0.18s", flexShrink:0, textDecoration:"none" }}
       onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)}>
-      <span style={{ width:15, height:15, display:"flex" }}>{s.icon}</span>
+      <span style={{ width:19, height:19, display:"flex" }}>{s.icon}</span>
     </a>
   );
 }
@@ -1710,10 +1751,10 @@ function VideoCard({ video }) {
         <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center" }}>
           <IconPlay size={44} />
         </div>
+        {/* One pill, bottom-right — same as the WordPress .tsd-yt-date badge.
+            The category chip that used to sit top-left is gone: the section is
+            already labelled Watch, and a second black chip read as a headline. */}
         <div style={{ position:"absolute", bottom:8, right:8, background:"rgba(0,0,0,0.82)", padding:"2px 7px", fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:10, fontWeight:700, color:"#fff", letterSpacing:"0.04em" }}>{video.dur}</div>
-        <div style={{ position:"absolute", top:8, left:8 }}>
-          <span style={{ display:"inline-block", padding:"2px 7px", background:"rgba(0,0,0,0.72)", color:"#fff", fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:10, fontWeight:700, letterSpacing:"0.1em", textTransform:"uppercase" }}>{video.cat}</span>
-        </div>
       </div>
       <p style={{ fontFamily:"Sarabun,sans-serif", fontWeight:700, fontSize:14, lineHeight:1.45, color:"var(--txt)", margin:"0 0 5px", textWrap:"pretty" }}>{video.title}</p>
       <p style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:11, color:"var(--txt-3)", margin:0 }}>{video.views} views · {video.date}</p>
@@ -1725,23 +1766,17 @@ function ShortCard({ video }) {
   const [hov, setHov] = useS2(false);
   return (
     <a href={`https://www.youtube.com/shorts/${video.id}`} target="_blank" rel="noopener noreferrer"
-      style={{ textDecoration:"none", flexShrink:0, width:180, display:"block", opacity:hov?0.88:1, transition:"opacity 0.18s, transform 0.18s", transform:hov?"translateY(-2px)":"translateY(0)" }}
+      className="sh-card"
+      style={{ textDecoration:"none", flexShrink:0, display:"block", opacity:hov?0.88:1, transition:"opacity 0.18s, transform 0.18s", transform:hov?"translateY(-2px)":"translateY(0)" }}
       onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)}>
-      {/* 9:16 Vertical Thumbnail */}
-      <div style={{ position:"relative", width:"100%", paddingBottom:"177.78%", background:video.bg, overflow:"hidden", borderRadius:0, marginBottom:10 }}>
+      {/* 9:16 thumbnail. A short is a thumbnail and a title — the red SHORTS
+          flag and the views gradient came off so the strip reads as one row of
+          pictures, the way the WordPress .tsd-short does. */}
+      <div style={{ position:"relative", width:"100%", paddingBottom:"177.7%", background:video.bg, overflow:"hidden", borderRadius:0, marginBottom:10 }}>
         <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center" }}>
-          <div style={{ width:40, height:40, borderRadius:"50%", background:"rgba(0,0,0,0.55)", display:"flex", alignItems:"center", justifyContent:"center" }}>
+          <div style={{ width:30, height:30, borderRadius:"50%", background:"rgba(0,0,0,0.6)", display:"flex", alignItems:"center", justifyContent:"center" }}>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
           </div>
-        </div>
-        {/* Shorts badge */}
-        <div style={{ position:"absolute", top:8, left:8, background:"#FF0000", padding:"2px 7px 2px 5px", display:"flex", alignItems:"center", gap:4 }}>
-          <svg width="7" height="10" viewBox="0 0 24 34" fill="white"><path d="M14 0L0 20h10L8 34 24 12h-10L14 0z"/></svg>
-          <span style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:10, fontWeight:800, color:"#fff", letterSpacing:"0.08em" }}>SHORTS</span>
-        </div>
-        {/* Views */}
-        <div style={{ position:"absolute", bottom:0, left:0, right:0, background:"linear-gradient(to top,rgba(0,0,0,0.75) 0%,transparent 100%)", padding:"28px 10px 8px" }}>
-          <div style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:10, fontWeight:700, color:"rgba(255,255,255,0.85)", letterSpacing:"0.04em" }}>{video.views} views</div>
         </div>
       </div>
       <p style={{ fontFamily:"Sarabun,sans-serif", fontWeight:700, fontSize:13, lineHeight:1.4, color:"var(--txt)", margin:0, textWrap:"pretty" }}>{video.title}</p>
@@ -1749,37 +1784,32 @@ function ShortCard({ video }) {
   );
 }
 
-// Section header shared
-function YTSectionHeader({ label, icon, title, href, hrefLabel="SEE ALL" }) {
+// The Watch and Shorts blocks used to carry their own header — a red YouTube
+// bar with the channel name. Every other section on the page announces itself
+// with the pink plate, so these now use the same SectionHead; the section is
+// part of the paper, not a guest panel from another site.
+
+// Shorts and Watch are two sections, not one YouTube block — same split the
+// WordPress build made, so the short-form strip can sit somewhere the
+// long-form grid doesn't have to follow.
+function ShortsSection() {
   return (
-    <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:24, flexWrap:"wrap", gap:12 }}>
-      <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-        <div style={{ width:4, height:18, background:"#FF0000" }}></div>
-        <span style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:10, letterSpacing:"0.2em", color:"var(--txt-3)", textTransform:"uppercase" }}>{label}</span>
-        {icon}
-        <span style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontWeight:700, fontSize:12, color:"var(--txt)", letterSpacing:"0.04em" }}>{title}</span>
+    <section>
+      <SectionHead label="Shorts" action="ดูทั้งหมด"
+        actionHref="https://www.youtube.com/@thestandardsport/shorts" />
+      <div className="sh-strip">
+        {YT_SHORTS.map(s => <ShortCard key={s.id} video={s} />)}
       </div>
-      <a href={href} target="_blank" rel="noopener noreferrer"
-        style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:11, fontWeight:700, color:"var(--txt-3)", textDecoration:"none", letterSpacing:"0.08em", display:"flex", alignItems:"center", gap:5 }}>
-        {hrefLabel}
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-      </a>
-    </div>
+    </section>
   );
 }
 
 function YouTubeSection() {
   return (
-    <div style={{ background:"var(--bg)", borderTop:"1px solid var(--bdr)" }}>
-      {/* ── Video Grid ── */}
-      <div style={{ padding:"48px 0 36px", borderBottom:"1px solid var(--bdr)" }}>
-        <div className="rsp-wrap">
-          <YTSectionHeader
-            label="Watch"
-            icon={<IconYT />}
-            title="THE STANDARD SPORT"
-            href="https://www.youtube.com/@thestandardsport"
-          />
+    <section>
+        <div>
+          <SectionHead label="Watch" action="ดูทั้งหมด"
+            actionHref="https://www.youtube.com/@thestandardsport/videos" />
           {/* 3-col + featured layout: featured big left, 3 small right */}
           <div className="rsp-ytmn">
             {/* Featured */}
@@ -1794,7 +1824,6 @@ function YouTubeSection() {
                     <div style={{ position:"absolute", bottom:5, right:5, background:"rgba(0,0,0,0.82)", padding:"1px 5px", fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:10, fontWeight:700, color:"#fff" }}>{v.dur}</div>
                   </div>
                   <div>
-                    <span style={{ display:"inline-block", padding:"1px 6px", background:"#0d0d0d", color:"#fff", fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:10, fontWeight:700, letterSpacing:"0.1em", textTransform:"uppercase", marginBottom:5 }}>{v.cat}</span>
                     <p style={{ fontFamily:"Sarabun,sans-serif", fontWeight:700, fontSize:13, lineHeight:1.4, color:"var(--txt)", margin:"0 0 4px", textWrap:"pretty" }}>{v.title}</p>
                     <p style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:10, color:"var(--txt-3)", margin:0 }}>{v.views}K · {v.date}</p>
                   </div>
@@ -1807,46 +1836,31 @@ function YouTubeSection() {
             {YT_VIDEOS.slice(3,6).map(v => <VideoCard key={v.id} video={v} />)}
           </div>
         </div>
-      </div>
-
-      {/* ── Shorts ── */}
-      <div style={{ padding:"36px 0 48px" }}>
-        <div className="rsp-wrap">
-          <YTSectionHeader
-            label="Shorts"
-            icon={<span style={{ color:"#FF0000", display:"flex", alignItems:"center" }}><IconShorts /></span>}
-            title="THE STANDARD SPORT SHORTS"
-            href="https://www.youtube.com/@thestandardsport/shorts"
-            hrefLabel="SEE ALL SHORTS"
-          />
-        </div>
-        {/* Horizontal scroll — bleeds to edges */}
-        <div style={{ overflowX:"auto", paddingBottom:8, scrollbarWidth:"none" }}
-          onMouseEnter={e=>e.currentTarget.style.cursor="grab"}
-          onMouseLeave={e=>e.currentTarget.style.cursor="default"}>
-          <div style={{ display:"flex", gap:16, paddingLeft:40, paddingRight:40, width:"max-content" }}>
-            {YT_SHORTS.map(s => <ShortCard key={s.id} video={s} />)}
-          </div>
-        </div>
-      </div>
-    </div>
+    </section>
   );
 }
 
-function CategoryNav({ font }) {
-  const [active, setActive] = useS2("F1");
-  const ff = font==="serif"?"Noto Serif Thai,serif":"Sarabun,sans-serif";
-  const cats = ["F1"];
+// The sport tag strip. It used to be a single filled "F1" button on its own
+// bordered rail; WordPress runs a row of hairline pills with the story count
+// beside each name, so the strip reads as a directory rather than a live filter.
+const SPORT_TAGS = [
+  { name:"Football",   count:128 },
+  { name:"F1",         count:64  },
+  { name:"Basketball", count:41  },
+  { name:"Volleyball", count:33  },
+  { name:"Tennis",     count:27  },
+  { name:"Muay Thai",  count:19  },
+];
+function CategoryNav() {
   return (
-    <div style={{ background:"var(--bg)", borderBottom:"1px solid var(--bdr)", overflowX:"auto" }}>
-      <div className="rsp-wrap" style={{ display:"flex", gap:4, overflowX:"auto" }}>
-        {cats.map(c=>(
-          <button key={c} onClick={()=>setActive(c)} style={{ background:active===c?"#ffa5f7":"none", border:"none", cursor:"pointer", padding:"10px 18px", fontFamily:ff, fontWeight:600, fontSize:13, color:active===c?"#0d0d0d":"var(--txt-3)", whiteSpace:"nowrap", transition:"all 0.15s" }}>{c}</button>
-        ))}
-      </div>
-    </div>
+    <nav className="ed-tags" aria-label="หมวดกีฬา">
+      {SPORT_TAGS.map(t => (
+        <a key={t.name} href="#">{t.name}<i>{t.count}</i></a>
+      ))}
+    </nav>
   );
 }
+window.CategoryNav = CategoryNav;
 
 function App() {
   const [t, setTweak] = window.useTweaks({ heroLayout:"full", fontStyle:"sans" });
@@ -1922,11 +1936,17 @@ function App() {
       ) : (
         <React.Fragment>
           {t.heroLayout==="full" ? <window.HeroFull font={t.fontStyle} /> : <window.HeroGrid font={t.fontStyle} />}
-          <CategoryNav font={t.fontStyle} />
-          <window.F1Section font={t.fontStyle} />
+          {/* The old red F1 panel is gone. It was a second standings widget
+              wearing another brand's livery, sitting directly above the one
+              the WordPress site actually ships — two answers to one question. */}
           <window.StandingsBand font={t.fontStyle} />
-          <window.NewsGrid font={t.fontStyle} onOpen={setArticle} />
-          <YouTubeSection />
+          {/* Same running order the WordPress build ships with:
+              tags → latest → standings → shorts → watch → archive. */}
+          <div className="rsp-wrap rsp-flow">
+            <ShortsSection />
+            <YouTubeSection />
+            <window.NewsGrid font={t.fontStyle} onOpen={setArticle} />
+          </div>
         </React.Fragment>
       )}
       <window.Footer />
