@@ -135,6 +135,7 @@
     .ed-hero-meta b           { color:#ffa5f7; font-weight:600; }
     .ed-read { display:inline-flex; align-items:center; gap:10px; align-self:flex-start; margin-top:22px;
                padding:11px 18px; background:var(--accent); color:#0d0d0d; text-decoration:none;
+               border:0; cursor:pointer;
                font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:11px; font-weight:800;
                letter-spacing:.08em; text-transform:uppercase; }
     .ed-read:hover { background:#fff; color:#0d0d0d; }
@@ -731,15 +732,16 @@ function Navbar({ font, dark, onToggleDark }) {
 }
 
 // ── Hero Full ─────────────────────────────────────────────────────────────────
-function HeroFull({ font }) {
+function HeroFull({ font, onOpen }) {
   const ff = font==="serif"?"Noto Serif Thai,serif":"Sarabun,sans-serif";
   const lead = NEWS[0];
+  const open = (item) => onOpen && onOpen(item);
   return (
     <div style={{ background:"var(--bg)" }}>
 
       {/* ── Full-bleed editorial hero: cover fills the band, headline sits on top ── */}
       <div className="rsp-edhero">
-        <div className="ed-hero-cover" style={{ background:lead.bg }} />
+        <div className="ed-hero-cover" style={{ background:lead.bg, cursor:"pointer" }} onClick={()=>open(lead)} />
         <div className="ed-hero-scrim" />
         <div className="streak" />
         <div className="ed-hero-text">
@@ -754,7 +756,7 @@ function HeroFull({ font }) {
               <span className="ed-label">{lead.cat}</span>
               <span className="ed-tag">{lead.date}</span>
             </div>
-            <h1 className="ed-display" style={{ fontSize:"clamp(30px,4.4vw,60px)", margin:"0 0 22px", lineHeight:1.08 }}>
+            <h1 className="ed-display" style={{ cursor:"pointer", fontSize:"clamp(30px,4.4vw,60px)", margin:"0 0 22px", lineHeight:1.08 }} onClick={()=>open(lead)}>
               {lead.title}
             </h1>
             <div className="ed-rule" style={{ marginBottom:22 }} />
@@ -766,7 +768,7 @@ function HeroFull({ font }) {
             <div className="ed-hero-meta" style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:12, fontWeight:600 }}>
               <b>{lead.cat}</b> · {lead.author} · {lead.date}
             </div>
-            <a className="ed-read" href="#editor-picks">อ่านต่อ <span aria-hidden="true">→</span></a>
+            <button type="button" className="ed-read" onClick={()=>open(lead)}>อ่านต่อ <span aria-hidden="true">→</span></button>
           </div>
           <span style={{ marginTop:"auto" }} />
         </div>
@@ -779,7 +781,7 @@ function HeroFull({ font }) {
           <SectionHead label="Editor's Picks" action="ดูข่าวทั้งหมด" />
           <div className="rsp-picks-grid">
             {NEWS.slice(0,4).map(n => (
-              <article key={n.id} className="rsp-pick-card">
+              <article key={n.id} className="rsp-pick-card" style={{ cursor:"pointer" }} onClick={()=>open(n)}>
                 <div className="zoom-frame" style={{ position:"relative", paddingBottom:coverRatio(n.bg, 56), marginBottom:10, boxShadow:"var(--sh-1)" }}>
                   <div className="zoom-img" style={{ background:n.bg }} />
                 </div>
@@ -797,12 +799,13 @@ function HeroFull({ font }) {
 }
 
 // ── Hero Grid ─────────────────────────────────────────────────────────────────
-function HeroGrid({ font }) {
+function HeroGrid({ font, onOpen }) {
   const ff = font==="serif"?"Noto Serif Thai,serif":"Sarabun,sans-serif";
+  const open = (item) => onOpen && onOpen(item);
   return (
     <div style={{ background:"var(--bg)", borderBottom:"1px solid var(--bdr)" }}>
       <div className="rsp-wrap" style={{ padding:"28px 40px" }}><div className="rsp-hgrid">
-        <div style={{ cursor:"pointer" }}>
+        <div style={{ cursor:"pointer" }} onClick={()=>open(NEWS[0])}>
           <div style={{ position:"relative", paddingBottom:"52.33%", background:NEWS[0].bg, overflow:"hidden" }}>
             <div style={{ position:"absolute", inset:0, background:"linear-gradient(to top,rgba(0,0,0,0.82) 0%,rgba(0,0,0,0.15) 55%,transparent 100%)" }} />
             <div style={{ position:"absolute", bottom:24, left:24, right:24 }}>
@@ -814,7 +817,7 @@ function HeroGrid({ font }) {
         </div>
         <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
           {NEWS.slice(1,4).map((n,i) => (
-            <div key={n.id} style={{ display:"grid", gridTemplateColumns:"72px 1fr", gap:12, cursor:"pointer", paddingBottom:i<2?16:0, borderBottom:i<2?"1px solid var(--bdr)":"none" }}>
+            <div key={n.id} onClick={()=>open(n)} style={{ display:"grid", gridTemplateColumns:"72px 1fr", gap:12, cursor:"pointer", paddingBottom:i<2?16:0, borderBottom:i<2?"1px solid var(--bdr)":"none" }}>
               <div style={{ position:"relative", paddingBottom:"52.33%", background:n.bg, flexShrink:0 }}></div>
               <div>
                 <CatTag label={n.cat} />
@@ -1038,7 +1041,7 @@ function ArticleView({ font, item, onBack, onOpen }) {
 // Mirrors the WordPress .tsd-scoreduo: a drawn card holding the 10-column table
 // on the left, a column of headlines ("Latest News") on the right. No full-bleed
 // dark band — the table sits at its own size inside the reading column.
-function StandingsBand({ font }) {
+function StandingsBand({ font, onOpen }) {
   const ff = font==="serif"?"Noto Serif Thai,serif":"Sarabun,sans-serif";
   const leagues = Object.keys(STANDINGS);
   const [tab, setTab] = useState(leagues[0]);
@@ -1123,7 +1126,8 @@ function StandingsBand({ font }) {
           </div>
           <div className="tsd-rail">
             {rail.map(p => (
-              <a key={p.id} className="tsd-railitem tsd-reveal" href="#" onClick={e=>e.preventDefault()}>
+              <a key={p.id} className="tsd-railitem tsd-reveal" href="#"
+                 onClick={e=>{ e.preventDefault(); if (onOpen) onOpen(p); }}>
                 <span className="tsd-rail-img" style={{ background:p.bg }}></span>
                 <span className="tsd-rail-body">
                   <span className="tsd-cm-cat">{p.cat}</span>
@@ -1396,11 +1400,13 @@ function App() {
                             onBack={()=>setArticle(null)} onOpen={setArticle} />
       ) : (
         <React.Fragment>
-          {t.heroLayout==="full" ? <window.HeroFull font={t.fontStyle} /> : <window.HeroGrid font={t.fontStyle} />}
+          {t.heroLayout==="full"
+            ? <window.HeroFull font={t.fontStyle} onOpen={setArticle} />
+            : <window.HeroGrid font={t.fontStyle} onOpen={setArticle} />}
           {/* Same running order the WordPress build ships with:
               picks → standings → shorts → watch, all inside one reading column. */}
           <div className="rsp-wrap rsp-flow">
-            <window.StandingsBand font={t.fontStyle} />
+            <window.StandingsBand font={t.fontStyle} onOpen={setArticle} />
             <ShortsSection />
             <YouTubeSection />
           </div>
