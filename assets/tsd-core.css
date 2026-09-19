@@ -164,17 +164,13 @@ html:not(.tsd-locked) #tsd-logout { display: block; }
          gap:2px; padding:0 20px; background:#0d0d0d;
          border-top:1px solid rgba(255,255,255,.1); }
 .nav-items { display:flex; align-items:center; justify-content:center; gap:2px; flex-wrap:wrap; }
-.nav-dd    { position:relative; }
+.nav-dd    { position:static; }
 .nav-dd-top{ display:flex; align-items:center; gap:7px; height:46px; padding:0 12px;
          text-decoration:none; white-space:nowrap;
          font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:13px; font-weight:600;
          letter-spacing:.06em; text-transform:uppercase; color:rgba(255,255,255,.62);
          border-bottom:2px solid transparent; transition:color .15s, border-color .15s; }
 .nav-dd-top:hover, .nav-dd.open .nav-dd-top { color:#fff; border-bottom-color:var(--accent); }
-/* ตัวเลขจำนวนบทความ ข้างชื่อช่อง */
-.nav-count { font-size:10px; font-weight:700; letter-spacing:.04em; color:rgba(255,255,255,.32);
-         font-variant-numeric:tabular-nums; }
-.nav-dd.open .nav-count, .nav-dd-top:hover .nav-count { color:var(--accent); }
 /* ลูกศรบอกว่าช่องนั้นมีรายการย่อย */
 .nav-caret { font-size:9px; line-height:1; color:rgba(255,255,255,.34);
              transition:transform .15s, color .15s; }
@@ -185,25 +181,30 @@ html:not(.tsd-locked) #tsd-logout { display: block; }
             animation:navPulse 1.9s ease-in-out infinite; }
 @keyframes navPulse { 0%,100% { opacity:1; } 50% { opacity:.35; } }
 
-.nav-dd-panel { display:none; position:absolute; top:100%; left:0; z-index:300; min-width:326px;
-            padding:8px 0; background:#111; border:1px solid rgba(255,255,255,.12);
-            box-shadow:0 18px 44px rgba(0,0,0,.55); }
-.nav-dd.open .nav-dd-panel { display:block; }
-.nav-dd-note { padding:6px 18px 10px; margin-bottom:6px; border-bottom:1px solid rgba(255,255,255,.08);
-           font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:10px; font-weight:600;
-           letter-spacing:.1em; text-transform:uppercase; color:rgba(255,255,255,.35); }
-.nav-dd-link { display:flex; align-items:center; justify-content:space-between; gap:14px;
-           padding:10px 18px; text-decoration:none;
-           font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:13px; font-weight:600;
-           letter-spacing:.03em; color:rgba(255,255,255,.78); transition:background .12s, color .12s; }
+/* Desktop mega menu: full width under the entire navigation row.
+   Direct children become columns; dividers and the event note span all columns. */
+.nav-dd-panel { display:none; position:absolute; top:100%; left:0; right:0; z-index:300;
+                grid-template-columns:repeat(3, minmax(0, 1fr)); gap:0 22px;
+                padding:20px max(24px, calc((100vw - 1280px)/2 + 24px)) 24px;
+                background:#111; border:1px solid rgba(255,255,255,.12);
+                box-shadow:0 18px 44px rgba(0,0,0,.55); }
+.nav-dd.open .nav-dd-panel { display:grid; }
+.nav-dd-note { grid-column:1 / -1; padding:0 0 12px; margin:0 0 8px;
+               border-bottom:1px solid rgba(255,255,255,.08);
+               font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:10px; font-weight:600;
+               letter-spacing:.1em; text-transform:uppercase; color:rgba(255,255,255,.35); }
+.nav-dd-link { display:flex; align-items:center; justify-content:space-between; gap:14px; min-height:42px;
+               padding:10px 12px; text-decoration:none;
+               font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:13px; font-weight:600;
+               letter-spacing:.03em; color:rgba(255,255,255,.78); transition:background .12s, color .12s; }
 .nav-dd-link > span:first-child { white-space:nowrap; }
 .nav-dd-link:hover { background:rgba(255,165,247,.14); color:#fff; }
 /* รายการเครื่องมือ (หน้าเฉพาะ/ตาราง) แยกจากรายการข่าวด้วยสีชมพู */
 .nav-dd-link.is-tool { color:var(--accent); }
 .nav-dd-link.is-tool:hover { background:var(--accent); color:#0d0d0d; }
-.nav-dd-sep { height:1px; background:rgba(255,255,255,.12); margin:8px 18px; }
+.nav-dd-sep { grid-column:1 / -1; height:1px; background:rgba(255,255,255,.12); margin:10px 0; }
 .nav-dd-tag { font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:9.5px; font-weight:700;
-          letter-spacing:.12em; text-transform:uppercase; color:rgba(255,255,255,.32); }
+              letter-spacing:.12em; text-transform:uppercase; color:rgba(255,255,255,.32); white-space:nowrap; }
 .nav-dd-link.is-tool .nav-dd-tag { color:inherit; opacity:.75; }
 
 /* ปุ่มถาวรชิดขวา — ไม่นับเป็นรายการในเมนู */
@@ -213,13 +214,7 @@ html:not(.tsd-locked) #tsd-logout { display: block; }
        letter-spacing:.09em; text-transform:uppercase; white-space:nowrap; }
 .nav-cta:hover { background:#fff; }
 
-.nav-mob { display:none; }
 
-@media (max-width:1400px) {
-  /* 8 ช่อง + ตัวเลข + ปุ่มถาวร ไม่พอดีบรรทัดเดียวที่จอกว้างปกติ → ตัดตัวเลขออกก่อน
-     (ตัวเลขยังเห็นได้บนจอกว้างกว่า 1400 หรือในเมนูมือถือ) */
-  .nav-count { display:none; }
-}
 @media (max-width:1100px) {
   .nav-dd-top { font-size:12px; padding:0 9px; letter-spacing:.04em; }
   .nav-cta    { padding:0 12px; font-size:10px; }
@@ -245,9 +240,12 @@ html:not(.tsd-locked) #tsd-logout { display: block; }
 .nav-dd.open .nav-dd-top { background:rgba(255,165,247,.12); }
 .nav-count { display:inline; }
 /* จอเล็กดรอปดาวน์ไม่ลอยทับ แต่กางในที่แบบแอกคอร์เดียน */
-.nav-dd-panel { position:static; min-width:0; border:0; border-top:1px solid rgba(255,255,255,.08);
-              box-shadow:none; background:#0a0a0a; padding:6px 0 10px; }
-.nav-dd-link { padding:11px 18px 11px 30px; }
+.nav-dd-panel { position:static; display:none !important; min-width:0; border:0; border-top:1px solid rgba(255,255,255,.08);
+                 box-shadow:none; background:#0a0a0a; padding:6px 0 10px; grid-template-columns:1fr; }
+.nav-dd.open .nav-dd-panel { display:block !important; }
+.nav-dd-note { grid-column:auto; padding:6px 18px 10px; margin-bottom:6px; }
+.nav-dd-link { min-height:0; padding:11px 18px 11px 30px; }
+.nav-dd-sep { grid-column:auto; margin:8px 18px; }
 .nav-cta { margin:16px 18px 0; height:44px; justify-content:center; }
 }
 @media (prefers-reduced-motion: reduce) {

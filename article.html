@@ -126,7 +126,6 @@ function NavItem({ item, openKey, setOpenKey }) {
         onClick={hasPanel ? (e) => { e.preventDefault(); setOpenKey(isOpen ? null : item.key); } : undefined}>
         {item.live && <span className="nav-live-dot" aria-hidden="true" />}
         <span>{item.label}</span>
-        {item.count != null && <span className="nav-count">{item.count}</span>}
         {/* ลูกศรบอกว่าช่องนี้กางรายการย่อยได้ */}
         {hasPanel && <span className="nav-caret" aria-hidden="true">▾</span>}
       </a>
