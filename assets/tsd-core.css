@@ -156,8 +156,103 @@ html:not(.tsd-locked) #tsd-logout { display: block; }
   nav button { min-height:44px; }
   nav .nav-mob, nav button[title] { min-width:44px; }
 }
-.nav-mob   { display:none; }
-.nav-desk  { display:flex; }
+
+/* ── Navbar: 8 ช่อง + ดรอปดาวน์ + ปุ่มถาวรชิดขวา ──────────────────────────
+ยึด IA ตาม assets/tsd-menu.js — เดสก์ท็อปเปิดดรอปดาวน์ด้วย hover/โฟกัส,
+จอเล็ก (.nav-bar.open) กลายเป็นแผงแนวตั้งที่กางรายการย่อยในที่แบบแอกคอร์เดียน */
+.nav-bar   { position:relative; display:flex; align-items:center; justify-content:center;
+         gap:2px; padding:0 20px; background:#0d0d0d;
+         border-top:1px solid rgba(255,255,255,.1); }
+.nav-items { display:flex; align-items:center; justify-content:center; gap:2px; flex-wrap:wrap; }
+.nav-dd    { position:relative; }
+.nav-dd-top{ display:flex; align-items:center; gap:7px; height:46px; padding:0 12px;
+         text-decoration:none; white-space:nowrap;
+         font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:13px; font-weight:600;
+         letter-spacing:.06em; text-transform:uppercase; color:rgba(255,255,255,.62);
+         border-bottom:2px solid transparent; transition:color .15s, border-color .15s; }
+.nav-dd-top:hover, .nav-dd.open .nav-dd-top { color:#fff; border-bottom-color:var(--accent); }
+/* ตัวเลขจำนวนบทความ ข้างชื่อช่อง */
+.nav-count { font-size:10px; font-weight:700; letter-spacing:.04em; color:rgba(255,255,255,.32);
+         font-variant-numeric:tabular-nums; }
+.nav-dd.open .nav-count, .nav-dd-top:hover .nav-count { color:var(--accent); }
+/* ลูกศรบอกว่าช่องนั้นมีรายการย่อย */
+.nav-caret { font-size:9px; line-height:1; color:rgba(255,255,255,.34);
+             transition:transform .15s, color .15s; }
+.nav-dd.open .nav-caret { color:var(--accent); transform:rotate(180deg); }
+.nav-dd-top:hover .nav-caret { color:rgba(255,255,255,.7); }
+/* จุดบอกช่องอีเวนต์ที่ยัง active (เอเชียนเกมส์) */
+.nav-live-dot { width:7px; height:7px; border-radius:50%; background:var(--accent); flex:0 0 auto;
+            animation:navPulse 1.9s ease-in-out infinite; }
+@keyframes navPulse { 0%,100% { opacity:1; } 50% { opacity:.35; } }
+
+.nav-dd-panel { display:none; position:absolute; top:100%; left:0; z-index:300; min-width:326px;
+            padding:8px 0; background:#111; border:1px solid rgba(255,255,255,.12);
+            box-shadow:0 18px 44px rgba(0,0,0,.55); }
+.nav-dd.open .nav-dd-panel { display:block; }
+.nav-dd-note { padding:6px 18px 10px; margin-bottom:6px; border-bottom:1px solid rgba(255,255,255,.08);
+           font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:10px; font-weight:600;
+           letter-spacing:.1em; text-transform:uppercase; color:rgba(255,255,255,.35); }
+.nav-dd-link { display:flex; align-items:center; justify-content:space-between; gap:14px;
+           padding:10px 18px; text-decoration:none;
+           font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:13px; font-weight:600;
+           letter-spacing:.03em; color:rgba(255,255,255,.78); transition:background .12s, color .12s; }
+.nav-dd-link > span:first-child { white-space:nowrap; }
+.nav-dd-link:hover { background:rgba(255,165,247,.14); color:#fff; }
+/* รายการเครื่องมือ (หน้าเฉพาะ/ตาราง) แยกจากรายการข่าวด้วยสีชมพู */
+.nav-dd-link.is-tool { color:var(--accent); }
+.nav-dd-link.is-tool:hover { background:var(--accent); color:#0d0d0d; }
+.nav-dd-sep { height:1px; background:rgba(255,255,255,.12); margin:8px 18px; }
+.nav-dd-tag { font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:9.5px; font-weight:700;
+          letter-spacing:.12em; text-transform:uppercase; color:rgba(255,255,255,.32); }
+.nav-dd-link.is-tool .nav-dd-tag { color:inherit; opacity:.75; }
+
+/* ปุ่มถาวรชิดขวา — ไม่นับเป็นรายการในเมนู */
+.nav-cta { margin-left:auto; display:inline-flex; align-items:center; gap:8px; height:34px; padding:0 16px;
+       background:var(--accent); color:#0d0d0d; text-decoration:none;
+       font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:11px; font-weight:800;
+       letter-spacing:.09em; text-transform:uppercase; white-space:nowrap; }
+.nav-cta:hover { background:#fff; }
+
+.nav-mob { display:none; }
+
+@media (max-width:1400px) {
+  /* 8 ช่อง + ตัวเลข + ปุ่มถาวร ไม่พอดีบรรทัดเดียวที่จอกว้างปกติ → ตัดตัวเลขออกก่อน
+     (ตัวเลขยังเห็นได้บนจอกว้างกว่า 1400 หรือในเมนูมือถือ) */
+  .nav-count { display:none; }
+}
+@media (max-width:1100px) {
+  .nav-dd-top { font-size:12px; padding:0 9px; letter-spacing:.04em; }
+  .nav-cta    { padding:0 12px; font-size:10px; }
+}
+@media (max-width:900px) {
+  /* แท็บเล็ตเล็ก: ยอมให้ตกสองบรรทัดดีกว่าล้นออกนอกจอ */
+  .nav-items { flex-wrap:wrap; }
+  .nav-bar   { flex-wrap:wrap; }
+  .nav-cta   { margin:6px auto 6px 8px; }
+}
+@media (max-width:768px) {
+.nav-mob { display:flex !important; }
+.nav-bar { display:none; }
+.nav-bar.open { display:flex; flex-direction:column; align-items:stretch; justify-content:flex-start;
+                position:absolute; top:100%; left:0; right:0; z-index:200; padding:6px 0 14px;
+                max-height:calc(100vh - 96px); overflow-y:auto; -webkit-overflow-scrolling:touch;
+              border-top:0; border-bottom:2px solid var(--accent);
+              box-shadow:0 12px 34px rgba(0,0,0,.45); }
+.nav-items { flex-direction:column; align-items:stretch; gap:0; }
+.nav-dd { border-bottom:1px solid rgba(255,255,255,.06); }
+.nav-dd-top { height:auto; min-height:48px; padding:12px 18px; font-size:13px;
+            justify-content:flex-start; border-bottom:0; }
+.nav-dd.open .nav-dd-top { background:rgba(255,165,247,.12); }
+.nav-count { display:inline; }
+/* จอเล็กดรอปดาวน์ไม่ลอยทับ แต่กางในที่แบบแอกคอร์เดียน */
+.nav-dd-panel { position:static; min-width:0; border:0; border-top:1px solid rgba(255,255,255,.08);
+              box-shadow:none; background:#0a0a0a; padding:6px 0 10px; }
+.nav-dd-link { padding:11px 18px 11px 30px; }
+.nav-cta { margin:16px 18px 0; height:44px; justify-content:center; }
+}
+@media (prefers-reduced-motion: reduce) {
+.nav-live-dot { animation:none; }
+}
 
 @media (max-width:1024px) {
   .rsp-wrap  { padding:0 24px; }
@@ -175,10 +270,6 @@ html:not(.tsd-locked) #tsd-logout { display: block; }
   .rsp-hgrid { grid-template-columns:1fr; }
   .rsp-ytmn  { grid-template-columns:1fr; }
   .rsp-ytbt  { grid-template-columns:repeat(2,1fr); }
-  .nav-mob   { display:flex !important; }
-  .nav-desk  { display:none !important; }
-  .nav-desk.open { display:flex !important; flex-direction:column; position:absolute; top:100%; left:0; right:0;
-    background:var(--bg); border-bottom:2px solid var(--accent); z-index:200; padding:8px 0; box-shadow:0 8px 32px rgba(0,0,0,.12); }
 }
 @media (max-width:480px) {
   .rsp-picks-grid { grid-template-columns:1fr; }
