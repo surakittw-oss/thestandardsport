@@ -5,3 +5,6 @@ node_modules/
 .env
 .env.local
 .env*.local
+
+# แคชคำตอบจาก WordPress REST API ของ scripts/build_data.py (สร้างใหม่ได้ ไม่ต้องเก็บใน git)
+scripts/.cache/

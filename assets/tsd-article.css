@@ -1,0 +1,176 @@
+/* หน้าบทความ (article.html) - คลาส ar-* ทั้งชุด
+   เดิมก้อนนี้อยู่ใน <style> ของ index.html และเคยใช้กับมุมมองบทความในหน้านั้น
+   ตอนนี้ย้ายมาเป็นไฟล์ของหน้าบทความโดยเฉพาะ (index.html ไม่มีมุมมองบทความแล้ว)
+   ส่วนที่เพิ่มจากของเดิมคือสไตล์สำหรับ "เนื้อความจริง" ที่ดึงจากเว็บ
+   (รูปในเนื้อเรื่อง, หัวข้อย่อย, ลิสต์, ตาราง, ปุ่มไปอ่านต้นฉบับ, แท็กจริง) */
+
+.ar-prog   { position:fixed; left:0; height:3px; width:0;
+             background:var(--accent); z-index:101; transition:width .08s linear; }
+.ar-crumb  { display:flex; gap:8px; align-items:center; flex-wrap:wrap;
+             font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:11px; font-weight:600;
+             letter-spacing:.08em; text-transform:uppercase; color:var(--txt-3); padding:18px 0 0; }
+.ar-crumb button { background:none; border:0; padding:0; cursor:pointer; font:inherit;
+             letter-spacing:inherit; text-transform:inherit; color:inherit; }
+.ar-crumb button:hover { color:var(--accent-ink); }
+.ar-crumb-now { opacity:.6; }
+
+/* Article column + sidebar. The sidebar sticks so the standings stay in
+   reach through a long read. */
+.ar-shell  { display:grid; grid-template-columns:minmax(0,1fr) 320px; gap:56px;
+             align-items:start; padding:32px 0 64px; }
+.ar-main   { min-width:0; }
+.ar-aside  { position:sticky; top:150px; display:flex; flex-direction:column; gap:32px; min-width:0; }
+
+.ar-kicker { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+.ar-date   { font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:10px; font-weight:700;
+             letter-spacing:.18em; text-transform:uppercase; color:var(--txt-3); }
+.ar-title  { font-family:"Noto Serif Thai",Georgia,serif; font-weight:800; font-size:44px;
+             line-height:1.25; letter-spacing:-.01em; margin:16px 0 18px; color:var(--txt); text-wrap:pretty; }
+.ar-stand  { font-size:19px; line-height:1.8; color:var(--txt-2); max-width:44em; margin:0; text-wrap:pretty; }
+
+.ar-byline { display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin:26px 0 0;
+             padding:18px 0; border-top:1px solid var(--bdr); border-bottom:1px solid var(--bdr); }
+.ar-avatar { width:40px; height:40px; border-radius:50%; flex-shrink:0;
+             background:linear-gradient(135deg,var(--accent),#ff79c6);
+             display:flex; align-items:center; justify-content:center;
+             font-weight:700; font-size:16px; color:#0d0d0d; }
+.ar-by-name{ font-family:"Chakra Petch","Space Grotesk",sans-serif; font-weight:600; font-size:13px; color:var(--txt); }
+.ar-by-meta{ font-size:12px; color:var(--txt-3); margin-top:2px; }
+.ar-share  { display:flex; gap:8px; margin-left:auto; }
+.ar-share button, .ar-share a { width:34px; height:34px; border:1px solid var(--bdr); background:none; padding:0;
+             display:flex; align-items:center; justify-content:center; color:var(--txt-3); cursor:pointer;
+             transition:color .15s, border-color .15s; }
+.ar-share button:hover, .ar-share a:hover { border-color:var(--accent); color:var(--accent-ink); }
+
+.ar-lead   { margin:28px 0; }
+/* กรอบรูปใช้สัดส่วนจริงของภาพ (ส่งผ่าน style มา) ค่าเริ่มต้นคือสัดส่วนบ้าน 1200x628 */
+.ar-lead-img { display:block; width:100%; padding-bottom:52.3%; background-size:cover; background-position:center; }
+.ar-lead figcaption, .ar-body figcaption { font-size:12px; color:var(--txt-3); line-height:1.6; margin-top:10px; }
+
+.ar-body   { max-width:44em; }
+.ar-body p { font-size:17px; line-height:1.95; margin:0 0 26px; color:var(--txt); text-wrap:pretty; }
+/* The section-heading bar: 12px CI rule, tinted ground. The contents card's
+   own heading is excluded — it is chrome, not prose, and was inheriting the
+   bar plus a 44px top margin inside the card. */
+.ar-body h2:not(.ar-toc-head) { font-family:"Noto Serif Thai",Georgia,serif; font-weight:700; font-size:26px; line-height:1.4;
+             margin:44px 0 18px; color:var(--txt); scroll-margin-top:140px;
+             border-left:12px solid var(--accent); background:var(--bg-alt); padding:10px 14px; }
+.ar-body blockquote { margin:36px 0; padding:0 0 0 26px; border-left:4px solid var(--accent); }
+.ar-body blockquote p { font-family:"Noto Serif Thai",Georgia,serif; font-size:22px; line-height:1.6;
+             font-weight:600; margin:0 0 12px; }
+.ar-body blockquote cite { font-style:normal; font-family:"Chakra Petch","Space Grotesk",sans-serif;
+             font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--txt-3); }
+
+/* ── เนื้อความจริงจากเว็บ (WordPress HTML ที่กรองแล้ว) ──────────────
+   ต้นแบบเดิมใส่ข้อความตัวอย่างที่เขียนไว้ตายตัวทุกบทความ ตรงนี้รับ HTML จริง
+   จึงต้องคุมรูป/หัวข้อย่อย/ลิสต์/ตาราง ที่ของเดิมไม่เคยมี */
+.ar-body h3, .ar-body h4 { font-family:"Noto Serif Thai",Georgia,serif; font-weight:700; line-height:1.45;
+             margin:34px 0 14px; color:var(--txt); scroll-margin-top:140px; }
+.ar-body h3 { font-size:22px; }
+.ar-body h4 { font-size:19px; }
+.ar-body ul, .ar-body ol { margin:0 0 26px; padding-left:26px; }
+.ar-body li { font-size:17px; line-height:1.85; margin:8px 0; color:var(--txt); }
+.ar-body li::marker { color:var(--accent); }
+.ar-body a  { color:var(--accent-ink); text-decoration:underline; text-underline-offset:2px; }
+.ar-body a:hover { text-decoration:none; }
+.ar-body strong, .ar-body b { font-weight:700; }
+.ar-body img { display:block; max-width:100%; height:auto; margin:28px 0; box-shadow:var(--sh-2); }
+.ar-body figure { margin:28px 0; }
+.ar-body figure img { margin:0; }
+.ar-body hr { border:0; border-top:1px solid var(--bdr); margin:36px 0; }
+.ar-body table { width:100%; border-collapse:collapse; margin:26px 0; font-size:14px; }
+.ar-body th, .ar-body td { border:1px solid var(--bdr); padding:8px 10px; text-align:left; }
+.ar-body th { background:var(--bg-alt); font-weight:700; }
+/* ปุ่มใต้เนื้อความ - พาไปต้นฉบับบน thestandard.co (เนื้อความในนี้เป็นสำเนาเพื่อดูแบบ) */
+.ar-orig { display:inline-flex; align-items:center; gap:10px; margin:34px 0 0;
+           padding:12px 18px; background:var(--accent); color:#0d0d0d; text-decoration:none;
+           font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:11px; font-weight:800;
+           letter-spacing:.08em; text-transform:uppercase; }
+.ar-orig:hover { background:var(--accent-ink); color:#fff; }
+.ar-orig-note { font-size:12px; color:var(--txt-3); margin:12px 0 0; line-height:1.7; }
+/* ไม่มีเนื้อความเต็มในชุดข้อมูล (ดึงมาแค่ N บทความล่าสุด) */
+.ar-nobody { background:var(--bg-alt); border-left:12px solid var(--accent); padding:18px 20px; }
+.ar-nobody p { margin:0 0 10px; font-size:15px; color:var(--txt-2); }
+.ar-nobody p:last-child { margin:0; }
+
+/* Contents card — sits after the opening paragraph, so the article still
+   opens in the writer's own words. */
+.ar-toc    { background:var(--bg-card); box-shadow:var(--sh-2); padding:20px 22px; margin:34px 0; }
+.ar-toc-head { font-family:"Chakra Petch","Space Grotesk",sans-serif; font-weight:700; font-size:20px;
+             line-height:1.3; margin:0; color:var(--txt); }
+.ar-toc-head::after { content:""; display:block; height:6px; background:var(--accent); margin-top:8px; }
+.ar-toc ul { list-style:disc; padding-left:22px; margin:16px 0 0; }
+.ar-toc li { margin:8px 0; font-size:16px; line-height:1.6; }
+.ar-toc li::marker { color:var(--accent); }
+.ar-toc a  { color:var(--txt-2); text-decoration:none; }
+.ar-toc a:hover { color:var(--accent-ink); }
+
+.ar-tags   { display:flex; flex-wrap:wrap; gap:8px; margin:34px 0 0; }
+.ar-tags a, .ar-tags span { border:1px solid var(--bdr); padding:6px 12px; text-decoration:none;
+             font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:11px; font-weight:600;
+             letter-spacing:.06em; text-transform:uppercase; color:var(--txt-2); }
+.ar-tags a:hover { border-color:var(--accent); color:var(--accent-ink); }
+.ar-tags-label { width:100%; font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:10px;
+             font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:var(--txt-3);
+             margin-bottom:2px; }
+
+.ar-authorbox { display:flex; gap:16px; align-items:flex-start; background:var(--bg-alt);
+             padding:22px; margin:36px 0 0; }
+.ar-authorbox p { font-size:13px; line-height:1.75; color:var(--txt-2); margin:6px 0 0; }
+
+/* Sidebar blocks */
+.ar-blockhead { display:flex; align-items:center; gap:10px; margin-bottom:18px; }
+.ar-blockhead i { width:4px; height:18px; background:var(--accent); display:block; }
+.ar-blockhead span { font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:10px; font-weight:700;
+             letter-spacing:.18em; text-transform:uppercase; color:var(--txt-3); }
+.ar-mini   { display:grid; grid-template-columns:84px 1fr; gap:12px; padding-bottom:14px;
+             margin-bottom:14px; border-bottom:1px solid var(--bdr-2); cursor:pointer;
+             text-decoration:none; color:inherit; }
+.ar-mini:last-child { border-bottom:none; padding-bottom:0; margin-bottom:0; }
+.ar-mini-img { display:block; width:100%; padding-bottom:56%; background-size:cover; background-position:center; }
+.ar-mini-title { display:block; font-weight:700; font-size:13px; line-height:1.45; margin:5px 0 3px;
+             color:var(--txt); text-wrap:pretty; }
+.ar-mini:hover .ar-mini-title { color:var(--accent-ink); }
+.ar-mini small { font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:10px; color:var(--txt-3); }
+/* Sidebar standings card. The header takes the CI pink, same as the site. */
+.ar-side-tbl { border:1px solid var(--bdr); }
+.ar-side-hd { background:var(--accent); color:var(--on-accent); padding:12px 16px;
+             font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:11px; font-weight:700;
+             letter-spacing:.16em; text-transform:uppercase; }
+.ar-side-row { display:flex; align-items:center; gap:10px; padding:9px 16px;
+             border-bottom:1px solid var(--bdr); font-size:13px; }
+.ar-side-row:last-child { border-bottom:none; }
+.ar-side-row em { font-family:"Chakra Petch","Space Grotesk",sans-serif; font-style:normal; font-weight:800;
+             font-size:12px; color:var(--txt-3); width:16px; flex-shrink:0; }
+.ar-side-row img { width:20px; height:20px; object-fit:contain; flex-shrink:0; }
+.ar-side-row span { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.ar-side-row b { margin-left:auto; font-family:"Chakra Petch","Space Grotesk",sans-serif;
+             font-variant-numeric:tabular-nums; }
+
+.ar-rgrid  { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:24px; }
+.ar-card   { display:block; cursor:pointer; transition:transform .2s; text-decoration:none; color:inherit; }
+.ar-card:hover { transform:translateY(-3px); }
+.ar-card .zoom { display:block; width:100%; background-size:cover;
+             background-position:center; box-shadow:var(--sh-1); }
+.ar-card h4 { font-weight:700; font-size:15px; line-height:1.45; margin:10px 0 6px; color:var(--txt); }
+.ar-card:hover h4 { color:var(--accent-ink); }
+.ar-card small { font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:11px; color:var(--txt-3); }
+
+/* บทความใหม่สุดที่ดึงเนื้อความเต็มมาไว้ (แสดงเป็นแถบข้อมูลใต้ breadcrumb) */
+.ar-datanote { display:flex; gap:10px; align-items:flex-start; flex-wrap:wrap;
+             font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:10px; font-weight:600;
+             letter-spacing:.06em; color:var(--txt-3); padding:10px 0 0; }
+.ar-datanote b { color:var(--txt-2); font-weight:700; }
+
+@media (max-width:1024px) {
+  .ar-shell { grid-template-columns:1fr; gap:40px; }
+  .ar-aside { position:static; }
+}
+@media (max-width:768px) {
+  .ar-title { font-size:32px; }
+  .ar-stand { font-size:17px; }
+  .ar-body h2:not(.ar-toc-head) { font-size:22px; }
+  .ar-body h3 { font-size:20px; }
+  .ar-body p, .ar-body li { font-size:16px; line-height:1.8; }
+  .ar-rgrid { grid-template-columns:1fr; gap:20px; }
+}

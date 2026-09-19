@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>บทความ · THE STANDARD SPORT</title>
+  <!-- หน้าบทความ แยกออกมาจาก index.html (เดิมมุมมองบทความอยู่ในไฟล์เดียวกับหน้าแรก)
+       อ่าน ?id=<post id> แล้วดึงข้อมูลจริงจาก
+         data/sport-posts.js    - metadata (หัวข้อ วันที่ ผู้เขียน แท็ก ภาพปก)
+         data/sport-articles.js - เนื้อความเต็ม (HTML ที่กรองแล้ว) ของ N บทความล่าสุด
+       หมายเหตุ: โค้ด Navbar/Footer ชุดเดียวกับ index.html (คัดลอกมาเพราะ Babel
+       โหลดสคริปต์ภายนอกผ่าน file:// ไม่ได้ ถ้าแยกเป็นไฟล์ .jsx หน้าจะเปิดดูในเครื่องไม่ขึ้น) -->
+  <script>
+    (function () {
+      try {
+        var raw = localStorage.getItem('tsdGate');
+        var s = raw ? JSON.parse(raw) : null;
+        var ok = s && typeof s.email === 'string' && s.exp > Date.now() &&
+          s.email.toLowerCase().endsWith('@thestandard.co');
+        if (!ok) document.documentElement.classList.add('tsd-locked');
+      } catch (e) {
+        document.documentElement.classList.add('tsd-locked');
+      }
+    })();
+  </script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <link rel="icon" type="image/png" href="uploads/favicon.png">
+  <link rel="apple-touch-icon" href="uploads/apple-touch-icon.png">
+  <meta name="theme-color" content="#0d0d0d">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,300;0,400;0,600;0,700;0,800;1,400&family=Noto+Serif+Thai:wght@300;400;600;700;800&family=Space+Grotesk:wght@400;500;600;700;800&family=Chakra+Petch:ital,wght@0,400;0,500;0,600;0,700;1,600;1,700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <link rel="stylesheet" href="assets/tsd-core.css">
+  <link rel="stylesheet" href="assets/tsd-article.css">
+
+  <script src="data/sport-posts.js"></script>
+  <script src="data/sport-articles.js"></script>
+</head>
+<body>
+
+<div id="tsd-gate">
+  <div id="tsd-gate-logo"><img src="uploads/logo-sport-lockup.png" alt="THE STANDARD SPORT"></div>
+  <p>หน้านี้จำกัดการเข้าถึงเฉพาะอีเมล @thestandard.co<br>กรุณาเข้าสู่ระบบด้วย Google เพื่อดูเนื้อหา</p>
+  <div id="tsd-gate-btn"></div>
+  <p id="tsd-gate-err"></p>
+</div>
+<button id="tsd-logout" onclick="tsdLogout()">ออกจากระบบ</button>
+<script src="assets/tsd-gate.js"></script>
+
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect, useMemo, useRef } = React;
+
+// ── ข้อมูล ────────────────────────────────────────────────────────────────────
+const POSTS = window.__TSD_POSTS__ || [];
+const ARTICLE_BODIES = window.__TSD_ARTICLES__ || {};   // { "<post id>": "html" }
+const DATA_META = (window.__TSD_STATS__ && window.__TSD_STATS__.meta) || null;
+
+// ตารางคะแนนตัวอย่างสำหรับ sidebar (ชุดดาต้าเป็นบทความ ไม่มีผลการแข่งขัน)
+const SIDE_LEAGUE = { label:"Premier League 2026-27", rows:[
+  { name:"Arsenal",    pts:10 }, { name:"Liverpool", pts:9 }, { name:"Chelsea", pts:8 },
+  { name:"Man City",   pts:7 },  { name:"Tottenham", pts:7 },
+]};
+
+// ── helpers ───────────────────────────────────────────────────────────────────
+const qs = (k) => new URLSearchParams(location.search).get(k);
+
+// เลือกบทความ: ใช้ ?id= ถ้ามีและรู้จัก ไม่งั้นเอาโพสต์ใหม่สุด
+function pickItem() {
+  const want = parseInt(qs('id'), 10);
+  if (want && POSTS.some(p => p.id === want)) return POSTS.find(p => p.id === want);
+  return POSTS[0] || null;
+}
+const bodyOf = (item) => (item && ARTICLE_BODIES[String(item.id)]) || "";
+
+// ระยะเวลาอ่าน: ประมาณจากจำนวนตัวอักษรของเนื้อความจริง
+function readMinutes(html) {
+  const text = (html || "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+  return Math.max(1, Math.round(text.length / 800));
+}
+
+// แยกย่อหน้าแรกออกมา เพื่อวางการ์ด "ประเด็นสำคัญ" ต่อท้าย (แบบเดียวกับของเดิม)
+function splitFirstParagraph(html) {
+  const i = html.indexOf("</p>");
+  if (i === -1) return ["", html];
+  return [html.slice(0, i + 4), html.slice(i + 4)];
+}
+const tagSearch = (name) => "https://thestandard.co/?s=" + encodeURIComponent(name);
+
+// ── Icons / ชิ้นส่วนที่ใช้ร่วมกับหน้าแรก ──────────────────────────────────────
+const IconMoon = () => <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>;
+const IconSun  = () => <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>;
+
+function LogoLockup({ height = 46 }) {
+  return <img src="uploads/logo-sport-lockup.png" alt="THE STANDARD SPORT"
+    style={{ height, width:"auto", display:"block", userSelect:"none" }} />;
+}
+function CatTag({ label }) {
+  return <span style={{ display:"inline-block", padding:"2px 9px", background:"#ffa5f7", color:"#0d0d0d", fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontWeight:700, fontSize:10, letterSpacing:"0.13em", textTransform:"uppercase" }}>{label}</span>;
+}
+
+// ── Navbar (ชุดเดียวกับ index.html) ──────────────────────────────────────────
+function Navbar({ dark, onToggleDark }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const items = ["Home","F1","FOOTBALL","VOLLEYBALL","GOLF","AROUND ESPORTS","TENNIS"];
+  const go = (item) => {
+    setMenuOpen(false);
+    if (item === "Home") location.href = "index.html";
+    else location.href = "index.html";   // หน้าแรกของหมวดยังไม่มี - กลับไปหน้าแรกก่อน
+  };
+  const HamIcon = () => menuOpen
+    ? <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    : <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M3 12h18M3 6h18M3 18h18"/></svg>;
+  return (
+    <nav style={{ position:"sticky", top:0, zIndex:100, background:"#0d0d0d", borderBottom:"1px solid rgba(255,255,255,.1)", boxShadow:"0 2px 10px rgba(0,0,0,.35)" }}>
+      <div style={{ position:"relative", display:"flex", alignItems:"center", justifyContent:"space-between", padding:"12px 32px", minHeight:76 }}>
+        <button className="nav-mob" onClick={()=>setMenuOpen(o=>!o)}
+          style={{ background:"none", border:"1px solid rgba(255,255,255,.22)", padding:"8px 10px", color:"rgba(255,255,255,.8)", display:"none", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+          <HamIcon />
+        </button>
+        <a href="index.html" aria-label="Home"
+          style={{ position:"absolute", left:"50%", transform:"translateX(-50%)", lineHeight:0 }}>
+          <LogoLockup height={52} />
+        </a>
+        <div style={{ display:"flex", gap:8, flexShrink:0, marginLeft:"auto" }}>
+          <button onClick={onToggleDark}
+            style={{ background:"none", border:"1px solid rgba(255,255,255,.22)", padding:"7px 10px", color:"rgba(255,255,255,.8)", display:"flex", alignItems:"center", justifyContent:"center", transition:"all 0.2s" }}
+            title={dark?"Light mode":"Dark mode"}>
+            {dark ? <IconSun /> : <IconMoon />}
+          </button>
+        </div>
+      </div>
+      <div className={`nav-desk${menuOpen?" open":""}`}
+        style={{ justifyContent:"center", borderTop:"1px solid rgba(255,255,255,.1)", background:"#0d0d0d" }}>
+        {items.map(item => (
+          <button key={item} onClick={()=>go(item)} style={{
+            background:"none", border:"none", padding:"0 20px", height:44,
+            fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontWeight:600, fontSize:14,
+            letterSpacing:"0.06em", textTransform:"uppercase",
+            color: item==="Home" ? "rgba(255,255,255,.55)" : "rgba(255,255,255,.55)",
+            borderBottom:"2px solid transparent", transition:"all 0.15s", whiteSpace:"nowrap", cursor:"pointer",
+          }}>{item}</button>
+        ))}
+      </div>
+    </nav>
+  );
+}
+
+// ── หัวใจของหน้านี้: บทความจริง ──────────────────────────────────────────────
+function Article({ font, item }) {
+  const ff = font === "serif" ? "Noto Serif Thai,serif" : "Sarabun,sans-serif";
+  const [prog, setProg] = useState(0);
+  const [barTop, setBarTop] = useState(0);
+  const [toc, setToc] = useState([]);
+  const [copied, setCopied] = useState(false);
+  const bodyRef = useRef(null);
+
+  const html = bodyOf(item);
+  const [firstPara, rest] = useMemo(() => splitFirstParagraph(html), [html]);
+  const shareUrl = item ? item.link : "";
+  const initial = ((item && item.author) || "?").trim().charAt(0);
+
+  // Progress bar นับเฉพาะเนื้อความ ไม่นับ footer
+  useEffect(() => {
+    const onScroll = () => {
+      const nav = document.querySelector("nav");
+      if (nav) setBarTop(Math.round(nav.getBoundingClientRect().bottom));
+      const el = bodyRef.current;
+      if (!el) return;
+      const start = el.getBoundingClientRect().top + window.scrollY;
+      const h = el.offsetHeight - window.innerHeight;
+      const p = h > 0 ? (window.scrollY - start) / h : (window.scrollY > start ? 1 : 0);
+      setProg(Math.max(0, Math.min(1, p)) * 100);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive:true });
+    window.addEventListener("resize", onScroll);
+    return () => { window.removeEventListener("scroll", onScroll); window.removeEventListener("resize", onScroll); };
+  }, [item]);
+
+  // ใส่ id ให้หัวข้อย่อยในเนื้อความจริง แล้วสร้างสารบัญจากหัวข้อเหล่านั้น
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    const el = bodyRef.current;
+    if (!el) { setToc([]); return; }
+    // ใส่ id ให้หัวข้อย่อยในเนื้อความจริง แล้วสร้างสารบัญจากหัวข้อเหล่านั้น
+    // (ยกเว้น .ar-toc-head ซึ่งเป็นหัวการ์ดสารบัญเอง ไม่ใช่หัวข้อของบทความ)
+    const heads = Array.from(el.querySelectorAll("h2:not(.ar-toc-head), h3"));
+    heads.forEach((h, i) => { h.id = "sec-" + i; });
+    el.querySelectorAll("img").forEach(img => {
+      img.loading = "lazy";
+      if (!img.getAttribute("decoding")) img.setAttribute("decoding", "async");
+      img.style.cursor = "zoom-in";
+    });
+    setToc(heads.map((h, i) => ({ id: "sec-" + i, text: h.textContent.trim() })));
+  }, [item]);
+
+  if (!item) return null;
+
+  const copyLink = () => {
+    const done = () => { setCopied(true); setTimeout(()=>setCopied(false), 1800); };
+    if (navigator.clipboard) navigator.clipboard.writeText(location.href).then(done, done);
+    else done();
+  };
+
+  return (
+    <div>
+      <div className="ar-prog" style={{ width: prog + "%", top: barTop }}></div>
+
+      <div className="rsp-wrap">
+        <nav className="ar-crumb" aria-label="เส้นทาง">
+          <a href="index.html" style={{ color:"inherit", textDecoration:"none" }}>Sport</a>
+          <span>/</span>
+          <a href={tagSearch(item.cat)} target="_blank" rel="noopener noreferrer" style={{ color:"inherit", textDecoration:"none" }}>{item.cat}</a>
+          <span>/</span>
+          <span className="ar-crumb-now">บทความ</span>
+        </nav>
+
+        <div className="ar-shell">
+          <article className="ar-main">
+            <div className="ar-kicker">
+              <CatTag label={item.cat} />
+              <span className="ar-date">{item.date}</span>
+              {html
+                ? <span className="ar-date" style={{ color:"var(--accent-ink)" }}>เนื้อความจริงจากเว็บ</span>
+                : <span className="ar-date">มีเฉพาะย่อหน้าเปิด</span>}
+            </div>
+
+            <h1 className="ar-title">{item.title}</h1>
+            {item.excerpt && <p className="ar-stand" style={{ fontFamily:ff }}>{item.excerpt}</p>}
+
+            <div className="ar-byline">
+              <div className="ar-avatar">{initial}</div>
+              <div>
+                <div className="ar-by-name">{item.author}</div>
+                <div className="ar-by-meta">{item.date} · อ่าน {readMinutes(html)} นาที</div>
+              </div>
+              <div className="ar-share">
+                <a href={"https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent(shareUrl)}
+                   target="_blank" rel="noopener noreferrer" aria-label="แชร์ Facebook">
+                  <svg viewBox="0 0 24 24" width="15" height="15"><path d="M15.5 8.2h-2a1 1 0 0 0-1 1v2.3h3l-.45 3.1H12.5V22h-3.1v-7.4H7.2v-3.1h2.2V9.2A4.1 4.1 0 0 1 13.5 5h2z" fill="currentColor"/></svg>
+                </a>
+                <a href={"https://x.com/intent/post?text=" + encodeURIComponent(item.title) + "&url=" + encodeURIComponent(shareUrl)}
+                   target="_blank" rel="noopener noreferrer" aria-label="แชร์ X">
+                  <svg viewBox="0 0 24 24" width="15" height="15"><path d="M4.4 3.4h4.2l4.1 5.6 4.7-5.6h2.3l-6 7.1 6.4 8.7h-4.2l-4.4-6-5 6H4.2l6.4-7.6z" fill="currentColor"/></svg>
+                </a>
+                <button type="button" aria-label="คัดลอกลิงก์" onClick={copyLink} title={copied ? "คัดลอกแล้ว" : "คัดลอกลิงก์"}>
+                  {copied
+                    ? <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M20 6L9 17l-5-5"/></svg>
+                    : <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                        <path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.5 1.5"/>
+                        <path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7L12 19"/>
+                      </svg>}
+                </button>
+              </div>
+            </div>
+
+            <figure className="ar-lead">
+              <span className="ar-lead-img" style={{ background:item.bg, paddingBottom:item.ratio || "52.3%" }}></span>
+              <figcaption>ภาพปก: THE STANDARD SPORT{item.img && item.img.startsWith("http") ? " (โหลดจากเว็บต้นทาง)" : ""}</figcaption>
+            </figure>
+
+            {html ? (
+              <>
+                <div className="ar-body" ref={bodyRef} style={{ fontFamily:ff }}>
+                  {firstPara && <div dangerouslySetInnerHTML={{ __html: firstPara }} />}
+
+                  {/* การ์ดสารบัญ สร้างจากหัวข้อย่อยจริงในเนื้อความ */}
+                  {toc.length > 1 && (
+                    <nav className="ar-toc" aria-labelledby="ar-toc-head">
+                      <h2 className="ar-toc-head" id="ar-toc-head">ในบทความนี้</h2>
+                      <ul>
+                        {toc.map(s => <li key={s.id}><a href={"#" + s.id}>{s.text || "(ไม่มีชื่อหัวข้อ)"}</a></li>)}
+                      </ul>
+                    </nav>
+                  )}
+
+                  <div dangerouslySetInnerHTML={{ __html: rest }} />
+                </div>
+
+                <a className="ar-orig" href={item.link} target="_blank" rel="noopener noreferrer">
+                  อ่านต้นฉบับบน thestandard.co <span aria-hidden="true">→</span>
+                </a>
+                <p className="ar-orig-note">
+                  เนื้อความด้านบนดึงมาจากบทความต้นฉบับโดยตรง (บทความใหม่สุด {DATA_META ? DATA_META.counts.postsWithBody : ""} ชิ้นมีเนื้อความเต็มในชุดข้อมูล)
+                  บทความเก่ากว่านั้นมีแค่ย่อหน้าเปิด กดปุ่มด้านบนเพื่ออ่านฉบับเต็มบนเว็บ
+                </p>
+              </>
+            ) : (
+              <div className="ar-body" ref={bodyRef} style={{ fontFamily:ff }}>
+                <div className="ar-nobody">
+                  <p><b>บทความนี้มีเฉพาะย่อหน้าเปิดในชุดข้อมูล</b></p>
+                  <p>สคริปต์ <code>scripts/build_data.py</code> ดึงเนื้อความเต็มมาเก็บไว้ {DATA_META ? DATA_META.counts.postsWithBody : ""} บทความใหม่สุด
+                     (ใช้ค่า <code>--articles</code> เพิ่มได้) ส่วนที่เหลือได้จาก CSV ซึ่งมีแค่ id/วันที่/หัวข้อ/ย่อหน้า/แท็ก</p>
+                  <p>{item.excerpt}</p>
+                </div>
+                <a className="ar-orig" href={item.link} target="_blank" rel="noopener noreferrer"
+                   style={{ marginTop:22 }}>
+                  อ่านต้นฉบับบน thestandard.co <span aria-hidden="true">→</span>
+                </a>
+              </div>
+            )}
+
+            {item.tags && item.tags.length > 0 && (
+              <div className="ar-tags">
+                <span className="ar-tags-label">แท็กจริงจากเว็บ</span>
+                {item.tags.map(t => (
+                  <a key={t} href={tagSearch(t)} target="_blank" rel="noopener noreferrer">{t}</a>
+                ))}
+              </div>
+            )}
+
+            <div className="ar-authorbox">
+              <div className="ar-avatar" style={{ width:48, height:48, fontSize:19 }}>{initial}</div>
+              <div>
+                <div className="ar-by-name">{item.author}</div>
+                <p style={{ fontFamily:ff }}>ผู้สื่อข่าวกีฬา THE STANDARD SPORT</p>
+              </div>
+            </div>
+          </article>
+
+          <aside className="ar-aside">
+            <div>
+              <div className="ar-blockhead"><i></i><span>Latest</span></div>
+              {POSTS.filter(n => n.id !== item.id).slice(0, 3).map(n => (
+                <a className="ar-mini" key={n.id} href={"article.html?id=" + n.id} style={{ textDecoration:"none", color:"inherit" }}>
+                  <span className="ar-mini-img" style={{ background:"url('" + (n.thumb || n.img) + "') center/cover no-repeat" }}></span>
+                  <span>
+                    <CatTag label={n.cat} />
+                    <span className="ar-mini-title" style={{ fontFamily:ff }}>{n.title}</span>
+                    <small>{n.date}</small>
+                  </span>
+                </a>
+              ))}
+            </div>
+
+            <div>
+              <div className="ar-blockhead"><i></i><span>Standings</span></div>
+              <div className="ar-side-tbl">
+                <div className="ar-side-hd">{SIDE_LEAGUE.label}</div>
+                {SIDE_LEAGUE.rows.map((t, i) => (
+                  <div className="ar-side-row" key={t.name}>
+                    <em>{i + 1}</em>
+                    <span style={{ fontFamily:ff }}>{t.name}</span>
+                    <b>{t.pts}</b>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </aside>
+        </div>
+
+        <RelatedStories font={ff} item={item} />
+
+        <div className="ar-datanote" style={{ paddingBottom:64 }}>
+          <span>ข้อมูลจาก</span>
+          {DATA_META && <b>{DATA_META.source.csv} + WordPress REST API (category Sport)</b>}
+          <span>·</span>
+          <span>ทั้งหมด {DATA_META ? DATA_META.counts.posts : 0} โพสต์ในชุดข้อมูลหน้าเว็บ ·
+            ช่วง {DATA_META ? DATA_META.counts.range[0] : ""} – {DATA_META ? DATA_META.counts.range[1] : ""} ·
+            สร้างเมื่อ {DATA_META ? String(DATA_META.generatedAt).slice(0,16).replace('T',' ') : ""}</span>
+          <span>·</span>
+          <a href={(DATA_META && DATA_META.source && DATA_META.source.categoryLink) || "https://thestandard.co/category/news/sport/"}
+             target="_blank" rel="noopener noreferrer" style={{ color:"var(--accent-ink)" }}>หมวด Sport บนเว็บจริง</a>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Related: จับคู่จากแท็กจริงที่ใช้ร่วมกันก่อน แล้วค่อยดูความใหม่ ─────────────
+function RelatedStories({ font, item }) {
+  const related = useMemo(() => {
+    const mine = new Set(item.tags || []);
+    return POSTS
+      .filter(n => n.id !== item.id)
+      .map(n => ({ n, score: (n.tags || []).filter(t => mine.has(t)).length }))
+      .sort((a, b) => (b.score - a.score) || (a.n.dateISO < b.n.dateISO ? 1 : -1))
+      .slice(0, 3)
+      .map(x => x.n);
+  }, [item]);
+
+  if (!related.length) return null;
+  return (
+    <div style={{ paddingBottom:48 }}>
+      <div className="ar-blockhead"><i></i><span>Related Stories · จับคู่จากแท็กเดียวกัน</span></div>
+      <div className="ar-rgrid">
+        {related.map(n => (
+          <a className="ar-card" key={n.id} href={"article.html?id=" + n.id}>
+            <span className="zoom" style={{ background:n.bg, paddingBottom: n.ratio || "52.3%" }}></span>
+            <h4 style={{ fontFamily:font }}>{n.title}</h4>
+            <small>{n.cat} · {n.date}</small>
+          </a>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ── Footer (ชุดเดียวกับ index.html) ──────────────────────────────────────────
+const SOCIALS = [
+  { label:"Facebook",  href:"https://www.facebook.com/thestandardsport",
+    icon:<svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 8.2h-2a1 1 0 0 0-1 1v2.3h3l-.45 3.1H12.5V22h-3.1v-7.4H7.2v-3.1h2.2V9.2A4.1 4.1 0 0 1 13.5 5h2z"/></svg> },
+  { label:"Instagram", href:"https://www.instagram.com/thestandardsport",
+    icon:<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9"><rect x="3.2" y="3.2" width="17.6" height="17.6" rx="5"/><circle cx="12" cy="12" r="4.1"/><circle cx="17.2" cy="6.9" r="1.25" fill="currentColor" stroke="none"/></svg> },
+  { label:"X",         href:"https://x.com/STANDARDsportth",
+    icon:<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.4 3.4h4.2l4.1 5.6 4.7-5.6h2.3l-6 7.1 6.4 8.7h-4.2l-4.4-6-5 6H4.2l6.4-7.6z"/></svg> },
+  { label:"TikTok",    href:"https://www.tiktok.com/@thestandardsport",
+    icon:<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M14.1 3.2v10.2a3.4 3.4 0 1 1-2.9-3.36"/><path d="M14.1 3.2c.35 2.5 1.95 4.1 4.6 4.35"/></svg> },
+];
+
+function SocialBtn({ s }) {
+  const [hov, setHov] = React.useState(false);
+  return (
+    <a href={s.href} target="_blank" rel="noopener noreferrer" title={s.label} aria-label={s.label}
+      style={{ display:"flex", alignItems:"center", justifyContent:"center", width:42, height:42,
+        background:hov?"#ffa5f7":"none",
+        border:`1px solid ${hov?"#ffa5f7":"rgba(255,255,255,0.22)"}`,
+        color:hov?"#0d0d0d":"rgba(255,255,255,0.72)",
+        transition:"all 0.18s", flexShrink:0, textDecoration:"none" }}
+      onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)}>
+      <span style={{ width:19, height:19, display:"flex" }}>{s.icon}</span>
+    </a>
+  );
+}
+
+function Footer() {
+  return (
+    <footer style={{ background:"#0d0d0d", borderTop:"1px solid rgba(255,255,255,0.06)" }}>
+      <div style={{ maxWidth:1280, margin:"0 auto", padding:"32px 40px 28px",
+        display:"flex", alignItems:"center", justifyContent:"space-between", gap:24, flexWrap:"wrap" }}>
+        <div>
+          <LogoLockup height={46} />
+          <div style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:10, color:"rgba(255,255,255,.3)", marginTop:12 }}>
+            © 2026 Website Prototype · <a href="index.html" style={{ color:"rgba(255,255,255,.45)" }}>กลับหน้าแรก</a>
+          </div>
+        </div>
+        <div style={{ display:"flex", gap:8, alignItems:"center" }}>
+          {SOCIALS.map(s => <SocialBtn key={s.label} s={s} />)}
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+// ── App ─────────────────────────────────────────────────────────────────────
+function App() {
+  const item = useMemo(pickItem, []);
+  const [font] = useState("serif");            // หน้าบทความใช้ serif ตามดีไซน์เดิม
+  const [dark, setDark] = useState(() => {
+    try { const s = localStorage.getItem('theme'); if (s) return s === 'dark'; } catch (e) {}
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  });
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', dark ? 'dark' : '');
+    try { localStorage.setItem('theme', dark ? 'dark' : 'light'); } catch (e) {}
+  }, [dark]);
+
+  useEffect(() => { if (item) document.title = item.title + ' · THE STANDARD SPORT'; }, [item]);
+
+  if (!item) {
+    return (
+      <div className="rsp-wrap" style={{ padding:"80px 0", fontFamily:"Sarabun,sans-serif" }}>
+        <b style={{ fontSize:18 }}>ไม่พบข้อมูลบทความ</b>
+        <p style={{ marginTop:10, lineHeight:1.7, color:"var(--txt-2)" }}>
+          ไฟล์ data/sport-posts.js ยังไม่ถูกสร้าง รัน <code>python3 scripts/build_data.py</code> ที่รากโปรเจกต์ก่อน
+          แล้วเปิด <a href="index.html">หน้าแรก</a> ใหม่
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <Navbar dark={dark} onToggleDark={()=>setDark(d=>!d)} />
+      <Article font={font} item={item} />
+      <Footer />
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>

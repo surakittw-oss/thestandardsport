@@ -6,7 +6,8 @@
   <title>THE STANDARD SPORT</title>
   <!-- Access gate: run before anything paints, so a visitor with no
        verified session never sees a flash of the real page. Mirrors the
-       same "no-flash" pattern used for dark-mode init on the WP plugin. -->
+       same "no-flash" pattern used for dark-mode init on the WP plugin.
+       (ยังฝัง inline เพราะต้องทำงานก่อน paint - ตัว logic เต็มอยู่ใน assets/tsd-gate.js) -->
   <script>
     (function () {
       try {
@@ -30,381 +31,16 @@
   <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
   <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
   <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
-  <style>
-    :root {
-      --bg:#ffffff; --bg-alt:#f6f6f6; --bg-card:#ffffff; --bg-row:#fafafa;
-      --txt:#0d0d0d; --txt-2:#4a4a4a; --txt-3:#8a8a8a; --txt-4:#b8b8b8;
-      --bdr:#e6e6e6; --bdr-2:#f1f1f1;
-      --accent:#ffa5f7;      /* CI pink — headline chips, fills, rules */
-      --on-accent:#0d0d0d;   /* text that sits on the CI pink */
-      --accent-ink:#d81b8f;  /* deeper pink for small text on white */
-      /* Soft lifted shadows (infographic card style) */
-      --sh-1:0 1px 2px rgba(13,13,13,.05), 0 2px 8px rgba(13,13,13,.055);
-      --sh-2:0 2px 6px rgba(13,13,13,.06), 0 10px 26px rgba(13,13,13,.08);
-      --sh-hi:0 6px 14px rgba(13,13,13,.09), 0 18px 40px rgba(13,13,13,.11);
-    }
-    [data-theme="dark"] {
-      --bg:#111111; --bg-alt:#181818; --bg-card:#1c1c1c; --bg-row:#202020;
-      --txt:#efefef; --txt-2:#cccccc; --txt-3:#8a8a8a; --txt-4:#5a5a5a;
-      --bdr:#2a2a2a; --bdr-2:#242424;
-      --accent-ink:#ffa5f7;  /* pink reads well on dark — use it directly */
-      --sh-1:0 1px 2px rgba(0,0,0,.4), 0 2px 8px rgba(0,0,0,.35);
-      --sh-2:0 2px 6px rgba(0,0,0,.45), 0 10px 26px rgba(0,0,0,.45);
-      --sh-hi:0 6px 14px rgba(0,0,0,.5), 0 18px 40px rgba(0,0,0,.55);
-    }
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-    body { font-family: Sarabun, sans-serif; background: var(--bg); color: var(--txt); -webkit-font-smoothing: antialiased; transition: background .25s, color .25s; }
-    button { cursor: pointer; }
-    ::-webkit-scrollbar { width: 4px; background: var(--bg-alt); }
-    ::-webkit-scrollbar-thumb { background: #ffa5f7; }
 
-    /* ── Access gate ─────────────────────────────────────────────── */
-    html.tsd-locked #root { display: none; }
-    #tsd-gate { display: none; position: fixed; inset: 0; z-index: 999999; background: var(--bg);
-      align-items: center; justify-content: center; flex-direction: column; gap: 16px; padding: 24px; text-align: center; }
-    html.tsd-locked #tsd-gate { display: flex; }
-    /* The lockup is a white mark made for the black menu bar — it needs a
-       dark plate behind it or it vanishes on the light gate background. */
-    #tsd-gate-logo { background: #0d0d0d; padding: 16px 26px; margin-bottom: 4px; }
-    #tsd-gate-logo img { height: 34px; width: auto; display: block; }
-    #tsd-gate p { color: var(--txt-2); font-size: 14px; line-height: 1.6; max-width: 320px; }
-    #tsd-gate-err { color: #d81b8f; font-size: 13px; display: none; max-width: 320px; }
-    #tsd-logout { display: none; position: fixed; right: 14px; bottom: 14px; z-index: 999998;
-      font-family: "Chakra Petch","Space Grotesk",sans-serif; font-size: 10px; font-weight: 700;
-      letter-spacing: .12em; text-transform: uppercase; color: var(--txt-3); background: var(--bg-card);
-      box-shadow: var(--sh-1); border: 1px solid var(--bdr); padding: 7px 12px; }
-    html:not(.tsd-locked) #tsd-logout { display: block; }
+  <!-- สไตล์ที่ใช้ร่วมกับหน้าบทความ (เดิมฝังอยู่ใน <style> ของไฟล์นี้ทั้งก้อน) -->
+  <link rel="stylesheet" href="assets/tsd-core.css">
 
-    /* ── Motion ──────────────────────────────────────────────────── */
-    /* 1. Cover zoom on hover — frame stays square, image moves inside */
-    .zoom-frame { overflow:hidden; }
-    .zoom-img   { position:absolute; inset:0; transition:transform .55s cubic-bezier(.2,.6,.2,1); will-change:transform; }
-    .zoom-frame:hover .zoom-img, .news-item:hover .zoom-img, article:hover .zoom-img { transform:scale(1.07); }
-    .news-item:hover h3, article:hover h2, article:hover h3 { color:var(--accent-ink); }
-    .news-item h3, article h2, article h3 { transition:color .18s ease; }
-    /* 2. Scroll reveal */
-    .reveal     { opacity:0; transform:translateY(18px); transition:opacity .6s ease, transform .6s cubic-bezier(.2,.6,.2,1); }
-    .reveal.in  { opacity:1; transform:none; }
-    /* 3. Count-up numbers use JS only — no styles needed beyond tabular figures */
-    [data-count] { font-variant-numeric:tabular-nums; }
-    /* 4. Speed streak — one pink sweep across the hero on first load */
-    .streak     { position:absolute; top:0; bottom:0; left:0; width:26%; z-index:2; pointer-events:none;
-                  background:#ffa5f7; opacity:.85; transform:skewX(-18deg) translateX(-300%);
-                  animation:fx-sweep 1.15s cubic-bezier(.7,0,.25,1) .15s forwards; }
-    @keyframes fx-sweep { to { transform:skewX(-18deg) translateX(500%); } }
-    /* Respect users who ask for less motion */
-    @media (prefers-reduced-motion: reduce) {
-      .zoom-img, .reveal { transition:none !important; }
-      .zoom-frame:hover .zoom-img, .news-item:hover .zoom-img, article:hover .zoom-img { transform:none; }
-      .reveal { opacity:1; transform:none; }
-      .streak { display:none; }
-      .ed-card { transition:none !important; }
-    }
-
-    /* ── Editorial system (label + hairline sections + display type) ─ */
-    /* CI heading chip — pink block, dark text (same lockup as the SPORT logo) */
-    .ed-label   { display:inline-block; background:var(--accent); color:var(--on-accent); font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:10px; font-weight:800; letter-spacing:.18em; text-transform:uppercase; padding:5px 12px; }
-    .ed-tag     { font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:10px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--txt-3); border:1px solid var(--bdr); padding:3px 9px; white-space:nowrap; }
-    .ed-head    { display:flex; align-items:center; justify-content:space-between; gap:16px; padding-bottom:14px; margin-bottom:20px; border-bottom:2px solid var(--accent); }
-    .ed-head-all { font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:11px; font-weight:700; letter-spacing:.08em; color:var(--txt-3); white-space:nowrap; text-decoration:none; }
-    .ed-head-all:hover { color:var(--accent-ink); }
-    .ed-rule    { width:56px; height:4px; background:var(--accent); }
-    .ed-display { font-family:"Chakra Petch","Space Grotesk",sans-serif; font-weight:800; text-transform:uppercase; line-height:.9; letter-spacing:-.025em; color:var(--txt); }
-    .ed-lede    { font-size:17px; line-height:1.65; color:var(--txt-2); }
-    /* Cards are separated by soft shadow, not borders (infographic style) */
-    .ed-card    { background:var(--bg-card); box-shadow:var(--sh-2); overflow:hidden; }
-    /* Full-bleed hero: the cover fills the whole band, headline sits on top of it */
-    .rsp-edhero    { position:relative; min-height:620px; display:flex; overflow:hidden; background:#0b0b0d; }
-    .ed-hero-cover { position:absolute; inset:0; background-size:cover !important; background-position:center !important; }
-    /* Bottom-weighted rather than a flat wash: a wash dark enough for the
-       headline also buried the photograph, so the darkness is concentrated
-       where the text sits and the top of the cover comes back. */
-    .ed-hero-scrim { position:absolute; inset:0; background:
-        linear-gradient(90deg, rgba(8,8,10,.78) 0%, rgba(8,8,10,.62) 32%, rgba(8,8,10,.28) 58%, rgba(8,8,10,.08) 100%),
-        linear-gradient(180deg, rgba(8,8,10,.10) 0%, transparent 28%, rgba(8,8,10,.38) 58%, rgba(8,8,10,.76) 100%); }
-    .ed-hero-text  { position:relative; z-index:1; display:flex; flex-direction:column; width:100%; max-width:1280px;
-                     padding:34px 56px 44px max(40px, calc((100vw - 1280px)/2 + 40px)); }
-    /* Hero copy always sits on the darkened cover, so it stays light in both themes */
-    .ed-hero-text .ed-display { color:#fff; text-shadow:0 2px 28px rgba(0,0,0,.45); }
-    .ed-hero-text .ed-lede    { color:rgba(255,255,255,.82); }
-    .ed-hero-text .ed-tag     { color:rgba(255,255,255,.72); border-color:rgba(255,255,255,.32); }
-    .ed-hero-note             { color:rgba(255,255,255,.6) !important; }
-    .ed-hero-note span        { border-color:rgba(255,255,255,.4) !important; color:rgba(255,255,255,.6) !important; }
-    .ed-hero-meta             { color:rgba(255,255,255,.55); }
-    .ed-hero-meta b           { color:#ffa5f7; font-weight:600; }
-    .ed-read { display:inline-flex; align-items:center; gap:10px; align-self:flex-start; margin-top:22px;
-               padding:11px 18px; background:var(--accent); color:#0d0d0d; text-decoration:none;
-               border:0; cursor:pointer;
-               font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:11px; font-weight:800;
-               letter-spacing:.08em; text-transform:uppercase; }
-    .ed-read:hover { background:#fff; color:#0d0d0d; }
-    @media (max-width:768px) {
-      .rsp-edhero    { min-height:520px; }
-      .ed-hero-scrim { background:linear-gradient(180deg, rgba(8,8,10,.58) 0%, rgba(8,8,10,.30) 32%, rgba(8,8,10,.55) 58%, rgba(8,8,10,.90) 100%); }
-      .ed-hero-text  { padding:24px 16px 32px; }
-    }
-    /* ── Responsive layout ─────────────────────────────────────── */
-    .rsp-wrap  { max-width:1280px; margin:0 auto; padding:0 40px; }
-    /* One page, one rhythm — the WordPress .tsd-wrap-flow. Sections used to sit
-       on alternating bands, which made each look like a separate widget. */
-    .rsp-flow  { padding-top:44px; padding-bottom:44px; }
-    .rsp-flow > *          { margin-top:44px; }
-    .rsp-flow > :first-child { margin-top:0; }
-    .rsp-picks-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:24px; }
-    .rsp-pick-card { min-width:0; }
-    .rsp-pick-meta { display:flex; justify-content:space-between; gap:8px; margin-bottom:7px;
-                     font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:10px;
-                     font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
-    .rsp-pick-meta span { color:var(--accent-ink); }
-    .rsp-pick-meta time { color:var(--txt-3); white-space:nowrap; }
-    .rsp-pick-card h3 { font-family:"Sarabun",system-ui,sans-serif; font-size:16px; line-height:1.35;
-                       font-weight:800; color:var(--txt); margin:0 0 7px; }
-    .rsp-pick-card p { font-family:"Sarabun",system-ui,sans-serif; font-size:12px; line-height:1.55;
-                       color:var(--txt-2); margin:0; display:-webkit-box; -webkit-line-clamp:2;
-                       -webkit-box-orient:vertical; overflow:hidden; }
-    /* Shorts strip: scrolls in the column, not edge to edge, with the accent
-       carried into the scrollbar so the rail reads as part of the design. */
-    .sh-strip  { display:flex; gap:16px; overflow-x:auto; padding-bottom:14px;
-                 scrollbar-width:thin; scrollbar-color:var(--accent) transparent; }
-    .sh-strip::-webkit-scrollbar { height:6px; }
-    .sh-strip::-webkit-scrollbar-track { background:transparent; }
-    .sh-strip::-webkit-scrollbar-thumb { background:var(--accent); border-radius:3px; }
-    .sh-strip::-webkit-scrollbar-thumb:hover { background:var(--accent-ink); }
-    .sh-card   { flex:0 0 120px; }
-    .rsp-hero  { display:grid; grid-template-columns:1fr 360px; gap:48px; align-items:start; }
-    .rsp-hgrid { display:grid; grid-template-columns:7fr 3fr; gap:20px; }
-    .rsp-ytmn  { display:grid; grid-template-columns:1.55fr 1fr; gap:28px; align-items:start; }
-    .rsp-ytbt  { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; margin-top:28px; }
-    .rsp-tbl   { overflow-x:auto; -webkit-overflow-scrolling:touch; }
-    @media (max-width:768px) {
-      .ed-tag    { font-size:10px; letter-spacing:.1em; }
-      .ed-head   { padding-bottom:12px; margin-bottom:16px; }
-      /* Comfortable touch targets on phones (44px guideline) */
-      nav button { min-height:44px; }
-      nav .nav-mob, nav button[title] { min-width:44px; }
-    }
-    .nav-mob   { display:none; }
-    .nav-desk  { display:flex; }
-
-    @media (max-width:1024px) {
-      .rsp-wrap  { padding:0 24px; }
-      .rsp-hero  { grid-template-columns:1fr 280px; gap:28px; }
-      .rsp-ytmn  { grid-template-columns:1.1fr 1fr; }
-      .rsp-ytbt  { grid-template-columns:repeat(2,1fr); }
-    }
-    @media (max-width:768px) {
-      .rsp-wrap  { padding:0 16px; }
-      .rsp-flow  { padding-top:28px; padding-bottom:28px; }
-      .rsp-flow > * { margin-top:28px; }
-      .sh-card   { flex-basis:104px; }
-      .rsp-hero  { grid-template-columns:1fr; }
-      .rsp-picks-grid { grid-template-columns:repeat(2,1fr); gap:22px 16px; }
-      .rsp-hgrid { grid-template-columns:1fr; }
-      .rsp-ytmn  { grid-template-columns:1fr; }
-      .rsp-ytbt  { grid-template-columns:repeat(2,1fr); }
-      .nav-mob   { display:flex !important; }
-      .nav-desk  { display:none !important; }
-      .nav-desk.open { display:flex !important; flex-direction:column; position:absolute; top:100%; left:0; right:0;
-        background:var(--bg); border-bottom:2px solid var(--accent); z-index:200; padding:8px 0; box-shadow:0 8px 32px rgba(0,0,0,.12); }
-    }
-    @media (max-width:480px) {
-      .rsp-picks-grid { grid-template-columns:1fr; }
-      .rsp-ytbt  { grid-template-columns:1fr; }
-    }
-    /* ── Article view ───────────────────────────────────────────
-       The single-article design from the WordPress skin. Prefixed ar- so it
-       cannot collide with the archive components above. */
-    .ar-prog   { position:fixed; left:0; height:3px; width:0;
-                 background:var(--accent); z-index:101; transition:width .08s linear; }
-    .ar-crumb  { display:flex; gap:8px; align-items:center; flex-wrap:wrap;
-                 font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:11px; font-weight:600;
-                 letter-spacing:.08em; text-transform:uppercase; color:var(--txt-3); padding:18px 0 0; }
-    .ar-crumb button { background:none; border:0; padding:0; cursor:pointer; font:inherit;
-                 letter-spacing:inherit; text-transform:inherit; color:inherit; }
-    .ar-crumb button:hover { color:var(--accent-ink); }
-    .ar-crumb-now { opacity:.6; }
-
-    /* Article column + sidebar. The sidebar sticks so the standings stay in
-       reach through a long read. */
-    .ar-shell  { display:grid; grid-template-columns:minmax(0,1fr) 320px; gap:56px;
-                 align-items:start; padding:32px 0 64px; }
-    .ar-main   { min-width:0; }
-    .ar-aside  { position:sticky; top:150px; display:flex; flex-direction:column; gap:32px; min-width:0; }
-
-    .ar-kicker { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
-    .ar-date   { font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:10px; font-weight:700;
-                 letter-spacing:.18em; text-transform:uppercase; color:var(--txt-3); }
-    .ar-title  { font-family:"Noto Serif Thai",Georgia,serif; font-weight:800; font-size:44px;
-                 line-height:1.25; letter-spacing:-.01em; margin:16px 0 18px; color:var(--txt); text-wrap:pretty; }
-    .ar-stand  { font-size:19px; line-height:1.8; color:var(--txt-2); max-width:44em; margin:0; text-wrap:pretty; }
-
-    .ar-byline { display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin:26px 0 0;
-                 padding:18px 0; border-top:1px solid var(--bdr); border-bottom:1px solid var(--bdr); }
-    .ar-avatar { width:40px; height:40px; border-radius:50%; flex-shrink:0;
-                 background:linear-gradient(135deg,var(--accent),#ff79c6);
-                 display:flex; align-items:center; justify-content:center;
-                 font-weight:700; font-size:16px; color:#0d0d0d; }
-    .ar-by-name{ font-family:"Chakra Petch","Space Grotesk",sans-serif; font-weight:600; font-size:13px; color:var(--txt); }
-    .ar-by-meta{ font-size:12px; color:var(--txt-3); margin-top:2px; }
-    .ar-share  { display:flex; gap:8px; margin-left:auto; }
-    .ar-share button { width:34px; height:34px; border:1px solid var(--bdr); background:none; padding:0;
-                 display:flex; align-items:center; justify-content:center; color:var(--txt-3); cursor:pointer;
-                 transition:color .15s, border-color .15s; }
-    .ar-share button:hover { border-color:var(--accent); color:var(--accent-ink); }
-
-    .ar-lead   { margin:28px 0; }
-    .ar-lead-img { display:block; width:100%; padding-bottom:52.3%; /* house cover 1200x628 */ background-size:cover; background-position:center; }
-    .ar-lead figcaption, .ar-body figcaption { font-size:12px; color:var(--txt-3); line-height:1.6; margin-top:10px; }
-
-    .ar-body   { max-width:44em; }
-    .ar-body p { font-size:17px; line-height:1.95; margin:0 0 26px; color:var(--txt); text-wrap:pretty; }
-    /* The section-heading bar: 12px CI rule, tinted ground. The contents card's
-       own heading is excluded — it is chrome, not prose, and was inheriting the
-       bar plus a 44px top margin inside the card. */
-    .ar-body h2:not(.ar-toc-head) { font-family:"Noto Serif Thai",Georgia,serif; font-weight:700; font-size:26px; line-height:1.4;
-                 margin:44px 0 18px; color:var(--txt); scroll-margin-top:140px;
-                 border-left:12px solid var(--accent); background:var(--bg-alt); padding:10px 14px; }
-    .ar-body blockquote { margin:36px 0; padding:0 0 0 26px; border-left:4px solid var(--accent); }
-    .ar-body blockquote p { font-family:"Noto Serif Thai",Georgia,serif; font-size:22px; line-height:1.6;
-                 font-weight:600; margin:0 0 12px; }
-    .ar-body blockquote cite { font-style:normal; font-family:"Chakra Petch","Space Grotesk",sans-serif;
-                 font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--txt-3); }
-
-    /* Contents card — sits after the opening paragraph, so the article still
-       opens in the writer's own words. */
-    .ar-toc    { background:var(--bg-card); box-shadow:var(--sh-2); padding:20px 22px; margin:34px 0; }
-    .ar-toc-head { font-family:"Chakra Petch","Space Grotesk",sans-serif; font-weight:700; font-size:20px;
-                 line-height:1.3; margin:0; color:var(--txt); }
-    .ar-toc-head::after { content:""; display:block; height:6px; background:var(--accent); margin-top:8px; }
-    .ar-toc ul { list-style:disc; padding-left:22px; margin:16px 0 0; }
-    .ar-toc li { margin:8px 0; font-size:16px; line-height:1.6; }
-    .ar-toc li::marker { color:var(--accent); }
-    .ar-toc a  { color:var(--txt-2); text-decoration:none; }
-    .ar-toc a:hover { color:var(--accent-ink); }
-
-    .ar-tags   { display:flex; flex-wrap:wrap; gap:8px; margin:34px 0 0; }
-    .ar-tags span { border:1px solid var(--bdr); padding:6px 12px;
-                 font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:11px; font-weight:600;
-                 letter-spacing:.06em; text-transform:uppercase; color:var(--txt-2); }
-
-    .ar-authorbox { display:flex; gap:16px; align-items:flex-start; background:var(--bg-alt);
-                 padding:22px; margin:36px 0 0; }
-    .ar-authorbox p { font-size:13px; line-height:1.75; color:var(--txt-2); margin:6px 0 0; }
-
-    /* Sidebar blocks */
-    .ar-blockhead { display:flex; align-items:center; gap:10px; margin-bottom:18px; }
-    .ar-blockhead i { width:4px; height:18px; background:var(--accent); display:block; }
-    .ar-blockhead span { font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:10px; font-weight:700;
-                 letter-spacing:.18em; text-transform:uppercase; color:var(--txt-3); }
-    .ar-mini   { display:grid; grid-template-columns:84px 1fr; gap:12px; padding-bottom:14px;
-                 margin-bottom:14px; border-bottom:1px solid var(--bdr-2); cursor:pointer; }
-    .ar-mini:last-child { border-bottom:none; padding-bottom:0; margin-bottom:0; }
-    .ar-mini-img { display:block; width:100%; padding-bottom:56%; background-size:cover; background-position:center; }
-    .ar-mini-title { display:block; font-weight:700; font-size:13px; line-height:1.45; margin:5px 0 3px;
-                 color:var(--txt); text-wrap:pretty; }
-    .ar-mini:hover .ar-mini-title { color:var(--accent-ink); }
-    .ar-mini small { font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:10px; color:var(--txt-3); }
-    /* Sidebar standings card. The header takes the CI pink, same as the site. */
-    .ar-side-tbl { border:1px solid var(--bdr); }
-    .ar-side-hd { background:var(--accent); color:var(--on-accent); padding:12px 16px;
-                 font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:11px; font-weight:700;
-                 letter-spacing:.16em; text-transform:uppercase; }
-    .ar-side-row { display:flex; align-items:center; gap:10px; padding:9px 16px;
-                 border-bottom:1px solid var(--bdr); font-size:13px; }
-    .ar-side-row:last-child { border-bottom:none; }
-    .ar-side-row em { font-family:"Chakra Petch","Space Grotesk",sans-serif; font-style:normal; font-weight:800;
-                 font-size:12px; color:var(--txt-3); width:16px; flex-shrink:0; }
-    .ar-side-row img { width:20px; height:20px; object-fit:contain; flex-shrink:0; }
-    .ar-side-row span { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-    .ar-side-row b { margin-left:auto; font-family:"Chakra Petch","Space Grotesk",sans-serif;
-                 font-variant-numeric:tabular-nums; }
-
-    .ar-rgrid  { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:24px; }
-    .ar-card   { display:block; cursor:pointer; transition:transform .2s; }
-    .ar-card:hover { transform:translateY(-3px); }
-    .ar-card .zoom { display:block; width:100%; padding-bottom:52.3%; background-size:cover;
-                 background-position:center; box-shadow:var(--sh-1); }
-    .ar-card h4 { font-weight:700; font-size:15px; line-height:1.45; margin:10px 0 6px; color:var(--txt); }
-    .ar-card:hover h4 { color:var(--accent-ink); }
-    .ar-card small { font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:11px; color:var(--txt-3); }
-
-    @media (max-width:1024px) {
-      .ar-shell { grid-template-columns:1fr; gap:40px; }
-      .ar-aside { position:static; }
-    }
-    @media (max-width:768px) {
-      .ar-title { font-size:32px; }
-      .ar-stand { font-size:17px; }
-      .ar-body h2:not(.ar-toc-head) { font-size:22px; }
-      .ar-rgrid { grid-template-columns:1fr; gap:20px; }
-    }
-
-    /* ── Standings + Latest News ───────────────────────────────
-       Mirrors the WordPress .tsd-scoreduo: a drawn card holding the table on the
-       left, a headline rail on the right. No dark band — the card sits inside
-       the reading column at its own size. */
-    .tsd-head   { display:flex; align-items:center; justify-content:space-between; gap:16px;
-                  padding-bottom:14px; margin-bottom:20px; border-bottom:2px solid var(--accent); }
-    .tsd-label  { display:inline-block; background:var(--accent); color:var(--on-accent);
-                  font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:10px; font-weight:700;
-                  letter-spacing:.18em; text-transform:uppercase; padding:5px 12px; }
-    .tsd-scoreduo { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.05fr); gap:40px; align-items:start; }
-    .tsd-rankcol, .tsd-newscol { min-width:0; }
-    .tsd-rankcard { border:1px solid var(--bdr); background:var(--card); padding:4px 20px 20px; }
-    .tsd-tabhead { padding:16px 0 0; }
-    .tsd-scoretitle { font-family:"Chakra Petch","Space Grotesk",sans-serif; font-weight:800; text-transform:uppercase;
-                  font-size:clamp(18px,2.4vw,26px); line-height:1.15; letter-spacing:-.01em; color:var(--txt); margin:0; }
-    .tsd-tabs  { display:flex; gap:3px; margin:14px 0 14px; border-bottom:1px solid var(--bdr); overflow-x:auto;
-                  scrollbar-width:thin; scrollbar-color:var(--accent) transparent; }
-    .tsd-tabs::-webkit-scrollbar { height:3px; }
-    .tsd-tabs::-webkit-scrollbar-thumb { background:var(--accent); }
-    .tsd-tab    { flex:0 0 auto; border:0; cursor:pointer; padding:9px 16px; background:none;
-                  color:var(--txt-3); border-bottom:2px solid transparent; margin-bottom:-1px;
-                  font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:12px; font-weight:700;
-                  letter-spacing:.08em; text-transform:uppercase; white-space:nowrap;
-                  transition:color .15s, border-color .15s; }
-    .tsd-tab:hover     { color:var(--txt); }
-    .tsd-tab.is-active { color:var(--txt); border-bottom-color:var(--accent); }
-    .tsd-standings-note { font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:11px; font-weight:700;
-                  letter-spacing:.1em; text-transform:uppercase; color:var(--txt-3); margin:0 0 14px; }
-    .tsd-tblwrap{ overflow-x:auto; -webkit-overflow-scrolling:touch;
-                  scrollbar-width:thin; scrollbar-color:var(--accent) transparent; }
-    .tsd-tblwrap::-webkit-scrollbar { height:6px; }
-    .tsd-tblwrap::-webkit-scrollbar-thumb { background:var(--accent); border-radius:3px; }
-    .tsd-tbl   { width:auto; border-collapse:collapse; min-width:min(100%,640px); margin:0 auto; }
-    .tsd-tbl th { font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:9.5px; font-weight:700;
-                  letter-spacing:.07em; text-transform:uppercase; color:var(--txt-3);
-                  text-align:right; padding:0 6px 9px; white-space:nowrap; }
-    .tsd-tbl th:first-child, .tsd-tbl th.is-name { text-align:left; }
-    .tsd-tbl td { font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:12px; color:var(--txt-2);
-                  text-align:right; padding:9px 6px; border-bottom:1px solid var(--bdr-2); white-space:nowrap; }
-    .tsd-tbl td:first-child { text-align:left; font-weight:700; color:var(--txt); width:34px; padding-left:8px; }
-    .tsd-tbl td.tsd-tbl-name { text-align:left; font-weight:700; color:var(--txt); white-space:normal; }
-    .tsd-tbl td:last-child { font-weight:700; color:var(--txt); }
-    .tsd-tbl tbody tr:hover td { background:var(--bg-row); }
-    .tsd-cell-name { display:inline-flex; align-items:center; gap:8px; }
-    .tsd-avatar-img.is-square.is-sm { width:24px; height:24px; object-fit:contain; flex:0 0 auto; display:block; border-radius:0; }
-    .tsd-mono  { width:24px; height:24px; flex:0 0 auto; display:flex; align-items:center; justify-content:center;
-                  background:var(--bg-alt); color:var(--txt-3);
-                  font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:11px; font-weight:800; }
-    .tsd-rail  { display:grid; grid-template-columns:1fr 1fr; gap:24px 22px; }
-    .tsd-railitem { display:grid; grid-template-columns:76px 1fr; gap:12px; align-items:start; min-width:0; text-decoration:none; }
-    .tsd-rail-img { display:block; height:56px; background:var(--bg-alt);
-                  background-size:cover !important; background-position:center !important; box-shadow:var(--sh-1); }
-    .tsd-rail-body { display:flex; flex-direction:column; gap:5px; min-width:0; }
-    .tsd-cm-cat { font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:10px; font-weight:700;
-                  letter-spacing:.12em; text-transform:uppercase; color:var(--accent-ink); }
-    .tsd-rail-title { font-weight:700; font-size:13px; line-height:1.42; color:var(--txt);
-                  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
-    .tsd-railitem:hover .tsd-rail-title { color:var(--accent-ink); }
-    @media (max-width:768px) {
-      .tsd-scoreduo { grid-template-columns:1fr; gap:32px; }
-      .tsd-rail    { grid-template-columns:1fr; gap:18px; }
-      .tsd-rankcard { padding:4px 14px 16px; }
-      .tsd-tbl th, .tsd-tbl td { padding-left:6px; padding-right:6px; }
-    }
-  </style>
+  <!-- ข้อมูลจริงจาก thestandard.co: 300 บทความล่าสุด (metadata)
+       เนื้อความเต็มอยู่ใน data/sport-articles.js ซึ่งหน้าบทความโหลดเอง
+       รีเฟรชด้วย scripts/build_data.py -->
+  <script src="data/sport-posts.js"></script>
+  <!-- Generated from the real THE STANDARD SPORT YouTube channel. Refresh with scripts/fetch_youtube.py. -->
+  <script src="uploads/youtube-data.js"></script>
 </head>
 <body>
 
@@ -417,107 +53,7 @@
   <p id="tsd-gate-err"></p>
 </div>
 <button id="tsd-logout" onclick="tsdLogout()">ออกจากระบบ</button>
-
-<script>
-(function () {
-  var CLIENT_ID = '854069548103-d459etq30iidinjm5u0pcj0p746o3q9h.apps.googleusercontent.com';
-  var ALLOWED_HD = 'thestandard.co';
-
-  function b64urlToBytes(b64url) {
-    var b64 = b64url.replace(/-/g, '+').replace(/_/g, '/');
-    b64 += '='.repeat((4 - (b64.length % 4)) % 4);
-    var bin = atob(b64);
-    var bytes = new Uint8Array(bin.length);
-    for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-    return bytes;
-  }
-  function b64urlToJson(b64url) {
-    return JSON.parse(new TextDecoder().decode(b64urlToBytes(b64url)));
-  }
-
-  // Verifies the id_token's RS256 signature against Google's own public
-  // keys (no secret involved — this is exactly what a server would check,
-  // just run in the browser with Web Crypto instead). This stops a forged
-  // token from being accepted; it does NOT stop someone with devtools
-  // access from just deleting the gate outright — no purely client-side
-  // check can, since the real page is already sitting in their browser.
-  // Good enough to keep the site out of casual/search-engine reach; not a
-  // substitute for real server-side auth if this ever holds sensitive data.
-  async function verifyGoogleIdToken(idToken) {
-    var parts = idToken.split('.');
-    if (parts.length !== 3) throw new Error('malformed token');
-    var header = b64urlToJson(parts[0]);
-    var payload = b64urlToJson(parts[1]);
-
-    var jwks = await fetch('https://www.googleapis.com/oauth2/v3/certs').then(function (r) { return r.json(); });
-    var jwk = jwks.keys.find(function (k) { return k.kid === header.kid; });
-    if (!jwk) throw new Error('unknown signing key');
-
-    var key = await crypto.subtle.importKey(
-      'jwk', jwk, { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' }, false, ['verify']
-    );
-    var data = new TextEncoder().encode(parts[0] + '.' + parts[1]);
-    var sig = b64urlToBytes(parts[2]);
-    var valid = await crypto.subtle.verify('RSASSA-PKCS1-v1_5', key, sig, data);
-    if (!valid) throw new Error('bad signature');
-
-    var now = Math.floor(Date.now() / 1000);
-    if (payload.exp < now) throw new Error('expired');
-    if (payload.aud !== CLIENT_ID) throw new Error('wrong audience');
-    if (payload.iss !== 'https://accounts.google.com' && payload.iss !== 'accounts.google.com') {
-      throw new Error('wrong issuer');
-    }
-    return payload;
-  }
-
-  function showError(msg) {
-    var el = document.getElementById('tsd-gate-err');
-    el.textContent = msg;
-    el.style.display = 'block';
-  }
-
-  window.tsdHandleCredential = async function (response) {
-    document.getElementById('tsd-gate-err').style.display = 'none';
-    try {
-      var payload = await verifyGoogleIdToken(response.credential);
-      var email = typeof payload.email === 'string' ? payload.email : '';
-      var domainOk = payload.email_verified === true &&
-        (payload.hd === ALLOWED_HD || email.toLowerCase().endsWith('@' + ALLOWED_HD));
-      if (!domainOk) {
-        showError('เข้าถึงได้เฉพาะอีเมล @' + ALLOWED_HD + ' เท่านั้น (บัญชีนี้คือ ' + (email || 'ไม่ทราบ') + ')');
-        return;
-      }
-      localStorage.setItem('tsdGate', JSON.stringify({
-        email: email,
-        exp: Date.now() + 7 * 24 * 60 * 60 * 1000,
-      }));
-      document.documentElement.classList.remove('tsd-locked');
-    } catch (e) {
-      showError('ยืนยันตัวตนกับ Google ไม่สำเร็จ กรุณาลองใหม่');
-    }
-  };
-
-  window.tsdLogout = function () {
-    localStorage.removeItem('tsdGate');
-    location.reload();
-  };
-
-  (function initButton() {
-    if (!window.google || !google.accounts || !google.accounts.id) {
-      setTimeout(initButton, 150); // gsi/client loads with async/defer
-      return;
-    }
-    google.accounts.id.initialize({
-      client_id: CLIENT_ID,
-      callback: window.tsdHandleCredential,
-      hd: ALLOWED_HD, // UI hint only — pre-filters the account chooser
-    });
-    google.accounts.id.renderButton(document.getElementById('tsd-gate-btn'), {
-      theme: 'outline', size: 'large', text: 'signin_with', shape: 'pill',
-    });
-  })();
-})();
-</script>
+<script src="assets/tsd-gate.js"></script>
 
 <div id="root"></div>
 
@@ -592,6 +128,24 @@ const IconYT     = () => <svg width="18" height="13" viewBox="0 0 18 13" fill="n
 const IconPlay   = ({ size=56 }) => <div style={{ width:size, height:size, borderRadius:"50%", background:"rgba(0,0,0,0.6)", display:"flex", alignItems:"center", justifyContent:"center" }}><svg width={size*0.4} height={size*0.4} viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg></div>;
 
 // ── Data ──────────────────────────────────────────────────────────────────────
+// ข่าวทุกชิ้นมาจาก data/sport-posts.js ซึ่งสร้างจากเว็บจริง (scripts/build_data.py)
+// ฟิลด์ที่หน้านี้ใช้: id, cat, date, author, bg (พื้นภาพ), title, excerpt, link, ratio
+// เดิมข่าว 10 ชิ้นเขียนตายไว้ในไฟล์นี้ และไม่มีลิงก์/แท็ก/ชื่อผู้เขียนจริง
+const POSTS = (typeof window !== 'undefined' && window.__TSD_POSTS__) || [];
+const DATA_META = (window.__TSD_STATS__ && window.__TSD_STATS__.meta) || null;
+// การ์ดทุกใบพาไปหน้าบทความของโพสต์นั้น (article.html อ่าน ?id= ตัวนี้)
+const openPost = (p) => { if (p && p.id) location.href = 'article.html?id=' + p.id; };
+window.tsdOpenPost = openPost;
+
+if (!POSTS.length) {
+  document.getElementById('root').innerHTML =
+    '<div style="max-width:640px;margin:80px auto;padding:0 24px;font-family:Sarabun,sans-serif">' +
+    '<b style="font-size:18px">ไม่พบข้อมูลข่าว</b>' +
+    '<p style="margin-top:10px;line-height:1.7;color:#4a4a4a">ไฟล์ data/sport-posts.js ยังไม่ถูกสร้าง ' +
+    'รัน <code>python3 scripts/build_data.py</code> ที่รากโปรเจกต์ก่อน แล้วเปิดหน้านี้ใหม่</p></div>';
+}
+
+// ตารางคะแนนยังเป็นข้อมูลตัวอย่าง - ชุดดาต้าที่ให้มาเป็น "บทความ" ไม่มีผลการแข่งขัน
 const STANDINGS = {
   premier: { label:"Premier League 2026-27", rows:[
     {name:"Arsenal",    mp:4,w:3,d:1, l:0, gf:9, ga:2, pts:10,logo:"https://crests.football-data.org/57.png"},
@@ -630,18 +184,6 @@ const STANDINGS = {
     {name:"Osasuna",        mp:38,w:11,d:9, l:18,gf:36,ga:54,pts:42},
   ]},
 };
-const NEWS = [
-  { id:1255535, cat:"Volleyball", hot:true, date:"16 ก.ย. 2026", author:"June Rapeepan", bg:"url('uploads/news/1255535.jpg') center/cover no-repeat", title:"โปรแกรมวอลเลย์บอลหญิงไทย เอเชียนเกมส์ 2026", excerpt:"🏐🇹🇭 โปรแกรมวอลเลย์บอลหญิงไทย เอเชียนเกมส์ 2026 วันนี้ทีมวอลเลย์บอลหญิงไทยลงสนามนัดแรกในศึกเอเชียนเกมส์ 2026 พบกับมองโกเลีย เวลา 14.00 น. ที่ Okazaki…" },
-  { id:1255360, cat:"Tennis", hot:false, date:"15 ก.ย. 2026", author:"Surakitt Wongsuwan", bg:"url('uploads/news/1255360.jpg') center/cover no-repeat", title:"‘สิงห์’ เปิดบ้านยินดี ‘รวงข้าว’ ลัลนา หลังขยับขึ้นมือ 61 ของโลก", excerpt:"‘รวงข้าว’ ลัลนา ธาราฤดี นักเทนนิสหญิงไทย เข้าพบ ภูริต ภิรมย์ภักดี กรรมการผู้จัดการใหญ่ บริษัท บุญรอดบริวเวอรี่ จำกัด เพื่อขอบคุณสำหรับการสนับสนุน…" },
-  { id:1255202, cat:"Asian Games", hot:false, date:"15 ก.ย. 2026", author:"Surakitt Wongsuwan", bg:"url('uploads/news/1255202.jpg') center/cover no-repeat", title:"เฉลิมฉาน-ทัดดาว รับหน้าที่ถือธงไทย พาทัพเข้าสู่พิธีเปิดเอเชียนเกมส์ 2026", excerpt:"‘ต่อ’ เฉลิมฉาน ยศวิริยะพาณิชย์ นักกีฬาขี่ม้า และ ‘แนน’ ทัดดาว นึกแจ้ง นักวอลเลย์บอลหญิงทีมชาติไทย ได้รับเลือกให้เป็นผู้ถือธงชาติไทย…" },
-  { id:1255098, cat:"Asian Games", hot:false, date:"15 ก.ย. 2026", author:"Surakitt Wongsuwan", bg:"url('uploads/news/1255098.jpg') center/cover no-repeat", title:"เบื้องหลังเหรียญเอเชียนเกมส์ 2026 ทำไม ‘รอยแตก’ ถึงกลายเป็นดีไซน์แห่งความสำเร็จ", excerpt:"เหรียญรางวัลคือหนึ่งในสิ่งที่นักกีฬาทุกคนอยากคว้ากลับบ้านจากเอเชียนเกมส์ แต่สำหรับ Aichi-Nagoya 2026…" },
-  { id:1255071, cat:"Tennis", hot:false, date:"15 ก.ย. 2026", author:"June Rapeepan", bg:"url('uploads/news/1255071.jpg') center/cover no-repeat", title:"ยอโควิช หลุดมือวางท็อป 10 ของโลกครั้งแรกตั้งแต่ปี 2018", excerpt:"โนวัค ยอโควิช หลุดจากการเป็นมือวาง 10 อันดับแรกในการจัดอันดับโลกของ ATP นับตั้งแต่ปี 2018 หลังตกรอบแรกเทนนิส ยูเอสโอเพน 2026…" },
-  { id:1255054, cat:"F1", hot:false, date:"15 ก.ย. 2026", author:"Surakitt Wongsuwan", bg:"url('uploads/news/1255054.jpg') center/cover no-repeat", title:"มาดริงเตรียมปรับสนามปี 2027 หลังนักขับ F1 วิจารณ์แซงยาก", excerpt:"ฝ่ายจัดการแข่งขัน สแปนิช กรังด์ปรีซ์ เตรียมพิจารณาปรับเลย์เอาต์ของสนามมาดริงสำหรับฤดูกาลหน้า หลังการแข่งขัน F1…" },
-  { id:1254944, cat:"Cycling", hot:false, date:"15 ก.ย. 2026", author:"June Rapeepan", bg:"url('uploads/news/1254944.jpg') center/cover no-repeat", title:"6 กีฬาใหม่ในเอเชียนเกมส์ 2026 รู้จักกีฬาน้องใหม่ ที่เตรียมชิงเหรียญเป็นครั้งแรก", excerpt:"เอเชียนเกมส์ 2026 ที่ Aichi-Nagoya กำลังเปิดฉาก พร้อมกับการมาถึงของกีฬาใหม่ที่ถูกบรรจุเข้าสู่การแข่งขันเป็นครั้งแรก ตั้งแต่เทคบอล พาเดล และ MMA…" },
-  { id:1254920, cat:"Football", hot:false, date:"14 ก.ย. 2026", author:"Surakitt Wongsuwan", bg:"url('uploads/news/1254920.jpg') center/cover no-repeat", title:"ฟุตบอลหญิงไทย ต้านเจ้าภาพญี่ปุ่นไม่ไหว พ่าย 0-8 ประเดิมเอเชียนเกมส์ 2026", excerpt:"วันนี้ (14 กันยายน) ฟุตบอลหญิงทีมชาติไทย ลงสนามนัดแรกในศึกเอเชียนเกมส์ 2026 รอบแบ่งกลุ่ม กลุ่ม E พบกับเจ้าภาพญี่ปุ่น…" },
-  { id:1254830, cat:"Asian Games", hot:false, date:"14 ก.ย. 2026", author:"Surakitt Wongsuwan", bg:"url('uploads/news/1254830.jpg') center/cover no-repeat", title:"Aichi-Nagoya 2026 เบื้องหลังดีไซน์ ที่ทุกสีและทุกเส้น มีเรื่องราวของเจ้าภาพซ่อนอยู่", excerpt:"เหลืออีกเพียงไม่กี่วัน… เอเชียนเกมส์ 2026 กำลังเปิดฉากขึ้นที่ Aichi-Nagoya ประเทศญี่ปุ่น…" },
-  { id:1254726, cat:"F1", hot:false, date:"14 ก.ย. 2026", author:"Surakitt Wongsuwan", bg:"url('uploads/news/1254726.jpg') center/cover no-repeat", title:"World Constructors’ Championship Standings (Spanish GP 2026)", excerpt:"ตารางคะแนนสะสมประเภทผู้สร้าง (Constructors’ Championship) หลังจบ Spanish Grand Prix 2026 ที่ MADRING ยังคงเป็น Mercedes ที่นำเป็นจ่าฝูง หลัง คิมี…" },
-];
 
 // ── Components ────────────────────────────────────────────────────────────────
 // Official THE STANDARD SPORT lockup (supplied artwork, transparent PNG).
@@ -669,14 +211,16 @@ function SectionHead({ label, tag, action, actionHref }) {
 }
 // One chip everywhere: CI pink with dark text. The black variant this used to
 // carry read as a different kind of label rather than the same one.
-// The frame takes the picture's own shape instead of a fixed ratio. Fixed
-// frames looked tidy but trimmed ~10% off the house 1200x628 cover; these
-// backgrounds carry their dimensions in the URL, so read them from there.
+// The frame takes the picture's own shape instead of a fixed ratio — ข้อมูลจริง
+// ส่งสัดส่วนของภาพปกมาด้วย (p.ratio จาก media_details) จึงใช้ค่านั้นก่อน
 function coverRatio(bg, fallback) {
   const w = /[?&]w=(\d+)/.exec(bg || ""), h = /[?&]h=(\d+)/.exec(bg || "");
   if (!w || !h) { return (fallback || 56) + "%"; }
   return (Math.round((+h[1] / +w[1]) * 1000) / 10) + "%";
 }
+const ratioOf = (n) => n.ratio || coverRatio(n.bg, 56);
+// ภาพย่อ (thumb) ใช้กับช่องเล็ก ๆ อย่างรางข่าวข้าง - ประหยัดแบนด์วิดท์กว่าดึงภาพใหญ่ 1200px
+const bgThumb = (n) => "url('" + (n.thumb || n.img) + "') center/cover no-repeat";
 
 function CatTag({ label, hot }) {
   return <span style={{ display:"inline-block", padding:"2px 9px", background:"#ffa5f7", color:"#0d0d0d", fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontWeight:700, fontSize:10, letterSpacing:"0.13em", textTransform:"uppercase" }}>{label}</span>;
@@ -743,8 +287,9 @@ function Navbar({ font, dark, onToggleDark, onNavigate }) {
 // ── Hero Full ─────────────────────────────────────────────────────────────────
 function HeroFull({ font, onOpen }) {
   const ff = font==="serif"?"Noto Serif Thai,serif":"Sarabun,sans-serif";
-  const lead = NEWS[0];
+  const lead = POSTS[0];
   const open = (item) => onOpen && onOpen(item);
+  if (!lead) return null;
   return (
     <div style={{ background:"var(--bg)" }}>
 
@@ -759,8 +304,7 @@ function HeroFull({ font, onOpen }) {
           <div style={{ marginTop:"auto", padding:"38px 0" }}>
             {/* Was a hardcoded "Lando / Norris" — fixed text that only ever
                 matched one specific F1 story. Every field here now reads off
-                lead (NEWS[0]), so the hero follows whatever the array's
-                first story actually is. */}
+                lead (POSTS[0]), so the hero follows the newest story. */}
             <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:22, flexWrap:"wrap" }}>
               <span className="ed-label">{lead.cat}</span>
               <span className="ed-tag">{lead.date}</span>
@@ -787,11 +331,13 @@ function HeroFull({ font, onOpen }) {
 
         {/* ── Editor's Picks — four equal cards, matching WordPress ── */}
         <div className="rsp-picks">
-          <SectionHead label="Editor's Picks" action="ดูข่าวทั้งหมด" />
+          {/* เดิมปุ่มนี้ไม่ลิงก์ไปไหน ตอนนี้ชี้ไปหน้าหมวด Sport ของเว็บจริง */}
+          <SectionHead label="Editor's Picks" action="ดูข่าวกีฬาทั้งหมด"
+            actionHref={(DATA_META && DATA_META.source && DATA_META.source.categoryLink) || "https://thestandard.co/category/news/sport/"} />
           <div className="rsp-picks-grid">
-            {NEWS.slice(0,4).map(n => (
+            {POSTS.slice(0,4).map(n => (
               <article key={n.id} className="rsp-pick-card" style={{ cursor:"pointer" }} onClick={()=>open(n)}>
-                <div className="zoom-frame" style={{ position:"relative", paddingBottom:coverRatio(n.bg, 56), marginBottom:10, boxShadow:"var(--sh-1)" }}>
+                <div className="zoom-frame" style={{ position:"relative", paddingBottom:ratioOf(n), marginBottom:10, boxShadow:"var(--sh-1)" }}>
                   <div className="zoom-img" style={{ background:n.bg }} />
                 </div>
                 <div className="rsp-pick-meta"><span>{n.cat}</span><time>{n.date}</time></div>
@@ -811,21 +357,22 @@ function HeroFull({ font, onOpen }) {
 function HeroGrid({ font, onOpen }) {
   const ff = font==="serif"?"Noto Serif Thai,serif":"Sarabun,sans-serif";
   const open = (item) => onOpen && onOpen(item);
+  if (!POSTS.length) return null;
   return (
     <div style={{ background:"var(--bg)", borderBottom:"1px solid var(--bdr)" }}>
       <div className="rsp-wrap" style={{ padding:"28px 40px" }}><div className="rsp-hgrid">
-        <div style={{ cursor:"pointer" }} onClick={()=>open(NEWS[0])}>
-          <div style={{ position:"relative", paddingBottom:"52.33%", background:NEWS[0].bg, overflow:"hidden" }}>
+        <div style={{ cursor:"pointer" }} onClick={()=>open(POSTS[0])}>
+          <div style={{ position:"relative", paddingBottom:"52.33%", background:POSTS[0].bg, overflow:"hidden" }}>
             <div style={{ position:"absolute", inset:0, background:"linear-gradient(to top,rgba(0,0,0,0.82) 0%,rgba(0,0,0,0.15) 55%,transparent 100%)" }} />
             <div style={{ position:"absolute", bottom:24, left:24, right:24 }}>
-              <CatTag label={NEWS[0].cat} hot={true} />
-              <h2 style={{ fontFamily:ff, fontWeight:800, fontSize:26, color:"#fff", margin:"8px 0 8px", lineHeight:1.3 }}>{NEWS[0].title}</h2>
-              <p style={{ fontFamily:"Sarabun,sans-serif", fontSize:13, color:"rgba(255,255,255,0.6)", margin:0 }}>{NEWS[0].author} · {NEWS[0].date}</p>
+              <CatTag label={POSTS[0].cat} hot={true} />
+              <h2 style={{ fontFamily:ff, fontWeight:800, fontSize:26, color:"#fff", margin:"8px 0 8px", lineHeight:1.3 }}>{POSTS[0].title}</h2>
+              <p style={{ fontFamily:"Sarabun,sans-serif", fontSize:13, color:"rgba(255,255,255,0.6)", margin:0 }}>{POSTS[0].author} · {POSTS[0].date}</p>
             </div>
           </div>
         </div>
         <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
-          {NEWS.slice(1,4).map((n,i) => (
+          {POSTS.slice(1,4).map((n,i) => (
             <div key={n.id} onClick={()=>open(n)} style={{ display:"grid", gridTemplateColumns:"72px 1fr", gap:12, cursor:"pointer", paddingBottom:i<2?16:0, borderBottom:i<2?"1px solid var(--bdr)":"none" }}>
               <div style={{ position:"relative", paddingBottom:"52.33%", background:n.bg, flexShrink:0 }}></div>
               <div>
@@ -837,211 +384,6 @@ function HeroGrid({ font, onOpen }) {
           ))}
         </div>
       </div></div>
-    </div>
-  );
-}
-
-
-// ── Article view ──────────────────────────────────────────────────────────────
-// The single-article design from the WordPress skin: breadcrumb, serif headline,
-// byline, contents card after the opening paragraph, sticky sidebar with the
-// standings, and related stories. The body copy is written per category so the
-// prototype reads like a real page rather than lorem.
-const AR_BODY = {
-  lede: "ผลงานคืนนี้ไม่ได้เปลี่ยนแค่ตารางคะแนน แต่เปลี่ยนวิธีที่คู่แข่งทั้งสนามต้องวางแผนกับอีกสิบสนามที่เหลือ",
-  paras: [
-    "สิ่งที่เกิดขึ้นเมื่อคืนนี้ไม่ได้อยู่ในบทวิเคราะห์ของใครเลยก่อนเริ่มการแข่งขัน ทีมงานเองก็ยอมรับหลังจบว่าแผนที่เตรียมมาถูกฉีกทิ้งตั้งแต่รอบที่สิบ และสิ่งที่เหลือคือการตัดสินใจหน้างานล้วนๆ",
-    "ถ้าย้อนดูสถิติสามฤดูกาลหลัง จะเห็นรูปแบบเดิมซ้ำๆ คือผู้นำตารางมักทิ้งห่างตั้งแต่ช่วงกลางฤดูกาลแล้วรักษาระยะไว้จนจบ ปีนี้กลับไม่เป็นแบบนั้น",
-    "คำถามที่เหลือจึงไม่ใช่ว่าใครเร็วกว่ากัน แต่คือใครจะรักษาความสม่ำเสมอไว้ได้นานกว่าในสิบสนามสุดท้าย",
-  ],
-  sections: [
-    { id:"s1", h:"จุดเปลี่ยนอยู่ที่รอบกลาง",
-      p:["ช่วงที่ทุกอย่างพลิกคือจังหวะที่ทีมตัดสินใจเข้าพิตเร็วกว่าแผนเดิมสองรอบ เป็นการเสี่ยงที่ถ้าพลาดจะเสียตำแหน่งทันที แต่เมื่อออกมาแล้วพบว่าสภาพสนามเปลี่ยนไปในทางที่ได้เปรียบ ช่องว่างที่เคยตามอยู่ก็หายไปภายในห้ารอบ",
-         "หัวหน้าทีมยอมรับภายหลังว่าไม่ได้มีข้อมูลรองรับมากพอในตอนนั้น แต่เลือกเชื่อสิ่งที่นักแข่งรายงานกลับมาทางวิทยุ"] },
-    { id:"s2", h:"ตัวเลขที่บอกมากกว่าอันดับ",
-      p:["ถ้าดูเฉพาะอันดับสุดท้ายจะไม่เห็นภาพทั้งหมด สิ่งที่น่าสนใจกว่าคือความสม่ำเสมอของเวลาต่อรอบ ซึ่งแกว่งน้อยกว่าคู่แข่งอย่างมีนัยสำคัญตลอดทั้งการแข่งขัน",
-         "ความสม่ำเสมอแบบนี้มักเป็นตัวชี้วัดที่ดีกว่าความเร็วสูงสุด เพราะมันบอกว่าทีมเข้าใจรถของตัวเองมากพอจะทำซ้ำได้"] },
-    { id:"s3", h:"สิบสนามที่เหลือจะตัดสินอะไร",
-      p:["ปฏิทินช่วงท้ายฤดูกาลมีสนามที่ไม่เข้าทางอยู่อย่างน้อยสามแห่ง นั่นแปลว่าคะแนนที่สะสมไว้ตอนนี้จะกลายเป็นกันชนสำคัญ",
-         "และถ้าคู่แข่งยังทำแต้มได้สม่ำเสมอแบบนี้ ช่องว่างที่ดูปลอดภัยอยู่ตอนนี้อาจหดลงเร็วกว่าที่หลายคนคิด"] },
-  ],
-  quote: { t:"เราไม่ได้วางแผนมาแบบนี้ แต่พอโอกาสมาถึงก็ต้องคว้ามันไว้ก่อน", by:"หัวหน้าทีม" },
-  tags: ["สรุปผลการแข่งขัน", "วิเคราะห์", "ตารางคะแนน"],
-};
-
-function ArticleView({ font, item, onBack, onOpen }) {
-  const ff = font === "serif" ? "Noto Serif Thai,serif" : "Sarabun,sans-serif";
-  const [prog, setProg] = useState(0);
-  const [barTop, setBarTop] = useState(0);
-  const bodyRef = React.useRef(null);
-
-  // Reading progress across the body only — a bar that counts the footer as
-  // "article read" tells the reader nothing useful.
-  useEffect(() => {
-    const onScroll = () => {
-      const nav = document.querySelector("nav");
-      if (nav) { setBarTop(Math.round(nav.getBoundingClientRect().bottom)); }
-
-      const el = bodyRef.current;
-      if (!el) { return; }
-      // Progress across the body only — a bar that counts the footer as
-      // "article read" reaches 100% while there is still text on screen.
-      const start = el.getBoundingClientRect().top + window.scrollY;
-      const h = el.offsetHeight - window.innerHeight;
-      const p = h > 0 ? (window.scrollY - start) / h : (window.scrollY > start ? 1 : 0);
-      setProg(Math.max(0, Math.min(1, p)) * 100);
-    };
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive:true });
-    window.addEventListener("resize", onScroll);
-    return () => { window.removeEventListener("scroll", onScroll); window.removeEventListener("resize", onScroll); };
-  }, [item]);
-
-  useEffect(() => { window.scrollTo(0, 0); }, [item]);
-
-  const others = NEWS.filter(n => n.id !== item.id);
-  const initial = (item.author || "?").trim().charAt(0);
-  const league = STANDINGS.premier;
-  const top5 = league.rows.slice().sort((a,b) => b.pts - a.pts).slice(0, 5);
-
-  return (
-    <div>
-      <div className="ar-prog" style={{ width: prog + "%", top: barTop }}></div>
-
-      <div className="rsp-wrap">
-        <nav className="ar-crumb" aria-label="เส้นทาง">
-          <button type="button" onClick={onBack}>Sport</button>
-          <span>/</span>
-          <button type="button" onClick={onBack}>{item.cat}</button>
-          <span>/</span>
-          <span className="ar-crumb-now">บทความ</span>
-        </nav>
-
-        <div className="ar-shell">
-          <article className="ar-main">
-            <div className="ar-kicker">
-              <CatTag>{item.cat}</CatTag>
-              <span className="ar-date">{item.date}</span>
-            </div>
-
-            <h1 className="ar-title">{item.title}</h1>
-            <p className="ar-stand" style={{ fontFamily:ff }}>{AR_BODY.lede}</p>
-
-            <div className="ar-byline">
-              <div className="ar-avatar">{initial}</div>
-              <div>
-                <div className="ar-by-name">{item.author}</div>
-                <div className="ar-by-meta">{item.date} · อ่าน 4 นาที</div>
-              </div>
-              <div className="ar-share">
-                <button type="button" aria-label="แชร์ Facebook">
-                  <svg viewBox="0 0 24 24" width="15" height="15"><path d="M15.5 8.2h-2a1 1 0 0 0-1 1v2.3h3l-.45 3.1H12.5V22h-3.1v-7.4H7.2v-3.1h2.2V9.2A4.1 4.1 0 0 1 13.5 5h2z" fill="currentColor"/></svg>
-                </button>
-                <button type="button" aria-label="แชร์ X">
-                  <svg viewBox="0 0 24 24" width="15" height="15"><path d="M4.4 3.4h4.2l4.1 5.6 4.7-5.6h2.3l-6 7.1 6.4 8.7h-4.2l-4.4-6-5 6H4.2l6.4-7.6z" fill="currentColor"/></svg>
-                </button>
-                <button type="button" aria-label="คัดลอกลิงก์">
-                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                    <path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.5 1.5"/>
-                    <path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7L12 19"/>
-                  </svg>
-                </button>
-              </div>
-            </div>
-
-            <figure className="ar-lead">
-              <span className="ar-lead-img" style={{ background:item.bg }}></span>
-              <figcaption>ภาพ: THE STANDARD SPORT</figcaption>
-            </figure>
-
-            <div className="ar-body" ref={bodyRef} style={{ fontFamily:ff }}>
-              <p>{AR_BODY.paras[0]}</p>
-
-              {/* The contents card follows the opening paragraph, so the reader
-                  gets the story's own words before the map of what follows. */}
-              <nav className="ar-toc" aria-labelledby="ar-toc-head">
-                <h2 className="ar-toc-head" id="ar-toc-head">ประเด็นสำคัญ</h2>
-                <ul>
-                  {AR_BODY.sections.map(sec => (
-                    <li key={sec.id}><a href={"#" + sec.id}>{sec.h}</a></li>
-                  ))}
-                </ul>
-              </nav>
-
-              {AR_BODY.paras.slice(1).map((t,i) => <p key={i}>{t}</p>)}
-
-              {AR_BODY.sections.map((sec,i) => (
-                <React.Fragment key={sec.id}>
-                  <h2 id={sec.id}>{sec.h}</h2>
-                  {sec.p.map((t,j) => <p key={j}>{t}</p>)}
-                  {0 === i && (
-                    <blockquote>
-                      <p>“{AR_BODY.quote.t}”</p>
-                      <cite>{AR_BODY.quote.by}</cite>
-                    </blockquote>
-                  )}
-                </React.Fragment>
-              ))}
-            </div>
-
-            <div className="ar-tags">
-              {AR_BODY.tags.map(t => <span key={t}>{t}</span>)}
-            </div>
-
-            <div className="ar-authorbox">
-              <div className="ar-avatar" style={{ width:48, height:48, fontSize:19 }}>{initial}</div>
-              <div>
-                <div className="ar-by-name">{item.author}</div>
-                <p style={{ fontFamily:ff }}>ผู้สื่อข่าวกีฬา THE STANDARD SPORT ติดตามฟอร์มูลาวันและฟุตบอลยุโรป</p>
-              </div>
-            </div>
-          </article>
-
-          <aside className="ar-aside">
-            <div>
-              <div className="ar-blockhead"><i></i><span>Latest</span></div>
-              {others.slice(0,3).map(n => (
-                <div className="ar-mini" key={n.id} onClick={()=>onOpen(n)}>
-                  <span className="ar-mini-img" style={{ background:n.bg }}></span>
-                  <span>
-                    <CatTag>{n.cat}</CatTag>
-                    <span className="ar-mini-title" style={{ fontFamily:ff }}>{n.title}</span>
-                    <small>{n.date}</small>
-                  </span>
-                </div>
-              ))}
-            </div>
-
-            <div>
-              <div className="ar-blockhead"><i></i><span>Standings</span></div>
-              <div className="ar-side-tbl">
-                <div className="ar-side-hd">{league.label}</div>
-                {top5.map((t,i) => (
-                  <div className="ar-side-row" key={t.name}>
-                    <em>{i+1}</em>
-                    {t.logo && <img src={t.logo} alt="" width="20" height="20" loading="lazy" />}
-                    <span style={{ fontFamily:ff }}>{t.name}</span>
-                    <b>{t.pts}</b>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </aside>
-        </div>
-
-        <div style={{ paddingBottom:64 }}>
-          <div className="ar-blockhead"><i></i><span>Related Stories</span></div>
-          <div className="ar-rgrid">
-            {others.slice(0,3).map(n => (
-              <div className="ar-card" key={n.id} onClick={()=>onOpen(n)}>
-                <span className="zoom" style={{ background:n.bg }}></span>
-                <h4 style={{ fontFamily:ff }}>{n.title}</h4>
-                <small>{n.cat} · {n.date}</small>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
@@ -1064,7 +406,8 @@ function StandingsBand({ font, onOpen }) {
 
   const cols = ["Rank", "Club", "MP", "W", "D", "L", "GF", "GA", "GD", "Pts"];
   const hasCrests = rows.some(r => r.logo);
-  const rail = NEWS.slice(5, 11);
+  // Rail ข่าวล่าสุด: ใช้โพสต์ใหม่สุดถัดจากที่ hero (1) + picks (4) ใช้ไปแล้ว
+  const rail = POSTS.slice(4, 10);
 
   return (
     <section>
@@ -1088,7 +431,7 @@ function StandingsBand({ font, onOpen }) {
                 ))}
               </div>
             </div>
-            <p className="tsd-standings-note">ตารางคะแนน</p>
+            <p className="tsd-standings-note">ตารางคะแนน (ข้อมูลตัวอย่าง ไม่ได้มาจากชุดดาต้า)</p>
             <div className="tsd-tblwrap">
               <table className="tsd-tbl is-ranked">
                 <thead>
@@ -1135,9 +478,9 @@ function StandingsBand({ font, onOpen }) {
           </div>
           <div className="tsd-rail">
             {rail.map(p => (
-              <a key={p.id} className="tsd-railitem tsd-reveal" href="#"
+              <a key={p.id} className="tsd-railitem tsd-reveal" href={"article.html?id=" + p.id}
                  onClick={e=>{ e.preventDefault(); if (onOpen) onOpen(p); }}>
-                <span className="tsd-rail-img" style={{ background:p.bg }}></span>
+                <span className="tsd-rail-img" style={{ background:bgThumb(p) }}></span>
                 <span className="tsd-rail-body">
                   <span className="tsd-cm-cat">{p.cat}</span>
                   <span className="tsd-rail-title">{p.title}</span>
@@ -1184,6 +527,7 @@ function SocialBtn({ s }) {
 }
 
 function Footer() {
+  const meta = DATA_META;
   return (
     <footer style={{ background:"#0d0d0d", borderTop:"1px solid rgba(255,255,255,0.06)" }}>
       <div style={{ maxWidth:1280, margin:"0 auto", padding:"32px 40px 28px",
@@ -1193,6 +537,14 @@ function Footer() {
           <div style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:10, color:"rgba(255,255,255,.3)", marginTop:12 }}>
             © 2026 Website Prototype
           </div>
+          {/* บอกที่มาของข้อมูลให้ตรวจย้อนกลับได้ */}
+          {meta && (
+            <div style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:10, color:"rgba(255,255,255,.3)", marginTop:6, lineHeight:1.8 }}>
+              ข่าวจริงจาก thestandard.co (category Sport) {meta.counts.posts} โพสต์
+              ช่วง {meta.counts.range[0]} – {meta.counts.range[1]} · เนื้อความเต็ม {meta.counts.postsWithBody} บทความ<br />
+              ชุดดาต้า {meta.source.csv} · สร้างเมื่อ {String(meta.generatedAt).slice(0,16).replace('T',' ')}
+            </div>
+          )}
         </div>
         <div style={{ display:"flex", gap:8, alignItems:"center" }}>
           {SOCIALS.map(s => <SocialBtn key={s.label} s={s} />)}
@@ -1201,7 +553,7 @@ function Footer() {
     </footer>
   );
 }
-Object.assign(window, { Navbar, HeroFull, HeroGrid, StandingsBand, ArticleView, Footer, CatTag, SectionHead, LogoLockup });
+Object.assign(window, { Navbar, HeroFull, HeroGrid, StandingsBand, Footer, CatTag, SectionHead, LogoLockup });
 </script>
 
 <!-- ③ MAIN APP + YOUTUBE -->
@@ -1209,16 +561,16 @@ Object.assign(window, { Navbar, HeroFull, HeroGrid, StandingsBand, ArticleView, 
 const { useState: useS2, useEffect: useE2 } = React;
 
 // ── YouTube data ─────────────────────────────────────────────────────────────
-const YT_VIDEOS = [
+const YT_VIDEOS = (window.__YT_LIVE__?.videos || [
   { id:"REPLACE_VIDEO_ID_1", cat:"F1",       title:"สรุปผล Spanish GP 2026 · นอร์ริส คว้าชัยสมัยที่ 4",        date:"1 มิ.ย. 2026",  dur:"8:42",  views:"124K", bg:"url('https://images.unsplash.com/photo-1614949194403-9602bdc14a3a?w=1200&h=628&fit=crop&auto=format&q=80') center/cover no-repeat" },
   { id:"REPLACE_VIDEO_ID_2", cat:"F1",       title:"Monaco GP 2026 ไฮไลท์ · แฮมิลตัน คว้าชัยกับ Ferrari",     date:"25 พ.ค. 2026", dur:"12:15", views:"98K",  bg:"url('https://images.unsplash.com/photo-1475666675596-cca2035b3d79?w=1200&h=628&fit=crop&auto=format&q=80') center/cover no-repeat" },
   { id:"REPLACE_VIDEO_ID_3", cat:"Football", title:"อาร์เซนอล คว้าแชมป์ Premier League ไฮไลท์และฉากฉลอง",    date:"31 พ.ค. 2026", dur:"15:30", views:"87K",  bg:"url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=1200&h=628&fit=crop&auto=format&q=80') center/cover no-repeat" },
   { id:"REPLACE_VIDEO_ID_4", cat:"F1",       title:"F1 Season 2026 วิเคราะห์ใครจะคว้าแชมป์โลก",               date:"28 พ.ค. 2026", dur:"22:05", views:"210K", bg:"url('https://images.unsplash.com/photo-1604914834278-075720506483?w=1200&h=628&fit=crop&auto=format&q=80') center/cover no-repeat" },
   { id:"REPLACE_VIDEO_ID_5", cat:"Tennis",   title:"Roland Garros 2026 ไฮไลท์รอบก่อน SF",                     date:"29 พ.ค. 2026", dur:"9:18",  views:"55K",  bg:"url('https://images.unsplash.com/photo-1614743758466-e569f4791116?w=1200&h=628&fit=crop&auto=format&q=80') center/cover no-repeat" },
   { id:"REPLACE_VIDEO_ID_6", cat:"Football", title:"บุรีรัมย์ vs เมืองทอง 3-1 ไทยลีก สัปดาห์ที่ 24",          date:"31 พ.ค. 2026", dur:"7:44",  views:"43K",  bg:"url('https://images.unsplash.com/photo-1553778263-73a83bab9b0c?w=1200&h=628&fit=crop&auto=format&q=80') center/cover no-repeat" },
-];
+]).map(v => ({ ...v, bg: v.bg || `url('${v.thumbnail}') center/cover no-repeat`, date: v.date || "", dur: v.dur || "", views: v.views || "" }));
 
-const YT_SHORTS = [
+const YT_SHORTS = (window.__YT_LIVE__?.shorts || [
   { id:"SHORT_ID_1", title:"นอร์ริส ฉลองชัย Spanish GP",          views:"2.1M", bg:"url('https://images.unsplash.com/photo-1614949194403-9602bdc14a3a?w=400&h=711&fit=crop&auto=format&q=80') center/cover no-repeat" },
   { id:"SHORT_ID_2", title:"แฮมิลตัน Pole Position ล่าสุด",       views:"1.4M", bg:"url('https://images.unsplash.com/photo-1475666675596-cca2035b3d79?w=400&h=711&fit=crop&auto=format&q=80') center/cover no-repeat" },
   { id:"SHORT_ID_3", title:"บุรีรัมย์ ประตูสวย week 24",          views:"980K", bg:"url('https://images.unsplash.com/photo-1553778263-73a83bab9b0c?w=400&h=711&fit=crop&auto=format&q=80') center/cover no-repeat" },
@@ -1226,9 +578,9 @@ const YT_SHORTS = [
   { id:"SHORT_ID_5", title:"Verstappen เลี้ยวเข้าพิทสุดเร็ว",     views:"3.2M", bg:"url('https://images.unsplash.com/photo-1604914834278-075720506483?w=400&h=711&fit=crop&auto=format&q=80') center/cover no-repeat" },
   { id:"SHORT_ID_6", title:"ซินเสิร์ฟ ACE โรลอง การ์รอส",         views:"750K", bg:"url('https://images.unsplash.com/photo-1614743758466-e569f4791116?w=400&h=711&fit=crop&auto=format&q=80') center/cover no-repeat" },
   { id:"SHORT_ID_7", title:"Leclerc Onboard สนาม Monaco",        views:"2.6M", bg:"url('https://images.unsplash.com/photo-1475666675596-cca2035b3d79?w=400&h=711&fit=crop&auto=format&q=80') center/cover no-repeat" },
-];
+]).map(v => ({ ...v, bg: v.bg || `url('${v.thumbnail}') center/cover no-repeat`, date: v.date || "", dur: v.dur || "", views: v.views || "" }));
 
-// icon: YouTube Shorts lightning
+// ── YouTube UI helpers
 const IconShorts = () => (
   <svg width="14" height="20" viewBox="0 0 24 34" fill="none">
     <path d="M14 0L0 20h10L8 34 24 12h-10L14 0z" fill="currentColor"/>
@@ -1338,9 +690,8 @@ function YouTubeSection() {
 // ── App ─────────────────────────────────────────────────────────────────────
 function App() {
   const [t, setTweak] = window.useTweaks({ heroLayout:"full", fontStyle:"sans" });
-  // null = the archive. Opening a story swaps the page for the article design
-  // rather than routing, which keeps the prototype a single file.
-  const [article, setArticle] = useS2(null);
+  // หน้านี้เป็นหน้าแรก/คลังข่าวล้วน ๆ แล้ว - การเปิดบทความคือ "ไปหน้าอื่น"
+  // (article.html?id=...) ไม่ใช่สลับคอมโพเนนต์ในไฟล์เดียวแบบเดิม
   const [dark, setDark] = useS2(() => {
     try { const s=localStorage.getItem('theme'); if(s) return s==='dark'; } catch(e){}
     return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -1404,35 +755,25 @@ function App() {
   return (
     <div>
       <window.Navbar font={t.fontStyle} dark={dark} onToggleDark={()=>setDark(d=>!d)}
-                     onNavigate={()=>{ setArticle(null); window.scrollTo({ top:0, behavior:"smooth" }); }} />
-      {article ? (
-        <window.ArticleView font={t.fontStyle} item={article}
-                            onBack={()=>setArticle(null)} onOpen={setArticle} />
-      ) : (
-        <React.Fragment>
-          {t.heroLayout==="full"
-            ? <window.HeroFull font={t.fontStyle} onOpen={setArticle} />
-            : <window.HeroGrid font={t.fontStyle} onOpen={setArticle} />}
-          {/* Same running order the WordPress build ships with:
-              picks → standings → shorts → watch, all inside one reading column. */}
-          <div className="rsp-wrap rsp-flow">
-            <window.StandingsBand font={t.fontStyle} onOpen={setArticle} />
-            <ShortsSection />
-            <YouTubeSection />
-          </div>
-        </React.Fragment>
-      )}
+                     onNavigate={()=>window.scrollTo({ top:0, behavior:"smooth" })} />
+      <React.Fragment>
+        {t.heroLayout==="full"
+          ? <window.HeroFull font={t.fontStyle} onOpen={window.tsdOpenPost} />
+          : <window.HeroGrid font={t.fontStyle} onOpen={window.tsdOpenPost} />}
+        {/* Same running order the WordPress build ships with:
+            picks → standings → shorts → watch, all inside one reading column. */}
+        <div className="rsp-wrap rsp-flow">
+          <window.StandingsBand font={t.fontStyle} onOpen={window.tsdOpenPost} />
+          <ShortsSection />
+          <YouTubeSection />
+        </div>
+      </React.Fragment>
       <window.Footer />
       <window.TweaksPanel title="Tweaks">
         <window.TweakSection label="Hero Layout" />
         <window.TweakRadio label="Style" value={t.heroLayout} options={["full","grid"]} onChange={v=>setTweak("heroLayout",v)} />
         <window.TweakSection label="Typography" />
         <window.TweakRadio label="Font" value={t.fontStyle} options={["sans","serif"]} onChange={v=>setTweak("fontStyle",v)} />
-        <window.TweakSection label="Page" />
-        <window.TweakRadio label="View" value={article ? "article" : "archive"}
-                           options={["archive","article"]}
-                           onChange={v=>setArticle(v === "article" ? NEWS[0] : null)} />
-
       </window.TweaksPanel>
     </div>
   );

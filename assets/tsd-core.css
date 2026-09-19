@@ -1,0 +1,252 @@
+/* THE STANDARD SPORT - สไตล์ที่ใช้ร่วมกันทุกหน้า (index.html + article.html)
+   เดิมก้อนนี้อยู่ใน <style> ของ index.html ทั้งก้อน แยกออกมาเพื่อให้หน้าบทความ
+   ใช้ตัวตนเดียวกันได้โดยไม่ต้องคัดลอก
+   ลำดับ: tokens > base > motion > editorial > responsive > ตารางคะแนน */
+
+:root {
+  --bg:#ffffff; --bg-alt:#f6f6f6; --bg-card:#ffffff; --bg-row:#fafafa;
+  --txt:#0d0d0d; --txt-2:#4a4a4a; --txt-3:#8a8a8a; --txt-4:#b8b8b8;
+  --bdr:#e6e6e6; --bdr-2:#f1f1f1;
+  --accent:#ffa5f7;      /* CI pink — headline chips, fills, rules */
+  --on-accent:#0d0d0d;   /* text that sits on the CI pink */
+  --accent-ink:#d81b8f;  /* deeper pink for small text on white */
+  /* Soft lifted shadows (infographic card style) */
+  --sh-1:0 1px 2px rgba(13,13,13,.05), 0 2px 8px rgba(13,13,13,.055);
+  --sh-2:0 2px 6px rgba(13,13,13,.06), 0 10px 26px rgba(13,13,13,.08);
+  --sh-hi:0 6px 14px rgba(13,13,13,.09), 0 18px 40px rgba(13,13,13,.11);
+}
+[data-theme="dark"] {
+  --bg:#111111; --bg-alt:#181818; --bg-card:#1c1c1c; --bg-row:#202020;
+  --txt:#efefef; --txt-2:#cccccc; --txt-3:#8a8a8a; --txt-4:#5a5a5a;
+  --bdr:#2a2a2a; --bdr-2:#242424;
+  --accent-ink:#ffa5f7;  /* pink reads well on dark — use it directly */
+  --sh-1:0 1px 2px rgba(0,0,0,.4), 0 2px 8px rgba(0,0,0,.35);
+  --sh-2:0 2px 6px rgba(0,0,0,.45), 0 10px 26px rgba(0,0,0,.45);
+  --sh-hi:0 6px 14px rgba(0,0,0,.5), 0 18px 40px rgba(0,0,0,.55);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: Sarabun, sans-serif; background: var(--bg); color: var(--txt); -webkit-font-smoothing: antialiased; transition: background .25s, color .25s; }
+button { cursor: pointer; }
+::-webkit-scrollbar { width: 4px; background: var(--bg-alt); }
+::-webkit-scrollbar-thumb { background: #ffa5f7; }
+
+/* ── Access gate ─────────────────────────────────────────────── */
+html.tsd-locked #root { display: none; }
+#tsd-gate { display: none; position: fixed; inset: 0; z-index: 999999; background: var(--bg);
+  align-items: center; justify-content: center; flex-direction: column; gap: 16px; padding: 24px; text-align: center; }
+html.tsd-locked #tsd-gate { display: flex; }
+/* The lockup is a white mark made for the black menu bar — it needs a
+   dark plate behind it or it vanishes on the light gate background. */
+#tsd-gate-logo { background: #0d0d0d; padding: 16px 26px; margin-bottom: 4px; }
+#tsd-gate-logo img { height: 34px; width: auto; display: block; }
+#tsd-gate p { color: var(--txt-2); font-size: 14px; line-height: 1.6; max-width: 320px; }
+#tsd-gate-err { color: #d81b8f; font-size: 13px; display: none; max-width: 320px; }
+#tsd-logout { display: none; position: fixed; right: 14px; bottom: 14px; z-index: 999998;
+  font-family: "Chakra Petch","Space Grotesk",sans-serif; font-size: 10px; font-weight: 700;
+  letter-spacing: .12em; text-transform: uppercase; color: var(--txt-3); background: var(--bg-card);
+  box-shadow: var(--sh-1); border: 1px solid var(--bdr); padding: 7px 12px; }
+html:not(.tsd-locked) #tsd-logout { display: block; }
+
+/* ── Motion ──────────────────────────────────────────────────── */
+/* 1. Cover zoom on hover — frame stays square, image moves inside */
+.zoom-frame { overflow:hidden; }
+.zoom-img   { position:absolute; inset:0; transition:transform .55s cubic-bezier(.2,.6,.2,1); will-change:transform; }
+.zoom-frame:hover .zoom-img, .news-item:hover .zoom-img, article:hover .zoom-img { transform:scale(1.07); }
+.news-item:hover h3, article:hover h2, article:hover h3 { color:var(--accent-ink); }
+.news-item h3, article h2, article h3 { transition:color .18s ease; }
+/* 2. Scroll reveal */
+.reveal     { opacity:0; transform:translateY(18px); transition:opacity .6s ease, transform .6s cubic-bezier(.2,.6,.2,1); }
+.reveal.in  { opacity:1; transform:none; }
+/* 3. Count-up numbers use JS only — no styles needed beyond tabular figures */
+[data-count] { font-variant-numeric:tabular-nums; }
+/* 4. Speed streak — one pink sweep across the hero on first load */
+.streak     { position:absolute; top:0; bottom:0; left:0; width:26%; z-index:2; pointer-events:none;
+              background:#ffa5f7; opacity:.85; transform:skewX(-18deg) translateX(-300%);
+              animation:fx-sweep 1.15s cubic-bezier(.7,0,.25,1) .15s forwards; }
+@keyframes fx-sweep { to { transform:skewX(-18deg) translateX(500%); } }
+/* Respect users who ask for less motion */
+@media (prefers-reduced-motion: reduce) {
+  .zoom-img, .reveal { transition:none !important; }
+  .zoom-frame:hover .zoom-img, .news-item:hover .zoom-img, article:hover .zoom-img { transform:none; }
+  .reveal { opacity:1; transform:none; }
+  .streak { display:none; }
+  .ed-card { transition:none !important; }
+}
+
+/* ── Editorial system (label + hairline sections + display type) ─ */
+/* CI heading chip — pink block, dark text (same lockup as the SPORT logo) */
+.ed-label   { display:inline-block; background:var(--accent); color:var(--on-accent); font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:10px; font-weight:800; letter-spacing:.18em; text-transform:uppercase; padding:5px 12px; }
+.ed-tag     { font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:10px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--txt-3); border:1px solid var(--bdr); padding:3px 9px; white-space:nowrap; }
+.ed-head    { display:flex; align-items:center; justify-content:space-between; gap:16px; padding-bottom:14px; margin-bottom:20px; border-bottom:2px solid var(--accent); }
+.ed-head-all { font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:11px; font-weight:700; letter-spacing:.08em; color:var(--txt-3); white-space:nowrap; text-decoration:none; }
+.ed-head-all:hover { color:var(--accent-ink); }
+.ed-rule    { width:56px; height:4px; background:var(--accent); }
+.ed-display { font-family:"Chakra Petch","Space Grotesk",sans-serif; font-weight:800; text-transform:uppercase; line-height:.9; letter-spacing:-.025em; color:var(--txt); }
+.ed-lede    { font-size:17px; line-height:1.65; color:var(--txt-2); }
+/* Cards are separated by soft shadow, not borders (infographic style) */
+.ed-card    { background:var(--bg-card); box-shadow:var(--sh-2); overflow:hidden; }
+/* Full-bleed hero: the cover fills the whole band, headline sits on top of it */
+.rsp-edhero    { position:relative; min-height:620px; display:flex; overflow:hidden; background:#0b0b0d; }
+.ed-hero-cover { position:absolute; inset:0; background-size:cover !important; background-position:center !important; }
+/* Bottom-weighted rather than a flat wash: a wash dark enough for the
+   headline also buried the photograph, so the darkness is concentrated
+   where the text sits and the top of the cover comes back. */
+.ed-hero-scrim { position:absolute; inset:0; background:
+    linear-gradient(90deg, rgba(8,8,10,.78) 0%, rgba(8,8,10,.62) 32%, rgba(8,8,10,.28) 58%, rgba(8,8,10,.08) 100%),
+    linear-gradient(180deg, rgba(8,8,10,.10) 0%, transparent 28%, rgba(8,8,10,.38) 58%, rgba(8,8,10,.76) 100%); }
+.ed-hero-text  { position:relative; z-index:1; display:flex; flex-direction:column; width:100%; max-width:1280px;
+                 padding:34px 56px 44px max(40px, calc((100vw - 1280px)/2 + 40px)); }
+/* Hero copy always sits on the darkened cover, so it stays light in both themes */
+.ed-hero-text .ed-display { color:#fff; text-shadow:0 2px 28px rgba(0,0,0,.45); }
+.ed-hero-text .ed-lede    { color:rgba(255,255,255,.82); }
+.ed-hero-text .ed-tag     { color:rgba(255,255,255,.72); border-color:rgba(255,255,255,.32); }
+.ed-hero-note             { color:rgba(255,255,255,.6) !important; }
+.ed-hero-note span        { border-color:rgba(255,255,255,.4) !important; color:rgba(255,255,255,.6) !important; }
+.ed-hero-meta             { color:rgba(255,255,255,.55); }
+.ed-hero-meta b           { color:#ffa5f7; font-weight:600; }
+.ed-read { display:inline-flex; align-items:center; gap:10px; align-self:flex-start; margin-top:22px;
+           padding:11px 18px; background:var(--accent); color:#0d0d0d; text-decoration:none;
+           border:0; cursor:pointer;
+           font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:11px; font-weight:800;
+           letter-spacing:.08em; text-transform:uppercase; }
+.ed-read:hover { background:#fff; color:#0d0d0d; }
+@media (max-width:768px) {
+  .rsp-edhero    { min-height:520px; }
+  .ed-hero-scrim { background:linear-gradient(180deg, rgba(8,8,10,.58) 0%, rgba(8,8,10,.30) 32%, rgba(8,8,10,.55) 58%, rgba(8,8,10,.90) 100%); }
+  .ed-hero-text  { padding:24px 16px 32px; }
+}
+/* ── Responsive layout ─────────────────────────────────────── */
+.rsp-wrap  { max-width:1280px; margin:0 auto; padding:0 40px; }
+/* One page, one rhythm — the WordPress .tsd-wrap-flow. Sections used to sit
+   on alternating bands, which made each look like a separate widget. */
+.rsp-flow  { padding-top:44px; padding-bottom:44px; }
+.rsp-flow > *          { margin-top:44px; }
+.rsp-flow > :first-child { margin-top:0; }
+.rsp-picks-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:24px; }
+.rsp-pick-card { min-width:0; }
+.rsp-pick-meta { display:flex; justify-content:space-between; gap:8px; margin-bottom:7px;
+                 font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:10px;
+                 font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
+.rsp-pick-meta span { color:var(--accent-ink); }
+.rsp-pick-meta time { color:var(--txt-3); white-space:nowrap; }
+.rsp-pick-card h3 { font-family:"Sarabun",system-ui,sans-serif; font-size:16px; line-height:1.35;
+                   font-weight:800; color:var(--txt); margin:0 0 7px; }
+.rsp-pick-card p { font-family:"Sarabun",system-ui,sans-serif; font-size:12px; line-height:1.55;
+                   color:var(--txt-2); margin:0; display:-webkit-box; -webkit-line-clamp:2;
+                   -webkit-box-orient:vertical; overflow:hidden; }
+/* Shorts strip: scrolls in the column, not edge to edge, with the accent
+   carried into the scrollbar so the rail reads as part of the design. */
+.sh-strip  { display:flex; gap:16px; overflow-x:auto; padding-bottom:14px;
+             scrollbar-width:thin; scrollbar-color:var(--accent) transparent; }
+.sh-strip::-webkit-scrollbar { height:6px; }
+.sh-strip::-webkit-scrollbar-track { background:transparent; }
+.sh-strip::-webkit-scrollbar-thumb { background:var(--accent); border-radius:3px; }
+.sh-strip::-webkit-scrollbar-thumb:hover { background:var(--accent-ink); }
+.sh-card   { flex:0 0 120px; }
+.rsp-hero  { display:grid; grid-template-columns:1fr 360px; gap:48px; align-items:start; }
+.rsp-hgrid { display:grid; grid-template-columns:7fr 3fr; gap:20px; }
+.rsp-ytmn  { display:grid; grid-template-columns:1.55fr 1fr; gap:28px; align-items:start; }
+.rsp-ytbt  { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; margin-top:28px; }
+.rsp-tbl   { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+@media (max-width:768px) {
+  .ed-tag    { font-size:10px; letter-spacing:.1em; }
+  .ed-head   { padding-bottom:12px; margin-bottom:16px; }
+  /* Comfortable touch targets on phones (44px guideline) */
+  nav button { min-height:44px; }
+  nav .nav-mob, nav button[title] { min-width:44px; }
+}
+.nav-mob   { display:none; }
+.nav-desk  { display:flex; }
+
+@media (max-width:1024px) {
+  .rsp-wrap  { padding:0 24px; }
+  .rsp-hero  { grid-template-columns:1fr 280px; gap:28px; }
+  .rsp-ytmn  { grid-template-columns:1.1fr 1fr; }
+  .rsp-ytbt  { grid-template-columns:repeat(2,1fr); }
+}
+@media (max-width:768px) {
+  .rsp-wrap  { padding:0 16px; }
+  .rsp-flow  { padding-top:28px; padding-bottom:28px; }
+  .rsp-flow > * { margin-top:28px; }
+  .sh-card   { flex-basis:104px; }
+  .rsp-hero  { grid-template-columns:1fr; }
+  .rsp-picks-grid { grid-template-columns:repeat(2,1fr); gap:22px 16px; }
+  .rsp-hgrid { grid-template-columns:1fr; }
+  .rsp-ytmn  { grid-template-columns:1fr; }
+  .rsp-ytbt  { grid-template-columns:repeat(2,1fr); }
+  .nav-mob   { display:flex !important; }
+  .nav-desk  { display:none !important; }
+  .nav-desk.open { display:flex !important; flex-direction:column; position:absolute; top:100%; left:0; right:0;
+    background:var(--bg); border-bottom:2px solid var(--accent); z-index:200; padding:8px 0; box-shadow:0 8px 32px rgba(0,0,0,.12); }
+}
+@media (max-width:480px) {
+  .rsp-picks-grid { grid-template-columns:1fr; }
+  .rsp-ytbt  { grid-template-columns:1fr; }
+}
+
+/* ── Standings + Latest News ───────────────────────────────
+   Mirrors the WordPress .tsd-scoreduo: a drawn card holding the table on the
+   left, a headline rail on the right. No dark band — the card sits inside
+   the reading column at its own size. */
+.tsd-head   { display:flex; align-items:center; justify-content:space-between; gap:16px;
+              padding-bottom:14px; margin-bottom:20px; border-bottom:2px solid var(--accent); }
+.tsd-label  { display:inline-block; background:var(--accent); color:var(--on-accent);
+              font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:10px; font-weight:700;
+              letter-spacing:.18em; text-transform:uppercase; padding:5px 12px; }
+.tsd-scoreduo { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.05fr); gap:40px; align-items:start; }
+.tsd-rankcol, .tsd-newscol { min-width:0; }
+/* --card ไม่มีนิยามในไฟล์นี้ (ตัวจริงคือ --bg-card) เดิมพื้นการ์ดจึงโปร่งใส */
+.tsd-rankcard { border:1px solid var(--bdr); background:var(--bg-card); padding:4px 20px 20px; }
+.tsd-tabhead { padding:16px 0 0; }
+.tsd-scoretitle { font-family:"Chakra Petch","Space Grotesk",sans-serif; font-weight:800; text-transform:uppercase;
+              font-size:clamp(18px,2.4vw,26px); line-height:1.15; letter-spacing:-.01em; color:var(--txt); margin:0; }
+.tsd-tabs  { display:flex; gap:3px; margin:14px 0 14px; border-bottom:1px solid var(--bdr); overflow-x:auto;
+              scrollbar-width:thin; scrollbar-color:var(--accent) transparent; }
+.tsd-tabs::-webkit-scrollbar { height:3px; }
+.tsd-tabs::-webkit-scrollbar-thumb { background:var(--accent); }
+.tsd-tab    { flex:0 0 auto; border:0; cursor:pointer; padding:9px 16px; background:none;
+              color:var(--txt-3); border-bottom:2px solid transparent; margin-bottom:-1px;
+              font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:12px; font-weight:700;
+              letter-spacing:.08em; text-transform:uppercase; white-space:nowrap;
+              transition:color .15s, border-color .15s; }
+.tsd-tab:hover     { color:var(--txt); }
+.tsd-tab.is-active { color:var(--txt); border-bottom-color:var(--accent); }
+.tsd-standings-note { font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:11px; font-weight:700;
+              letter-spacing:.1em; text-transform:uppercase; color:var(--txt-3); margin:0 0 14px; }
+.tsd-tblwrap{ overflow-x:auto; -webkit-overflow-scrolling:touch;
+              scrollbar-width:thin; scrollbar-color:var(--accent) transparent; }
+.tsd-tblwrap::-webkit-scrollbar { height:6px; }
+.tsd-tblwrap::-webkit-scrollbar-thumb { background:var(--accent); border-radius:3px; }
+.tsd-tbl   { width:auto; border-collapse:collapse; min-width:min(100%,640px); margin:0 auto; }
+.tsd-tbl th { font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:9.5px; font-weight:700;
+              letter-spacing:.07em; text-transform:uppercase; color:var(--txt-3);
+              text-align:right; padding:0 6px 9px; white-space:nowrap; }
+.tsd-tbl th:first-child, .tsd-tbl th.is-name { text-align:left; }
+.tsd-tbl td { font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:12px; color:var(--txt-2);
+              text-align:right; padding:9px 6px; border-bottom:1px solid var(--bdr-2); white-space:nowrap; }
+.tsd-tbl td:first-child { text-align:left; font-weight:700; color:var(--txt); width:34px; padding-left:8px; }
+.tsd-tbl td.tsd-tbl-name { text-align:left; font-weight:700; color:var(--txt); white-space:normal; }
+.tsd-tbl td:last-child { font-weight:700; color:var(--txt); }
+.tsd-tbl tbody tr:hover td { background:var(--bg-row); }
+.tsd-cell-name { display:inline-flex; align-items:center; gap:8px; }
+.tsd-avatar-img.is-square.is-sm { width:24px; height:24px; object-fit:contain; flex:0 0 auto; display:block; border-radius:0; }
+.tsd-mono  { width:24px; height:24px; flex:0 0 auto; display:flex; align-items:center; justify-content:center;
+              background:var(--bg-alt); color:var(--txt-3);
+              font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:11px; font-weight:800; }
+.tsd-rail  { display:grid; grid-template-columns:1fr 1fr; gap:24px 22px; }
+.tsd-railitem { display:grid; grid-template-columns:76px 1fr; gap:12px; align-items:start; min-width:0; text-decoration:none; }
+.tsd-rail-img { display:block; height:56px; background:var(--bg-alt);
+              background-size:cover !important; background-position:center !important; box-shadow:var(--sh-1); }
+.tsd-rail-body { display:flex; flex-direction:column; gap:5px; min-width:0; }
+.tsd-cm-cat { font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:10px; font-weight:700;
+              letter-spacing:.12em; text-transform:uppercase; color:var(--accent-ink); }
+.tsd-rail-title { font-weight:700; font-size:13px; line-height:1.42; color:var(--txt);
+              display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.tsd-railitem:hover .tsd-rail-title { color:var(--accent-ink); }
+@media (max-width:768px) {
+  .tsd-scoreduo { grid-template-columns:1fr; gap:32px; }
+  .tsd-rail    { grid-template-columns:1fr; gap:18px; }
+  .tsd-rankcard { padding:4px 14px 16px; }
+  .tsd-tbl th, .tsd-tbl td { padding-left:6px; padding-right:6px; }
+}
