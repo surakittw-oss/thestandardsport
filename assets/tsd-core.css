@@ -110,8 +110,9 @@ html:not(.tsd-locked) #tsd-logout { display:block; }
 .tsdx-nav { position:fixed; top:0; left:0; right:0; z-index:400;
             background:transparent; border-bottom:1px solid transparent;
             transition:background .3s, border-color .3s; }
-/* ทึบไปเลย ไม่ใช่ดำโปร่ง — ภาพข่าวที่ไหลผ่านใต้แถบทำให้ตัวเมนูอ่านยาก */
-.tsdx-nav.is-stuck { background:var(--bg); border-bottom-color:var(--bdr-2); }
+/* แถบดำทึบเสมอ ไม่ผูกกับธีม — เป็นแถบแบรนด์ ไม่ใช่พื้นหน้า
+   (ใช้ var(--bg) ไม่ได้ เพราะโหมดกระดาษจะทำให้แถบกลายเป็นสีขาว) */
+.tsdx-nav.is-stuck { background:#08080a; border-bottom-color:rgba(255,255,255,.1); }
 /* nav อยู่บนภาพ hero เสมอ ตัวหนังสือจึงขาวตลอดจนกว่าจะ stuck ในโหมดกระดาษ
    แถบนี้กินเต็มความกว้างจอ ไม่หุบตามคอลัมน์อ่าน โลโก้จึงชิดขอบซ้ายจริง ๆ
    และเมนูมีที่พอให้วางกลางโดยไม่ต้องบีบตัวอักษร */
@@ -121,11 +122,7 @@ html:not(.tsd-locked) #tsd-logout { display:block; }
 .tsdx-navtools { margin-left:auto; display:flex; align-items:center; gap:6px; }
 .tsdx-iconbtn { width:38px; height:38px; display:flex; align-items:center; justify-content:center;
                 background:none; border:1px solid transparent; color:#fff; transition:border-color .15s, color .15s; }
-.tsdx-iconbtn:hover { border-color:var(--bdr); color:var(--accent-ink); }
-[data-theme="light"] .tsdx-nav.is-stuck .tsdx-iconbtn { color:var(--txt); }
-/* ตอนยังไม่ stuck แถบลอยอยู่บนภาพ hero ที่มืดเสมอ ใช้ชมพู CI ตัวสว่างได้ */
-.tsdx-nav:not(.is-stuck) .tsdx-iconbtn:hover,
-.tsdx-nav:not(.is-stuck) .nav-dd-top:hover { color:var(--accent); }
+.tsdx-iconbtn:hover { border-color:rgba(255,255,255,.2); color:var(--accent); }
 
 .nav-bar { display:flex; align-items:center; flex:1; min-width:0; }
 .nav-items { display:flex; align-items:center; margin:0 auto; }
@@ -134,9 +131,7 @@ html:not(.tsd-locked) #tsd-logout { display:block; }
               text-decoration:none; white-space:nowrap; color:#fff;
               font-family:var(--f-body); font-size:16px; font-weight:400; letter-spacing:0;
               transition:color .15s, opacity .15s; }
-.nav-dd-top:hover, .nav-dd.open .nav-dd-top { color:var(--accent-ink); }
-[data-theme="light"] .tsdx-nav.is-stuck .nav-dd-top { color:var(--txt-2); }
-[data-theme="light"] .tsdx-nav.is-stuck .nav-dd-top:hover { color:var(--accent-ink); }
+.nav-dd-top:hover, .nav-dd.open .nav-dd-top { color:var(--accent); }
 .nav-caret { font-size:8px; line-height:1; opacity:.45; transition:transform .15s; }
 .nav-dd.open .nav-caret { transform:rotate(180deg); opacity:1; }
 .nav-live-dot { width:5px; height:5px; border-radius:50%; background:var(--accent); flex:0 0 auto;
@@ -146,21 +141,21 @@ html:not(.tsd-locked) #tsd-logout { display:block; }
 .nav-dd-panel { display:none; position:absolute; top:100%; left:0; right:0; z-index:300;
                 grid-template-columns:repeat(4,minmax(0,1fr)); gap:0 24px;
                 padding:30px 40px 36px;
-                background:var(--bg); border-top:1px solid var(--bdr-2); }
+                background:#08080a; border-top:1px solid rgba(255,255,255,.1); }
 .nav-dd.open .nav-dd-panel { display:grid; }
-.nav-dd-note { grid-column:1/-1; padding:0 0 14px; margin:0 0 10px; border-bottom:1px solid var(--bdr-2);
+.nav-dd-note { grid-column:1/-1; padding:0 0 14px; margin:0 0 10px; border-bottom:1px solid rgba(255,255,255,.1);
                font-family:var(--f-mono); font-size:9px; letter-spacing:.2em; text-transform:uppercase;
-               color:var(--accent-ink); }
+               color:var(--accent); }
 .nav-dd-link { display:flex; align-items:center; justify-content:space-between; gap:14px;
-               padding:11px 0; text-decoration:none; border-bottom:1px solid var(--bdr-2);
-               font-family:var(--f-body); font-size:14px; font-weight:600; color:var(--txt-2);
+               padding:11px 0; text-decoration:none; border-bottom:1px solid rgba(255,255,255,.1);
+               font-family:var(--f-body); font-size:14px; font-weight:600; color:rgba(255,255,255,.75);
                transition:color .12s, padding-left .12s; }
-.nav-dd-link:hover { color:var(--accent-ink); padding-left:8px; }
-.nav-dd-link.is-tool { color:var(--accent-ink); }
-.nav-dd-sep { grid-column:1/-1; height:1px; background:var(--bdr-2); margin:12px 0; }
+.nav-dd-link:hover { color:var(--accent); padding-left:8px; }
+.nav-dd-link.is-tool { color:var(--accent); }
+.nav-dd-sep { grid-column:1/-1; height:1px; background:rgba(255,255,255,.1); margin:12px 0; }
 .nav-dd-tag { font-family:var(--f-mono); font-size:9px; letter-spacing:.14em; text-transform:uppercase;
-              color:var(--txt-4); white-space:nowrap; }
-.nav-mob { display:none; background:none; border:1px solid var(--bdr); padding:8px 10px; color:#fff; }
+              color:rgba(255,255,255,.35); white-space:nowrap; }
+.nav-mob { display:none; background:none; border:1px solid rgba(255,255,255,.2); padding:8px 10px; color:#fff; }
 
 /* ── Hero ────────────────────────────────────────────────────── */
 .tsdx-hero { position:relative; min-height:100svh; display:flex; align-items:flex-end;
@@ -362,14 +357,14 @@ html:not(.tsd-locked) #tsd-logout { display:block; }
      อ้างอิงให้ลูก และ absolute จะวัดจากตัวมันได้ตรงกว่าในทุกกรณี */
   .nav-bar.open { display:flex; flex-direction:column; align-items:stretch; position:absolute;
                   top:100%; left:0; right:0; height:calc(100svh - 64px); z-index:390;
-                  padding:18px 18px 40px; background:var(--bg);
+                  padding:18px 18px 40px; background:#08080a;
                   overflow-y:auto; -webkit-overflow-scrolling:touch; }
   /* margin auto เป็นของเมนูแถวเดียวที่ต้องวางกลาง ในแผงแนวตั้งต้องล้างทิ้ง
      ไม่งั้นรายการจะหดมากองกลางจอแทนที่จะกินเต็มความกว้าง */
   .nav-items { flex-direction:column; align-items:stretch; margin:0; }
-  .nav-dd { border-bottom:1px solid var(--bdr-2); }
+  .nav-dd { border-bottom:1px solid rgba(255,255,255,.1); }
   .nav-dd-top { height:auto; min-height:54px; padding:15px 0; font-size:17px;
-                color:var(--txt); justify-content:space-between; }
+                color:#fff; justify-content:space-between; }
   /* ป้ายชื่อหมวด (span ที่ไม่มีคลาส) ต้องกินที่ที่เหลือ ไม่งั้นช่องที่มีจุด live
      จะถูกดันไปอยู่กลางแถวช่องเดียว */
   .nav-dd-top > span:not([class]) { flex:1; text-align:left; }
