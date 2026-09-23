@@ -100,6 +100,8 @@ html:not(.tsd-locked) #tsd-logout { display:block; }
 .tsdx-spine { position:relative; }
 .tsdx-spine::before { content:""; position:absolute; top:0; bottom:0; left:var(--gutter);
                       width:1px; background:var(--bdr-2); pointer-events:none; z-index:1; }
+/* หน้าที่ไม่มีภาพ hero รองอยู่ต้องเว้นที่ให้แถบเมนูซึ่งเป็น position:fixed */
+.tsdx-navpad { padding-top:64px; }
 .rsp-flow { padding:0 0 96px; }
 .rsp-flow > * { margin-top:104px; }
 
@@ -369,6 +371,7 @@ html:not(.tsd-locked) #tsd-logout { display:block; }
 @media (max-width:1024px) {
   .nav-mob { display:flex; }
   .tsdx-navrow { height:58px; }
+  .tsdx-navpad { padding-top:58px; }
   .tsdx-navlogo img { height:23px; }
   .nav-bar { display:none; }
   /* absolute ไม่ใช่ fixed: .tsdx-nav ใส่ backdrop-filter ไว้ ซึ่งทำให้มันกลาย
