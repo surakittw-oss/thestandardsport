@@ -6,7 +6,9 @@
 const IconMoon = () => <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>;
 const IconSun  = () => <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>;
 
-function LogoLockup({ height = 26 }) {
+// ไม่ใส่ความสูงมาก็ปล่อยให้ CSS ของที่ที่มันไปวางเป็นคนกำหนด
+// (เดิม default 26px เป็น inline style ซึ่งทับกฎใน tsd-core.css เสมอ)
+function LogoLockup({ height }) {
   return <img src="uploads/logo-sport-lockup.png" alt="THE STANDARD SPORT"
     style={{ height, width:"auto", display:"block", userSelect:"none" }} />;
 }
@@ -59,7 +61,6 @@ function Navbar({ dark, onToggleDark, solid = false }) {
   const [openKey, setOpenKey] = React.useState(null);
   const [scrolled, setScrolled] = React.useState(false);
   const MENU = (typeof window !== 'undefined' && window.__TSD_MENU__) || [];
-  const CTA = (typeof window !== 'undefined' && window.__TSD_MENU_CTA__) || null;
 
   React.useEffect(() => {
     const onKey = (e) => { if (e.key === "Escape") { setOpenKey(null); setMenuOpen(false); } };
@@ -91,13 +92,12 @@ function Navbar({ dark, onToggleDark, solid = false }) {
           aria-expanded={menuOpen ? "true" : "false"}>
           <HamIcon />
         </button>
-        <a className="tsdx-navlogo" href="index.html" aria-label="Home"><LogoLockup height={26} /></a>
+        <a className="tsdx-navlogo" href="index.html" aria-label="Home"><LogoLockup /></a>
         <div className={"nav-bar" + (menuOpen ? " open" : "")}>
           <div className="nav-items">
             {MENU.map(it => <NavItem key={it.key} item={it} openKey={openKey}
               setOpenKey={setOpenKey} useHover={CAN_HOVER && !menuOpen} />)}
           </div>
-          {CTA && <a className="nav-cta" href={CTA.href}>{CTA.label} <span aria-hidden="true">→</span></a>}
         </div>
         <div className="tsdx-navtools">
           <button className="tsdx-iconbtn" onClick={onToggleDark} title={dark?"Light mode":"Dark mode"}>

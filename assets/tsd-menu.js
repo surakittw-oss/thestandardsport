@@ -4,7 +4,6 @@
    โครงสร้าง 8 ช่องตาม IA ที่กำหนดไว้:
      1 Football   2 Volleyball   3 Thai Sport   4 Active
      5 Motorsport  6 Other Sports  7 Long Reads  8 ● Asian Games (ช่องอีเวนต์)
-   ปุ่ม "Fixtures & Results" ชิดขวาเป็นปุ่มถาวร ไม่นับเป็นรายการในเมนู
 
    หมายเหตุ
    - เมนูไม่แสดงจำนวนบทความ เพื่อให้แถบอ่านง่ายและไม่ผูกกับตัวเลขที่เปลี่ยนตามข้อมูล
@@ -23,8 +22,6 @@ window.__TSD_MENU__ = [
       { label: "La Liga & European Leagues",   href: "index.html?cat=la-liga-europe" },
       { label: "Other National Teams",         href: "index.html?cat=national-teams" },
       { label: "Premier League",               href: "index.html?cat=premier-league" },
-      { divider: true },
-      { label: "Fixtures & Results", href: "index.html?page=fixtures", tool: true, note: "live page" },
     ],
   },
   // ไม่มีดรอปดาวน์ — กดแล้วเข้าหน้ารวมของวอลเลย์บอลเลย
@@ -91,10 +88,6 @@ window.__TSD_MENU__ = [
     items: [
       { label: "Asian Games News",     href: "index.html?cat=asian-games-news" },
       { label: "PLAYER Profile",       href: "index.html?cat=player-profile" },
-      { label: "Fixtures & Medals",    href: "index.html?cat=fixtures-medals" },
     ],
   },
 ];
-
-// ปุ่มถาวรชิดขวาของเมนูบาร์ (ไม่ใช่รายการในเมนู)
-window.__TSD_MENU_CTA__ = { label: "Fixtures & Results", href: "index.html?page=fixtures" };
