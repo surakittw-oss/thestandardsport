@@ -27,7 +27,7 @@
   <meta name="theme-color" content="#0d0d0d">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,300;0,400;0,600;0,700;0,800;1,400&family=Noto+Serif+Thai:wght@300;400;600;700;800&family=Space+Grotesk:wght@400;500;600;700;800&family=Chakra+Petch:ital,wght@0,400;0,500;0,600;0,700;1,600;1,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,300;0,400;0,600;0,700;0,800;1,400&family=Noto+Serif+Thai:wght@300;400;600;700;800&family=Space+Grotesk:wght@400;500;600;700;800&family=Chakra+Petch:ital,wght@0,400;0,500;0,600;0,700;1,600;1,700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
   <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
   <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
@@ -196,18 +196,15 @@ function LogoLockup({ height = 46 }) {
       style={{ height, width:"auto", display:"block", userSelect:"none" }} />
   );
 }
-// Editorial section header — red label left, boxed tag right (Dribbble-style archive layout)
-function SectionHead({ label, tag, action, actionHref }) {
-  const act = action && (actionHref
-    ? <a href={actionHref} target="_blank" rel="noopener noreferrer" className="ed-head-all">{action} →</a>
-    : <span className="ed-head-all" style={{ cursor:"pointer" }}>{action} →</span>);
+// หัวข้อบล็อก — พาดหัวใหญ่สองบรรทัด บรรทัดล่างสีชมพู CI แบบเว็บ ref
+// (เดิมเป็นป้ายชมพูเล็ก ๆ ซึ่งทำให้ทุกบล็อกดูเป็นวิดเจ็ตแยกชิ้น)
+function SectionHead({ line1, line2, action, actionHref }) {
   return (
-    <div className="ed-head">
-      <span className="ed-label">{label}</span>
-      <span style={{ display:"flex", alignItems:"center", gap:12 }}>
-        {act}
-        {tag && <span className="ed-tag">{tag}</span>}
-      </span>
+    <div className="tsdx-head">
+      <h2>{line1}<em>{line2}</em></h2>
+      {action && (actionHref
+        ? <a href={actionHref} target="_blank" rel="noopener noreferrer" className="tsdx-head-note">{action} <span aria-hidden="true">→</span></a>
+        : <span className="tsdx-head-note">{action} <span aria-hidden="true">→</span></span>)}
     </div>
   );
 }
@@ -224,8 +221,25 @@ const ratioOf = (n) => n.ratio || coverRatio(n.bg, 56);
 // ภาพย่อ (thumb) ใช้กับช่องเล็ก ๆ อย่างรางข่าวข้าง - ประหยัดแบนด์วิดท์กว่าดึงภาพใหญ่ 1200px
 const bgThumb = (n) => "url('" + (n.thumb || n.img) + "') center/cover no-repeat";
 
-function CatTag({ label, hot }) {
-  return <span style={{ display:"inline-block", padding:"2px 9px", background:"#ffa5f7", color:"#0d0d0d", fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontWeight:700, fontSize:10, letterSpacing:"0.13em", textTransform:"uppercase" }}>{label}</span>;
+// การ์ดข่าวใบเดียวใช้ทั้งหน้า ต่างกันแค่ขนาด (xl / l / m / row) กับสัดส่วนภาพ
+// กรอบภาพตรึงสัดส่วนไว้ตามขนาดการ์ด ไม่ใช้สัดส่วนจริงของรูป เพราะในกริด
+// ภาพสูงต่ำไม่เท่ากันทำให้แถวเบี้ยวและอ่านยาก
+const RATIO = { xl:"52.3%", l:"52.3%", m:"52.3%", row:"52.3%", wide:"52.3%" };
+function NewsCard({ post, size = "l", ratio, lede = true, className = "" }) {
+  if (!post) return null;
+  return (
+    <article className={"tsdx-card is-" + size + (className ? " " + className : "")}
+             onClick={()=>openPost(post)}>
+      <div className="tsdx-frame" style={{ paddingBottom: ratio || RATIO[size] || "66%" }}>
+        <i style={{ background: size === "row" ? bgThumb(post) : post.bg }} />
+      </div>
+      <div className="tsdx-body">
+        <div className="tsdx-kicker"><span>{post.cat}</span><time>{post.date}</time></div>
+        <h3>{post.title}</h3>
+        {lede && post.excerpt && post.excerpt.length > 20 && <p>{post.excerpt}</p>}
+      </div>
+    </article>
+  );
 }
 
 // ── Navbar ────────────────────────────────────────────────────────────────────
@@ -235,7 +249,10 @@ function CatTag({ label, hot }) {
 // ช่องที่ไม่มีรายการย่อย (Volleyball): กดแล้วเข้าหน้ารวมของหมวดนั้นทันที
 const CAN_HOVER = typeof window !== 'undefined' && !!window.matchMedia && window.matchMedia('(hover: hover)').matches;
 
-function NavItem({ item, openKey, setOpenKey }) {
+// useHover: เปิดด้วยการชี้เมาส์เฉพาะตอนเป็นเมนูแถวเดียวเท่านั้น
+// ในแผงแบบแอกคอร์เดียน ถ้ายังเปิดด้วย hover อยู่ การคลิกจะกลายเป็นการ "ปิด"
+// สิ่งที่ hover เพิ่งเปิดไป เมนูย่อยจึงไม่มีทางกางบนเครื่องที่มีทั้งจอสัมผัสและเมาส์
+function NavItem({ item, openKey, setOpenKey, useHover }) {
   const hasPanel = !!(item.items && item.items.length);
   const isOpen = hasPanel && openKey === item.key;
   const closeIfOutside = (e) => {
@@ -243,14 +260,14 @@ function NavItem({ item, openKey, setOpenKey }) {
   };
   return (
     <div className={"nav-dd" + (isOpen ? " open" : "")}
-      onMouseEnter={CAN_HOVER && hasPanel ? () => setOpenKey(item.key) : undefined}
-      onMouseLeave={CAN_HOVER && hasPanel ? () => setOpenKey(null) : undefined}
+      onMouseEnter={useHover && hasPanel ? () => setOpenKey(item.key) : undefined}
+      onMouseLeave={useHover && hasPanel ? () => setOpenKey(null) : undefined}
       onBlur={hasPanel ? closeIfOutside : undefined}>
       <a className="nav-dd-top" href={item.href || "index.html"}
         aria-haspopup={hasPanel ? "true" : undefined}
         aria-expanded={hasPanel ? (isOpen ? "true" : "false") : undefined}
-        onFocus={hasPanel ? () => setOpenKey(item.key) : undefined}
-        onClick={hasPanel ? (e) => { e.preventDefault(); setOpenKey(isOpen ? null : item.key); } : undefined}>
+        onFocus={useHover && hasPanel ? () => setOpenKey(item.key) : undefined}
+        onClick={hasPanel ? (e) => { e.preventDefault(); setOpenKey(k => k === item.key ? null : item.key); } : undefined}>
         {item.live && <span className="nav-live-dot" aria-hidden="true" />}
         <span>{item.label}</span>
         {/* ลูกศรบอกว่าช่องนี้กางรายการย่อยได้ */}
@@ -287,142 +304,132 @@ function Navbar({ dark, onToggleDark }) {
   const HamIcon = () => menuOpen
     ? <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
     : <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M3 12h18M3 6h18M3 18h18"/></svg>;
+  // แถบโปร่งบนภาพ hero แล้วทึบเมื่อเลื่อนพ้น — จังหวะเดียวกับเว็บ ref
+  const [stuck, setStuck] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setStuck(window.scrollY > 40);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive:true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  // แผงเมนูเต็มจอบนมือถือไม่ควรให้หน้าหลังเลื่อนตาม
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [menuOpen]);
+
   return (
-    <nav style={{ position:"sticky", top:0, zIndex:100, background:"#0d0d0d", borderBottom:"1px solid rgba(255,255,255,.1)", boxShadow:"0 2px 10px rgba(0,0,0,.35)" }}>
-      {/* Top row */}
-      <div style={{ position:"relative", display:"flex", alignItems:"center", justifyContent:"space-between", padding:"12px 32px", minHeight:76 }}>
-        <button className="nav-mob" onClick={()=>setMenuOpen(o=>!o)} aria-label="เมนู" aria-expanded={menuOpen ? "true" : "false"}
-          style={{ background:"none", border:"1px solid rgba(255,255,255,.22)", padding:"8px 10px", color:"rgba(255,255,255,.8)", display:"none", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+    <nav className={"tsdx-nav" + (stuck || menuOpen ? " is-stuck" : "")}>
+      <div className="tsdx-navrow">
+        <button className="nav-mob tsdx-iconbtn" onClick={()=>setMenuOpen(o=>!o)} aria-label="เมนู"
+          aria-expanded={menuOpen ? "true" : "false"}>
           <HamIcon />
         </button>
-        <a href="index.html" aria-label="Home"
-          style={{ position:"absolute", left:"50%", transform:"translateX(-50%)", lineHeight:0 }}>
-          <LogoLockup height={52} />
-        </a>
-        <div style={{ display:"flex", gap:8, flexShrink:0, marginLeft:"auto" }}>
-          <button onClick={onToggleDark}
-            style={{ background:"none", border:"1px solid rgba(255,255,255,.22)", padding:"7px 10px", color:"rgba(255,255,255,.8)", display:"flex", alignItems:"center", justifyContent:"center", transition:"all 0.2s" }}
-            title={dark?"Light mode":"Dark mode"}>
+        <a className="tsdx-navlogo" href="index.html" aria-label="Home"><LogoLockup height={26} /></a>
+        {/* เมนู 8 ช่องอยู่ในแถวเดียวกับโลโก้ ไม่แยกเป็นแถบที่สองอีกแล้ว */}
+        <div className={"nav-bar" + (menuOpen ? " open" : "")}>
+          <div className="nav-items">
+            {MENU.map(it => <NavItem key={it.key} item={it} openKey={openKey}
+              setOpenKey={setOpenKey} useHover={CAN_HOVER && !menuOpen} />)}
+          </div>
+          {CTA && <a className="nav-cta" href={CTA.href}>{CTA.label} <span aria-hidden="true">→</span></a>}
+        </div>
+        <div className="tsdx-navtools">
+          <button className="tsdx-iconbtn" onClick={onToggleDark} title={dark?"Light mode":"Dark mode"}>
             {dark ? <IconSun /> : <IconMoon />}
           </button>
         </div>
-      </div>
-      {/* เมนู 8 ช่อง + ปุ่มถาวร */}
-      <div className={"nav-bar" + (menuOpen ? " open" : "")}>
-        <div className="nav-items">
-          {MENU.map(it => <NavItem key={it.key} item={it} openKey={openKey} setOpenKey={setOpenKey} />)}
-        </div>
-        {CTA && (
-          <a className="nav-cta" href={CTA.href}>
-            {CTA.label} <span aria-hidden="true">→</span>
-          </a>
-        )}
       </div>
     </nav>
   );
 }
 
-// ── Hero Full ─────────────────────────────────────────────────────────────────
-function HeroFull({ font, onOpen }) {
-  const ff = font==="serif"?"Noto Serif Thai,serif":"Sarabun,sans-serif";
-  const lead = POSTS[0];
-  const open = (item) => onOpen && onOpen(item);
-  if (!lead) return null;
+// ── Hero ──────────────────────────────────────────────────────────────────────
+// ภาพเต็มจอ + ชื่อหมวดตัวใหญ่สีชมพูคร่อมพาดหัวขาว (คู่สีแบบเว็บ ref)
+// ข่าวไทยพาดหัวยาว จึงให้หมวดเป็นบรรทัดชมพูแทนการตัดคำในพาดหัวเอง
+function Hero({ post }) {
+  if (!post) return null;
   return (
-    <div style={{ background:"var(--bg)" }}>
-
-      {/* ── Full-bleed editorial hero: cover fills the band, headline sits on top ── */}
-      <div className="rsp-edhero">
-        <div className="ed-hero-cover" style={{ background:lead.bg, cursor:"pointer" }} onClick={()=>open(lead)} />
-        <div className="ed-hero-scrim" />
-        <div className="streak" />
-        <div className="ed-hero-text">
-          {/* marginTop:auto keeps the headline pinned to the bottom of the hero —
-              the note that used to do that job with marginBottom:auto is gone. */}
-          <div style={{ marginTop:"auto", padding:"38px 0" }}>
-            {/* Was a hardcoded "Lando / Norris" — fixed text that only ever
-                matched one specific F1 story. Every field here now reads off
-                lead (POSTS[0]), so the hero follows the newest story. */}
-            <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:22, flexWrap:"wrap" }}>
-              <span className="ed-label">{lead.cat}</span>
-              <span className="ed-tag">{lead.date}</span>
-            </div>
-            <h1 className="ed-display" style={{ cursor:"pointer", fontSize:"clamp(30px,4.4vw,60px)", margin:"0 0 22px", lineHeight:1.08 }} onClick={()=>open(lead)}>
-              {lead.title}
-            </h1>
-            <div className="ed-rule" style={{ marginBottom:22 }} />
-            {lead.excerpt && lead.excerpt.length > 20 &&
-              <p className="ed-lede" style={{ fontFamily:ff, margin:"0 0 16px", maxWidth:440 }}>
-                {lead.excerpt}
-              </p>
-            }
-            <div className="ed-hero-meta" style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:12, fontWeight:600 }}>
-              <b>{lead.cat}</b> · {lead.author} · {lead.date}
-            </div>
-            <button type="button" className="ed-read" onClick={()=>open(lead)}>อ่านต่อ <span aria-hidden="true">→</span></button>
+    <header className="tsdx-hero">
+      <div className="tsdx-hero-img" style={{ background:post.bg }} />
+      <div className="tsdx-hero-scrim" />
+      <div className="tsdx-hero-body">
+        <div className="tsdx-hero-inner">
+          <div className="tsdx-hero-kicker">
+            <span className="tx-chip">เรื่องเด่นวันนี้</span>
+            <span className="tx-mono">{post.date}</span>
           </div>
-          <span style={{ marginTop:"auto" }} />
-        </div>
-      </div>
-
-      <div id="editor-picks" className="rsp-wrap" style={{ padding:"44px 40px" }}>
-
-        {/* ── Editor's Picks — four equal cards, matching WordPress ── */}
-        <div className="rsp-picks">
-          {/* เดิมปุ่มนี้ไม่ลิงก์ไปไหน ตอนนี้ชี้ไปหน้าหมวด Sport ของเว็บจริง */}
-          <SectionHead label="Editor's Picks" action="ดูข่าวกีฬาทั้งหมด"
-            actionHref={(DATA_META && DATA_META.source && DATA_META.source.categoryLink) || "https://thestandard.co/category/news/sport/"} />
-          <div className="rsp-picks-grid">
-            {POSTS.slice(0,4).map(n => (
-              <article key={n.id} className="rsp-pick-card" style={{ cursor:"pointer" }} onClick={()=>open(n)}>
-                <div className="zoom-frame" style={{ position:"relative", paddingBottom:ratioOf(n), marginBottom:10, boxShadow:"var(--sh-1)" }}>
-                  <div className="zoom-img" style={{ background:n.bg }} />
-                </div>
-                <div className="rsp-pick-meta"><span>{n.cat}</span><time>{n.date}</time></div>
-                <h3>{n.title}</h3>
-                <p>{n.excerpt}</p>
-              </article>
-            ))}
+          <p className="tsdx-hero-cat">{post.cat}</p>
+          <h1 className="tsdx-hero-title" onClick={()=>openPost(post)}>{post.title}</h1>
+          {post.excerpt && post.excerpt.length > 20 &&
+            <p className="tsdx-hero-lede">{post.excerpt}</p>}
+          <div className="tsdx-hero-meta">เรื่อง <b>{post.author}</b></div>
+          <div className="tsdx-hero-actions">
+            <button type="button" className="btn" onClick={()=>openPost(post)}>อ่านเรื่องนี้</button>
+            <a className="btn is-bare" href="#latest">ข่าวทั้งหมด</a>
           </div>
         </div>
-
       </div>
-    </div>
+      <div className="tsdx-scroll"><i /><span>Scroll</span></div>
+    </header>
   );
 }
 
-// ── Hero Grid ─────────────────────────────────────────────────────────────────
-function HeroGrid({ font, onOpen }) {
-  const ff = font==="serif"?"Noto Serif Thai,serif":"Sarabun,sans-serif";
-  const open = (item) => onOpen && onOpen(item);
-  if (!POSTS.length) return null;
+// ── ข่าวเด่น: ใบใหญ่หนึ่งใบคู่กับรายการแนวนอนสามใบ ──────────────────────────
+// นี่คือจังหวะ "ผสม" ของหน้า — มีใบที่ชนะสายตาชัดเจนหนึ่งใบเสมอ
+// ไม่ใช่การ์ดขนาดเท่ากันสี่ใบที่มองแล้วไม่รู้ว่าอันไหนสำคัญ
+function LeadBlock() {
+  const lead = POSTS[1];
+  const rest = POSTS.slice(2, 5);
+  if (!lead) return null;
   return (
-    <div style={{ background:"var(--bg)", borderBottom:"1px solid var(--bdr)" }}>
-      <div className="rsp-wrap" style={{ padding:"28px 40px" }}><div className="rsp-hgrid">
-        <div style={{ cursor:"pointer" }} onClick={()=>open(POSTS[0])}>
-          <div style={{ position:"relative", paddingBottom:"52.33%", background:POSTS[0].bg, overflow:"hidden" }}>
-            <div style={{ position:"absolute", inset:0, background:"linear-gradient(to top,rgba(0,0,0,0.82) 0%,rgba(0,0,0,0.15) 55%,transparent 100%)" }} />
-            <div style={{ position:"absolute", bottom:24, left:24, right:24 }}>
-              <CatTag label={POSTS[0].cat} hot={true} />
-              <h2 style={{ fontFamily:ff, fontWeight:800, fontSize:26, color:"#fff", margin:"8px 0 8px", lineHeight:1.3 }}>{POSTS[0].title}</h2>
-              <p style={{ fontFamily:"Sarabun,sans-serif", fontSize:13, color:"rgba(255,255,255,0.6)", margin:0 }}>{POSTS[0].author} · {POSTS[0].date}</p>
-            </div>
-          </div>
+    <section className="reveal">
+      <SectionHead line1="ข่าว" line2="เด่น"
+        action="ดูข่าวกีฬาทั้งหมด"
+        actionHref={(DATA_META && DATA_META.source && DATA_META.source.categoryLink) || "https://thestandard.co/category/news/sport/"} />
+      <div className="tsdx-lead">
+        <NewsCard post={lead} size="xl" />
+        <div className="tsdx-leadlist">
+          {rest.map(p => <NewsCard key={p.id} post={p} size="row" lede={false} />)}
         </div>
-        <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
-          {POSTS.slice(1,4).map((n,i) => (
-            <div key={n.id} onClick={()=>open(n)} style={{ display:"grid", gridTemplateColumns:"72px 1fr", gap:12, cursor:"pointer", paddingBottom:i<2?16:0, borderBottom:i<2?"1px solid var(--bdr)":"none" }}>
-              <div style={{ position:"relative", paddingBottom:"52.33%", background:n.bg, flexShrink:0 }}></div>
-              <div>
-                <CatTag label={n.cat} />
-                <p style={{ fontFamily:ff, fontWeight:700, fontSize:13, margin:"5px 0 3px", lineHeight:1.4, color:"var(--txt)" }}>{n.title}</p>
-                <p style={{ fontFamily:"Sarabun,sans-serif", fontSize:11, color:"var(--txt-4)", margin:0 }}>{n.date}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div></div>
-    </div>
+      </div>
+    </section>
+  );
+}
+
+// ── แถบคั่นเต็มจอ: หยิบเรื่องยาวหนึ่งเรื่องมาขยายเต็มความกว้างจอ ─────────────
+// ทำหน้าที่เดียวกับแบนด์ภาพใหญ่ในเว็บ ref คือตัดจังหวะไม่ให้กริดไหลยาวจนล้า
+function BreakBand({ post }) {
+  if (!post) return null;
+  return (
+    <section className="tsdx-break reveal" onClick={()=>openPost(post)}>
+      <div className="tsdx-break-img"><i style={{ background:post.bg }} /></div>
+      <div className="tsdx-break-panel">
+        <span className="tx-chip">{post.cat}</span>
+        <h3>{post.title}</h3>
+        {post.excerpt && post.excerpt.length > 20 && <p>{post.excerpt}</p>}
+        <span className="btn is-ghost">อ่านต่อ <span aria-hidden="true">→</span></span>
+      </div>
+    </section>
+  );
+}
+
+// ── ข่าวล่าสุด: ใบแรกกินสองช่องเป็นภาพแนวนอนยาว ที่เหลือไล่เป็นกริดสามช่อง ──
+function LatestGrid() {
+  const items = POSTS.slice(5, 14);
+  if (!items.length) return null;
+  return (
+    <section id="latest" className="reveal">
+      <SectionHead line1="ข่าว" line2="ล่าสุด" action="ดูทั้งหมด"
+        actionHref={(DATA_META && DATA_META.source && DATA_META.source.categoryLink) || "https://thestandard.co/category/news/sport/"} />
+      <div className="tsdx-grid">
+        {items.map((p, i) => (
+          <NewsCard key={p.id} post={p} size="l"
+            className={i === 0 ? "is-wide" : ""}
+            ratio={i === 0 ? RATIO.wide : undefined} />
+        ))}
+      </div>
+    </section>
   );
 }
 
@@ -449,9 +456,7 @@ function StandingsBand({ font, onOpen }) {
 
   return (
     <section>
-      <div className="tsd-head">
-        <span className="tsd-label">Standings</span>
-      </div>
+      <SectionHead line1="ตาราง" line2="คะแนน" />
       <div className="tsd-scoreduo">
         <div className="tsd-rankcol">
           <div className="tsd-rankcard">
@@ -511,20 +516,11 @@ function StandingsBand({ font, onOpen }) {
         </div>
 
         <div className="tsd-newscol">
-          <div className="tsd-head">
-            <span className="tsd-label">Latest News</span>
+          <div className="tsdx-head" style={{ marginBottom:24 }}>
+            <h2 style={{ fontSize:"clamp(22px,2.2vw,30px)" }}>จาก<em>สนาม</em></h2>
           </div>
           <div className="tsd-rail">
-            {rail.map(p => (
-              <a key={p.id} className="tsd-railitem tsd-reveal" href={"article.html?id=" + p.id}
-                 onClick={e=>{ e.preventDefault(); if (onOpen) onOpen(p); }}>
-                <span className="tsd-rail-img" style={{ background:bgThumb(p) }}></span>
-                <span className="tsd-rail-body">
-                  <span className="tsd-cm-cat">{p.cat}</span>
-                  <span className="tsd-rail-title">{p.title}</span>
-                </span>
-              </a>
-            ))}
+            {rail.map(p => <NewsCard key={p.id} post={p} size="row" lede={false} />)}
           </div>
         </div>
       </div>
@@ -545,53 +541,44 @@ const SOCIALS = [
     icon:<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M14.1 3.2v10.2a3.4 3.4 0 1 1-2.9-3.36"/><path d="M14.1 3.2c.35 2.5 1.95 4.1 4.6 4.35"/></svg> },
 ];
 
-// Square, not circular: everything else in this design has hard corners, and a
-// row of circles reads as a different system bolted on.
 function SocialBtn({ s }) {
-  const [hov, setHov] = React.useState(false);
   return (
-    <a href={s.href} target="_blank" rel="noopener noreferrer" title={s.label}
-      aria-label={s.label}
-      style={{ display:"flex", alignItems:"center", justifyContent:"center",
-        width:42, height:42,
-        background:hov?"#ffa5f7":"none",
-        border:`1px solid ${hov?"#ffa5f7":"rgba(255,255,255,0.22)"}`,
-        color:hov?"#0d0d0d":"rgba(255,255,255,0.72)",
-        transition:"all 0.18s", flexShrink:0, textDecoration:"none" }}
-      onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)}>
-      <span style={{ width:19, height:19, display:"flex" }}>{s.icon}</span>
-    </a>
+    <a className="tsdx-soc" href={s.href} target="_blank" rel="noopener noreferrer"
+       title={s.label} aria-label={s.label}>{s.icon}</a>
   );
 }
 
 function Footer() {
   const meta = DATA_META;
   return (
-    <footer style={{ background:"#0d0d0d", borderTop:"1px solid rgba(255,255,255,0.06)" }}>
-      <div style={{ maxWidth:1280, margin:"0 auto", padding:"32px 40px 28px",
-        display:"flex", alignItems:"center", justifyContent:"space-between", gap:24, flexWrap:"wrap" }}>
-        <div>
-          <LogoLockup height={46} />
-          <div style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:10, color:"rgba(255,255,255,.3)", marginTop:12 }}>
-            © 2026 Website Prototype
+    <footer className="tsdx-foot">
+      <div className="rsp-wrap">
+        <div className="tsdx-foot-top">
+          <div className="tsdx-foot-logo">
+            <LogoLockup height={40} />
+            <p className="tx-mono" style={{ marginTop:18, lineHeight:2.2 }}>
+              ข่าวกีฬาไทยและต่างประเทศ<br />ทุกวัน ตลอด 24 ชั่วโมง
+            </p>
           </div>
+          <div className="tsdx-foot-socials">
+            {SOCIALS.map(s => <SocialBtn key={s.label} s={s} />)}
+          </div>
+        </div>
+        <div className="tsdx-foot-bottom">
+          <span>© 2026 The Standard Sport · Website Prototype</span>
           {/* บอกที่มาของข้อมูลให้ตรวจย้อนกลับได้ */}
           {meta && (
-            <div style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:10, color:"rgba(255,255,255,.3)", marginTop:6, lineHeight:1.8 }}>
-              ข่าวจริงจาก thestandard.co (category Sport) {meta.counts.posts} โพสต์
-              ช่วง {meta.counts.range[0]} – {meta.counts.range[1]} · เนื้อความเต็ม {meta.counts.postsWithBody} บทความ<br />
-              ชุดดาต้า {meta.source.csv} · สร้างเมื่อ {String(meta.generatedAt).slice(0,16).replace('T',' ')}
-            </div>
+            <span style={{ textAlign:"right" }}>
+              thestandard.co · {meta.counts.posts} โพสต์ · {meta.counts.range[0]} – {meta.counts.range[1]}<br />
+              {meta.source.csv} · {String(meta.generatedAt).slice(0,16).replace('T',' ')}
+            </span>
           )}
-        </div>
-        <div style={{ display:"flex", gap:8, alignItems:"center" }}>
-          {SOCIALS.map(s => <SocialBtn key={s.label} s={s} />)}
         </div>
       </div>
     </footer>
   );
 }
-Object.assign(window, { Navbar, HeroFull, HeroGrid, StandingsBand, Footer, CatTag, SectionHead, LogoLockup });
+Object.assign(window, { Navbar, Hero, LeadBlock, BreakBand, LatestGrid, NewsCard, StandingsBand, Footer, SectionHead, LogoLockup, RATIO });
 </script>
 
 <!-- ③ MAIN APP + YOUTUBE -->
@@ -618,69 +605,44 @@ const YT_SHORTS = (window.__YT_LIVE__?.shorts || [
   { id:"SHORT_ID_7", title:"Leclerc Onboard สนาม Monaco",        views:"2.6M", bg:"url('https://images.unsplash.com/photo-1475666675596-cca2035b3d79?w=400&h=711&fit=crop&auto=format&q=80') center/cover no-repeat" },
 ]).map(v => ({ ...v, bg: v.bg || `url('${v.thumbnail}') center/cover no-repeat`, date: v.date || "", dur: v.dur || "", views: v.views || "" }));
 
-// ── YouTube UI helpers
-const IconShorts = () => (
-  <svg width="14" height="20" viewBox="0 0 24 34" fill="none">
-    <path d="M14 0L0 20h10L8 34 24 12h-10L14 0z" fill="currentColor"/>
-  </svg>
-);
-
-function VideoCard({ video }) {
-  const [hov, setHov] = useS2(false);
+// ── YouTube ───────────────────────────────────────────────────────────────────
+// คลิปใช้กรอบและจังหวะเดียวกับการ์ดข่าว ต่างแค่มีปุ่มเล่นกับความยาวคลิป
+function VideoCard({ video, size = "l" }) {
   return (
-    <a href={`https://www.youtube.com/watch?v=${video.id}`} target="_blank" rel="noopener noreferrer"
-      style={{ textDecoration:"none", display:"block", opacity:hov?0.9:1, transition:"opacity 0.18s, transform 0.18s", transform:hov?"translateY(-2px)":"translateY(0)" }}
-      onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)}>
-      {/* 16:9 Thumbnail */}
-      <div style={{ position:"relative", paddingBottom:"52.33%", background:video.bg, overflow:"hidden", marginBottom:12 }}>
-        <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center" }}>
-          <IconPlay size={44} />
-        </div>
-        {/* One pill, bottom-right — same as the WordPress .tsd-yt-date badge.
-            The category chip that used to sit top-left is gone: the section is
-            already labelled Watch, and a second black chip read as a headline. */}
-        <div style={{ position:"absolute", bottom:8, right:8, background:"rgba(0,0,0,0.82)", padding:"2px 7px", fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:10, fontWeight:700, color:"#fff", letterSpacing:"0.04em" }}>{video.dur}</div>
+    <a className={"tsdx-card is-" + size} href={`https://www.youtube.com/watch?v=${video.id}`}
+       target="_blank" rel="noopener noreferrer">
+      <div className="tsdx-frame" style={{ paddingBottom:"56.25%" }}>
+        <i style={{ background:video.bg }} />
+        <span className={"tsdx-play" + (size === "row" ? " is-sm" : "")}>
+          <span><svg width={size === "row" ? 12 : 18} height={size === "row" ? 12 : 18} viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></span>
+        </span>
+        {video.dur && <span className="tsdx-dur">{video.dur}</span>}
       </div>
-      <p style={{ fontFamily:"Sarabun,sans-serif", fontWeight:700, fontSize:14, lineHeight:1.45, color:"var(--txt)", margin:"0 0 5px", textWrap:"pretty" }}>{video.title}</p>
-      <p style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:11, color:"var(--txt-3)", margin:0 }}>{video.views} views · {video.date}</p>
+      <div className="tsdx-body">
+        <div className="tsdx-kicker"><span>Watch</span><time>{video.date}</time></div>
+        <h3>{video.title}</h3>
+      </div>
     </a>
   );
 }
 
 function ShortCard({ video }) {
-  const [hov, setHov] = useS2(false);
   return (
-    <a href={`https://www.youtube.com/shorts/${video.id}`} target="_blank" rel="noopener noreferrer"
-      className="sh-card"
-      style={{ textDecoration:"none", flexShrink:0, display:"block", opacity:hov?0.88:1, transition:"opacity 0.18s, transform 0.18s", transform:hov?"translateY(-2px)":"translateY(0)" }}
-      onMouseEnter={()=>setHov(true)} onMouseLeave={()=>setHov(false)}>
-      {/* 9:16 thumbnail. A short is a thumbnail and a title — the red SHORTS
-          flag and the views gradient came off so the strip reads as one row of
-          pictures, the way the WordPress .tsd-short does. */}
-      <div style={{ position:"relative", width:"100%", paddingBottom:"177.7%", background:video.bg, overflow:"hidden", borderRadius:0, marginBottom:10 }}>
-        <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center" }}>
-          <div style={{ width:30, height:30, borderRadius:"50%", background:"rgba(0,0,0,0.6)", display:"flex", alignItems:"center", justifyContent:"center" }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
-          </div>
-        </div>
+    <a className="tsdx-card is-m sh-card" href={`https://www.youtube.com/shorts/${video.id}`}
+       target="_blank" rel="noopener noreferrer">
+      <div className="tsdx-frame" style={{ paddingBottom:"177.7%" }}>
+        <i style={{ background:video.bg }} />
+        <span className="tsdx-play is-sm"><span><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></span></span>
       </div>
-      <p style={{ fontFamily:"Sarabun,sans-serif", fontWeight:700, fontSize:13, lineHeight:1.4, color:"var(--txt)", margin:0, textWrap:"pretty" }}>{video.title}</p>
+      <div className="tsdx-body"><h3 style={{ marginTop:14 }}>{video.title}</h3></div>
     </a>
   );
 }
 
-// The Watch and Shorts blocks used to carry their own header — a red YouTube
-// bar with the channel name. Every other section on the page announces itself
-// with the pink plate, so these now use the same SectionHead; the section is
-// part of the paper, not a guest panel from another site.
-
-// Shorts and Watch are two sections, not one YouTube block — same split the
-// WordPress build made, so the short-form strip can sit somewhere the
-// long-form grid doesn't have to follow.
 function ShortsSection() {
   return (
-    <section>
-      <SectionHead label="Shorts" action="ดูทั้งหมด"
+    <section className="reveal">
+      <SectionHead line1="คลิป" line2="สั้น" action="ดูทั้งหมด"
         actionHref="https://www.youtube.com/@thestandardsport/shorts" />
       <div className="sh-strip">
         {YT_SHORTS.map(s => <ShortCard key={s.id} video={s} />)}
@@ -691,52 +653,32 @@ function ShortsSection() {
 
 function YouTubeSection() {
   return (
-    <section>
-        <div>
-          <SectionHead label="Watch" action="ดูทั้งหมด"
-            actionHref="https://www.youtube.com/@thestandardsport/videos" />
-          {/* 3-col + featured layout: featured big left, 3 small right */}
-          <div className="rsp-ytmn">
-            {/* Featured */}
-            <VideoCard video={YT_VIDEOS[0]} />
-            {/* Right 3-col list */}
-            <div style={{ display:"flex", flexDirection:"column", gap:20 }}>
-              {YT_VIDEOS.slice(1,4).map(v => (
-                <a key={v.id} href={`https://www.youtube.com/watch?v=${v.id}`} target="_blank" rel="noopener noreferrer"
-                  style={{ textDecoration:"none", display:"grid", gridTemplateColumns:"120px 1fr", gap:12, alignItems:"start" }}>
-                  <div style={{ position:"relative", paddingBottom:"52.33%", background:v.bg, overflow:"hidden" }}>
-                    <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center" }}><IconPlay size={28} /></div>
-                    <div style={{ position:"absolute", bottom:5, right:5, background:"rgba(0,0,0,0.82)", padding:"1px 5px", fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:10, fontWeight:700, color:"#fff" }}>{v.dur}</div>
-                  </div>
-                  <div>
-                    <p style={{ fontFamily:"Sarabun,sans-serif", fontWeight:700, fontSize:13, lineHeight:1.4, color:"var(--txt)", margin:"0 0 4px", textWrap:"pretty" }}>{v.title}</p>
-                    <p style={{ fontFamily:"Chakra Petch,Space Grotesk,sans-serif", fontSize:10, color:"var(--txt-3)", margin:0 }}>{v.views}K · {v.date}</p>
-                  </div>
-                </a>
-              ))}
-            </div>
-          </div>
-          {/* Bottom row 3 more */}
-          <div className="rsp-ytbt">
-            {YT_VIDEOS.slice(3,6).map(v => <VideoCard key={v.id} video={v} />)}
-          </div>
+    <section className="reveal">
+      <SectionHead line1="วิดีโอ" line2="ล่าสุด" action="ดูทั้งหมด"
+        actionHref="https://www.youtube.com/@thestandardsport/videos" />
+      {/* คลิปเด่นใบใหญ่ซ้าย รายการสั้นขวา — จังหวะเดียวกับบล็อกข่าวเด่น */}
+      <div className="rsp-ytmn">
+        <VideoCard video={YT_VIDEOS[0]} size="xl" />
+        <div className="tsdx-leadlist">
+          {YT_VIDEOS.slice(1,4).map(v => <VideoCard key={v.id} video={v} size="row" />)}
         </div>
+      </div>
+      <div className="rsp-ytbt">
+        {YT_VIDEOS.slice(3,6).map(v => <VideoCard key={v.id} video={v} size="l" />)}
+      </div>
     </section>
   );
 }
 
 // ── App ─────────────────────────────────────────────────────────────────────
 function App() {
-  const [t, setTweak] = window.useTweaks({ heroLayout:"full", fontStyle:"sans" });
-  // หน้านี้เป็นหน้าแรก/คลังข่าวล้วน ๆ แล้ว - การเปิดบทความคือ "ไปหน้าอื่น"
-  // (article.html?id=...) ไม่ใช่สลับคอมโพเนนต์ในไฟล์เดียวแบบเดิม
+  // ผืนดำคือค่าเริ่มต้นของดีไซน์นี้ โหมดกระดาษเป็นทางเลือก ไม่ใช่ฐาน
   const [dark, setDark] = useS2(() => {
-    try { const s=localStorage.getItem('theme'); if(s) return s==='dark'; } catch(e){}
-    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    try { return localStorage.getItem('theme') !== 'light'; } catch(e){ return true; }
   });
 
   useE2(() => {
-    document.documentElement.setAttribute('data-theme', dark ? 'dark' : '');
+    document.documentElement.setAttribute('data-theme', dark ? '' : 'light');
     try { localStorage.setItem('theme', dark ? 'dark' : 'light'); } catch(e){}
   }, [dark]);
 
@@ -745,7 +687,10 @@ function App() {
     const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const settle = el => {
       el.classList.add('in');
-      if (el.dataset.count != null) el.textContent = el.dataset.count;
+      if (el.dataset.count != null && !el.dataset.counted) {
+        el.dataset.counted = '1';
+        el.textContent = el.dataset.count;
+      }
     };
     if (reduce || !('IntersectionObserver' in window)) {
       const paint = () => document.querySelectorAll('.reveal, [data-count]').forEach(settle);
@@ -771,12 +716,13 @@ function App() {
         const el = e.target;
         io.unobserve(el);
         el.classList.add('in');
-        if (el.dataset.count != null) {
+        if (el.dataset.count != null && !el.dataset.counted) {
+          el.dataset.counted = '1';
           const n = parseFloat(el.dataset.count);
           isNaN(n) ? el.textContent = el.dataset.count : countTo(el, n);
         }
       });
-    }, { threshold: 0.15, rootMargin: '0px 0px -8% 0px' });
+    }, { threshold: 0, rootMargin: '0px 0px -5% 0px' });
 
     const seen = new WeakSet();
     const scan = () => document.querySelectorAll('.reveal, [data-count]').forEach(el => {
@@ -785,33 +731,37 @@ function App() {
       io.observe(el);
     });
     scan();
+    // กวาดซ้ำตอนเลื่อน: ถ้าผู้ใช้กระโดดข้ามทีเดียวหลายจอ (ลากสกรอลล์บาร์,
+    // กดลิงก์ยึดตำแหน่ง, เบราว์เซอร์คืนตำแหน่งเดิม) IntersectionObserver
+    // อาจไม่ทันเห็นบล็อกที่ผ่านไป แล้วบล็อกนั้นจะค้างจางหายทั้งก้อน
+    const sweep = () => document
+      .querySelectorAll('.reveal:not(.in), [data-count]:not([data-counted])')
+      .forEach(el => { if (el.getBoundingClientRect().top < window.innerHeight) settle(el); });
+    window.addEventListener('scroll', sweep, { passive:true });
     const mo = new MutationObserver(scan);   // re-arm when tabs swap content in
     mo.observe(document.body, { childList:true, subtree:true });
-    return () => { mo.disconnect(); io.disconnect(); };
+    return () => { mo.disconnect(); io.disconnect(); window.removeEventListener('scroll', sweep); };
   }, []);
 
+  // จังหวะของหน้า: ภาพเต็มจอ → ข่าวเด่น → แถบคั่นเต็มจอ → ข่าวล่าสุด
+  // → ตารางคะแนน → คลิปสั้น → วิดีโอ   สลับกริดกับภาพเต็มความกว้างไปมา
+  // ไม่ให้เป็นกริดไหลยาวต่อกันหมดจนสายตาไม่มีที่พัก
+  const breakPost = POSTS[14] || POSTS[5];
   return (
     <div>
       <window.Navbar dark={dark} onToggleDark={()=>setDark(d=>!d)} />
-      <React.Fragment>
-        {t.heroLayout==="full"
-          ? <window.HeroFull font={t.fontStyle} onOpen={window.tsdOpenPost} />
-          : <window.HeroGrid font={t.fontStyle} onOpen={window.tsdOpenPost} />}
-        {/* Same running order the WordPress build ships with:
-            picks → standings → shorts → watch, all inside one reading column. */}
-        <div className="rsp-wrap rsp-flow">
-          <window.StandingsBand font={t.fontStyle} onOpen={window.tsdOpenPost} />
-          <ShortsSection />
-          <YouTubeSection />
-        </div>
-      </React.Fragment>
+      <window.Hero post={POSTS[0]} />
+      <div className="rsp-wrap rsp-flow">
+        <window.LeadBlock />
+      </div>
+      <window.BreakBand post={breakPost} />
+      <div className="rsp-wrap rsp-flow">
+        <window.LatestGrid />
+        <window.StandingsBand onOpen={window.tsdOpenPost} />
+        <ShortsSection />
+        <YouTubeSection />
+      </div>
       <window.Footer />
-      <window.TweaksPanel title="Tweaks">
-        <window.TweakSection label="Hero Layout" />
-        <window.TweakRadio label="Style" value={t.heroLayout} options={["full","grid"]} onChange={v=>setTweak("heroLayout",v)} />
-        <window.TweakSection label="Typography" />
-        <window.TweakRadio label="Font" value={t.fontStyle} options={["sans","serif"]} onChange={v=>setTweak("fontStyle",v)} />
-      </window.TweaksPanel>
     </div>
   );
 }

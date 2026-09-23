@@ -1,341 +1,458 @@
-/* THE STANDARD SPORT - สไตล์ที่ใช้ร่วมกันทุกหน้า (index.html + article.html)
-   เดิมก้อนนี้อยู่ใน <style> ของ index.html ทั้งก้อน แยกออกมาเพื่อให้หน้าบทความ
-   ใช้ตัวตนเดียวกันได้โดยไม่ต้องคัดลอก
-   ลำดับ: tokens > base > motion > editorial > responsive > ตารางคะแนน */
+/* THE STANDARD SPORT — core design system (index.html + article.html)
+   ลำดับ: tokens > base > gate > type scale > nav > hero > sections > cards
+          > standings > shorts/watch > footer > motion > responsive
+
+   ทิศทางดีไซน์: dark-first editorial ตาม ref lupinelights.com —
+   ผืนดำเต็มจอ, ตัวพาดหัวใหญ่ตัวหนาแบบ uppercase, ป้ายเล็ก monospace,
+   เส้น hairline แทนกรอบหนา, CI ชมพูเป็นสีเดียวที่ "ดัง" บนหน้า */
 
 :root {
-  --bg:#ffffff; --bg-alt:#f6f6f6; --bg-card:#ffffff; --bg-row:#fafafa;
-  --txt:#0d0d0d; --txt-2:#4a4a4a; --txt-3:#8a8a8a; --txt-4:#b8b8b8;
-  --bdr:#e6e6e6; --bdr-2:#f1f1f1;
-  --accent:#ffa5f7;      /* CI pink — headline chips, fills, rules */
-  --on-accent:#0d0d0d;   /* text that sits on the CI pink */
-  --accent-ink:#d81b8f;  /* deeper pink for small text on white */
-  /* Soft lifted shadows (infographic card style) */
-  --sh-1:0 1px 2px rgba(13,13,13,.05), 0 2px 8px rgba(13,13,13,.055);
-  --sh-2:0 2px 6px rgba(13,13,13,.06), 0 10px 26px rgba(13,13,13,.08);
-  --sh-hi:0 6px 14px rgba(13,13,13,.09), 0 18px 40px rgba(13,13,13,.11);
+  /* พื้น */
+  --bg:#08080a; --bg-alt:#0f0f12; --bg-card:#141417; --bg-row:#1a1a1e;
+  /* ตัวอักษร */
+  --txt:#ffffff; --txt-2:rgba(255,255,255,.74); --txt-3:rgba(255,255,255,.5); --txt-4:rgba(255,255,255,.34);
+  /* เส้น */
+  --bdr:rgba(255,255,255,.14); --bdr-2:rgba(255,255,255,.07);
+  /* CI */
+  --accent:#ffa5f7;      /* ชมพู CI — พาดหัวคู่สี, ปุ่มหลัก, เส้นเน้น */
+  --accent-2:#f471e4;    /* ชมพูเข้มขึ้น ใช้ตอน hover/พื้นทึบ */
+  --on-accent:#0a0a0c;   /* ตัวอักษรบนพื้นชมพู */
+  --accent-ink:#ffa5f7;  /* ชมพูสำหรับตัวหนังสือเล็ก (บนพื้นดำใช้ตัวเดียวกันได้) */
+  /* ตัวอักษร */
+  --f-display:"Chakra Petch","Space Grotesk",sans-serif;
+  --f-mono:"Roboto Mono","Chakra Petch",ui-monospace,monospace;
+  --f-serif:"Noto Serif Thai",serif;
+  --f-body:"Sarabun",system-ui,sans-serif;
+  /* ระยะ */
+  --gutter:40px; --maxw:1440px;
+  --sh-1:none; --sh-2:none; --sh-hi:none;
 }
-[data-theme="dark"] {
-  --bg:#111111; --bg-alt:#181818; --bg-card:#1c1c1c; --bg-row:#202020;
-  --txt:#efefef; --txt-2:#cccccc; --txt-3:#8a8a8a; --txt-4:#5a5a5a;
-  --bdr:#2a2a2a; --bdr-2:#242424;
-  --accent-ink:#ffa5f7;  /* pink reads well on dark — use it directly */
-  --sh-1:0 1px 2px rgba(0,0,0,.4), 0 2px 8px rgba(0,0,0,.35);
-  --sh-2:0 2px 6px rgba(0,0,0,.45), 0 10px 26px rgba(0,0,0,.45);
-  --sh-hi:0 6px 14px rgba(0,0,0,.5), 0 18px 40px rgba(0,0,0,.55);
+/* โหมดกระดาษ — ระบบเดียวกัน กลับขั้วสีเท่านั้น */
+[data-theme="light"] {
+  --bg:#faf9f7; --bg-alt:#f1efec; --bg-card:#ffffff; --bg-row:#f6f5f3;
+  --txt:#0a0a0c; --txt-2:rgba(10,10,12,.72); --txt-3:rgba(10,10,12,.5); --txt-4:rgba(10,10,12,.34);
+  --bdr:rgba(10,10,12,.16); --bdr-2:rgba(10,10,12,.08);
+  /* ชมพู CI (#ffa5f7) อ่อนเกินกว่าจะวางบนกระดาษขาวได้ โหมดนี้จึงใช้ชมพูเข้ม
+     ซึ่งเป็นสีเดียวกันแค่ลดความสว่างลงให้ผ่านเกณฑ์ contrast */
+  --accent:#cc179b; --accent-ink:#cc179b; --accent-2:#a8127f; --on-accent:#ffffff;
 }
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
-body { font-family: Sarabun, sans-serif; background: var(--bg); color: var(--txt); -webkit-font-smoothing: antialiased; transition: background .25s, color .25s; }
-button { cursor: pointer; }
-::-webkit-scrollbar { width: 4px; background: var(--bg-alt); }
-::-webkit-scrollbar-thumb { background: #ffa5f7; }
+
+*, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+html { scroll-behavior:smooth; background:var(--bg); }
+body { font-family:var(--f-body); background:var(--bg); color:var(--txt);
+       -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+       transition:background .25s, color .25s; overflow-x:hidden; }
+button { cursor:pointer; font:inherit; color:inherit; }
+img { display:block; max-width:100%; }
+a { color:inherit; }
+::-webkit-scrollbar { width:10px; background:var(--bg); }
+::-webkit-scrollbar-thumb { background:rgba(255,165,247,.35); }
+::-webkit-scrollbar-thumb:hover { background:var(--accent); }
+::selection { background:var(--accent); color:var(--on-accent); }
 
 /* ── Access gate ─────────────────────────────────────────────── */
-html.tsd-locked #root { display: none; }
-#tsd-gate { display: none; position: fixed; inset: 0; z-index: 999999; background: var(--bg);
-  align-items: center; justify-content: center; flex-direction: column; gap: 16px; padding: 24px; text-align: center; }
-html.tsd-locked #tsd-gate { display: flex; }
-/* The lockup is a white mark made for the black menu bar — it needs a
-   dark plate behind it or it vanishes on the light gate background. */
-#tsd-gate-logo { background: #0d0d0d; padding: 16px 26px; margin-bottom: 4px; }
-#tsd-gate-logo img { height: 34px; width: auto; display: block; }
-#tsd-gate p { color: var(--txt-2); font-size: 14px; line-height: 1.6; max-width: 320px; }
-#tsd-gate-err { color: #d81b8f; font-size: 13px; display: none; max-width: 320px; }
-#tsd-logout { display: none; position: fixed; right: 14px; bottom: 14px; z-index: 999998;
-  font-family: "Chakra Petch","Space Grotesk",sans-serif; font-size: 10px; font-weight: 700;
-  letter-spacing: .12em; text-transform: uppercase; color: var(--txt-3); background: var(--bg-card);
-  box-shadow: var(--sh-1); border: 1px solid var(--bdr); padding: 7px 12px; }
-html:not(.tsd-locked) #tsd-logout { display: block; }
+html.tsd-locked #root { display:none; }
+#tsd-gate { display:none; position:fixed; inset:0; z-index:999999; background:var(--bg);
+  align-items:center; justify-content:center; flex-direction:column; gap:18px; padding:24px; text-align:center; }
+html.tsd-locked #tsd-gate { display:flex; }
+#tsd-gate-logo img { height:38px; width:auto; display:block; }
+#tsd-gate p { color:var(--txt-3); font-family:var(--f-mono); font-size:11px; letter-spacing:.08em;
+              line-height:2; max-width:360px; text-transform:uppercase; }
+#tsd-gate-err { color:var(--accent); font-size:12px; display:none; max-width:340px; text-transform:none; }
+#tsd-logout { display:none; position:fixed; right:14px; bottom:14px; z-index:999998;
+  font-family:var(--f-mono); font-size:9px; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--txt-3); background:transparent; border:1px solid var(--bdr); padding:8px 12px; }
+#tsd-logout:hover { color:var(--txt); border-color:var(--accent); }
+html:not(.tsd-locked) #tsd-logout { display:block; }
+
+/* ── Type scale ──────────────────────────────────────────────── */
+/* พาดหัวใหญ่: uppercase อัดชิด บรรทัดแน่น แบบ ref */
+.tx-display { font-family:var(--f-display); font-weight:700; line-height:.94;
+              letter-spacing:-.015em; text-transform:uppercase; color:var(--txt); }
+/* พาดหัวไทยไม่ควร uppercase (ไม่มีผล) แต่ต้องการบรรทัดหายใจกว่านิดหนึ่ง */
+.tx-display.is-th { line-height:1.06; letter-spacing:-.01em; }
+.tx-pink { color:var(--accent); }
+/* ป้ายเล็ก monospace — kicker, meta, ปุ่ม, เมนู */
+.tx-mono { font-family:var(--f-mono); font-size:10px; font-weight:500; letter-spacing:.16em;
+           text-transform:uppercase; color:var(--txt-3); }
+/* กรอบป้ายแบบ ref (PRODUCT FINDER) */
+.tx-chip { display:inline-block; font-family:var(--f-mono); font-size:10px; font-weight:500;
+           letter-spacing:.16em; text-transform:uppercase; color:var(--txt);
+           border:1px solid var(--bdr); padding:6px 12px; white-space:nowrap; }
+.tx-chip.is-fill { background:var(--accent); border-color:var(--accent); color:var(--on-accent); }
+/* เกริ่นนำ serif — ตัวเอียงใน ref, ไทยใช้ serif ตั้งตรงอ่านง่ายกว่า */
+.tx-lede { font-family:var(--f-serif); font-size:clamp(15px,1.15vw,18px); line-height:1.75;
+           color:var(--txt-2); }
+/* ปุ่ม */
+.btn { display:inline-flex; align-items:center; gap:10px; padding:15px 26px; border:1px solid var(--accent);
+       background:var(--accent); color:var(--on-accent); text-decoration:none;
+       font-family:var(--f-mono); font-size:10px; font-weight:500; letter-spacing:.18em;
+       text-transform:uppercase; transition:background .18s, color .18s, border-color .18s; }
+.btn:hover { background:transparent; color:var(--accent); }
+.btn.is-ghost { background:transparent; border-color:var(--bdr); color:var(--txt); }
+.btn.is-ghost:hover { border-color:var(--accent); color:var(--accent); }
+.btn.is-bare { background:none; border:0; padding:15px 0; color:var(--txt-2); }
+.btn.is-bare:hover { color:var(--accent); }
+
+/* ── Shell ───────────────────────────────────────────────────── */
+.rsp-wrap { max-width:var(--maxw); margin:0 auto; padding:0 var(--gutter); }
+/* เส้นตั้ง hairline วิ่งตลอดหน้า — spine แบบ ref */
+.tsdx-spine { position:relative; }
+.tsdx-spine::before { content:""; position:absolute; top:0; bottom:0; left:var(--gutter);
+                      width:1px; background:var(--bdr-2); pointer-events:none; z-index:1; }
+.rsp-flow { padding:0 0 96px; }
+.rsp-flow > * { margin-top:104px; }
+
+/* ── Navbar ──────────────────────────────────────────────────── */
+/* แถบบางแถวเดียว โปร่งใสบน hero แล้วทึบเมื่อเลื่อน */
+.tsdx-nav { position:fixed; top:0; left:0; right:0; z-index:400;
+            background:transparent; border-bottom:1px solid transparent;
+            transition:background .3s, border-color .3s, backdrop-filter .3s; }
+.tsdx-nav.is-stuck { background:rgba(8,8,10,.92); -webkit-backdrop-filter:blur(18px);
+                     backdrop-filter:blur(18px); border-bottom-color:var(--bdr-2); }
+[data-theme="light"] .tsdx-nav.is-stuck { background:rgba(250,249,247,.92); }
+/* nav อยู่บนภาพ hero เสมอ ตัวหนังสือจึงขาวตลอดจนกว่าจะ stuck ในโหมดกระดาษ */
+.tsdx-navrow { display:flex; align-items:center; gap:18px; height:64px;
+               max-width:var(--maxw); margin:0 auto; padding:0 var(--gutter); }
+.tsdx-navlogo { line-height:0; flex:0 0 auto; margin-right:10px; }
+.tsdx-navlogo img { height:26px; }
+.tsdx-navtools { margin-left:auto; display:flex; align-items:center; gap:6px; }
+.tsdx-iconbtn { width:34px; height:34px; display:flex; align-items:center; justify-content:center;
+                background:none; border:1px solid transparent; color:#fff; transition:border-color .15s, color .15s; }
+.tsdx-iconbtn:hover { border-color:var(--bdr); color:var(--accent); }
+[data-theme="light"] .tsdx-nav.is-stuck .tsdx-iconbtn { color:var(--txt); }
+
+.nav-bar { display:flex; align-items:center; gap:0; }
+.nav-items { display:flex; align-items:center; gap:0; }
+.nav-dd { position:static; }
+.nav-dd-top { display:flex; align-items:center; gap:7px; height:64px; padding:0 13px;
+              text-decoration:none; white-space:nowrap; color:rgba(255,255,255,.7);
+              font-family:var(--f-mono); font-size:10px; font-weight:500; letter-spacing:.14em;
+              text-transform:uppercase; transition:color .15s; }
+.nav-dd-top:hover, .nav-dd.open .nav-dd-top { color:var(--accent); }
+[data-theme="light"] .tsdx-nav.is-stuck .nav-dd-top { color:var(--txt-2); }
+[data-theme="light"] .tsdx-nav.is-stuck .nav-dd-top:hover { color:var(--accent-ink); }
+.nav-caret { font-size:7px; line-height:1; opacity:.5; transition:transform .15s; }
+.nav-dd.open .nav-caret { transform:rotate(180deg); opacity:1; }
+.nav-live-dot { width:5px; height:5px; border-radius:50%; background:var(--accent); flex:0 0 auto;
+                animation:navPulse 1.9s ease-in-out infinite; }
+@keyframes navPulse { 0%,100% { opacity:1; } 50% { opacity:.3; } }
+
+.nav-dd-panel { display:none; position:absolute; top:100%; left:0; right:0; z-index:300;
+                grid-template-columns:repeat(4,minmax(0,1fr)); gap:0 24px;
+                padding:28px max(var(--gutter), calc((100vw - var(--maxw))/2 + var(--gutter))) 34px;
+                background:rgba(10,10,12,.97); -webkit-backdrop-filter:blur(20px); backdrop-filter:blur(20px);
+                border-top:1px solid var(--bdr-2); }
+[data-theme="light"] .nav-dd-panel { background:rgba(255,255,255,.98); }
+.nav-dd.open .nav-dd-panel { display:grid; }
+.nav-dd-note { grid-column:1/-1; padding:0 0 14px; margin:0 0 10px; border-bottom:1px solid var(--bdr-2);
+               font-family:var(--f-mono); font-size:9px; letter-spacing:.2em; text-transform:uppercase;
+               color:var(--accent); }
+.nav-dd-link { display:flex; align-items:center; justify-content:space-between; gap:14px;
+               padding:11px 0; text-decoration:none; border-bottom:1px solid var(--bdr-2);
+               font-family:var(--f-body); font-size:14px; font-weight:600; color:var(--txt-2);
+               transition:color .12s, padding-left .12s; }
+.nav-dd-link:hover { color:var(--accent); padding-left:8px; }
+.nav-dd-link.is-tool { color:var(--accent-ink); }
+.nav-dd-sep { grid-column:1/-1; height:1px; background:var(--bdr-2); margin:12px 0; }
+.nav-dd-tag { font-family:var(--f-mono); font-size:9px; letter-spacing:.14em; text-transform:uppercase;
+              color:var(--txt-4); white-space:nowrap; }
+.nav-cta { display:inline-flex; align-items:center; gap:8px; height:32px; padding:0 16px;
+           background:var(--accent); color:var(--on-accent); text-decoration:none;
+           font-family:var(--f-mono); font-size:9px; font-weight:500; letter-spacing:.16em;
+           text-transform:uppercase; white-space:nowrap; transition:background .18s; }
+.nav-cta:hover { background:#fff; }
+.nav-mob { display:none; background:none; border:1px solid var(--bdr); padding:8px 10px; color:#fff; }
+
+/* ── Hero ────────────────────────────────────────────────────── */
+.tsdx-hero { position:relative; min-height:100svh; display:flex; align-items:flex-end;
+             overflow:hidden; background:#000; }
+.tsdx-hero-img { position:absolute; inset:0; background-size:cover !important;
+                 background-position:center !important; transform:scale(1.04);
+                 animation:heroIn 1.6s cubic-bezier(.16,1,.3,1) forwards; }
+@keyframes heroIn { to { transform:scale(1); } }
+/* ไล่เฉดหนักด้านล่าง ให้ภาพด้านบนยังเห็นเต็มตา */
+.tsdx-hero-scrim { position:absolute; inset:0; background:
+    linear-gradient(180deg, rgba(0,0,0,.55) 0%, rgba(0,0,0,.12) 26%, rgba(0,0,0,.55) 62%, rgba(0,0,0,.94) 100%),
+    linear-gradient(90deg, rgba(0,0,0,.62) 0%, rgba(0,0,0,.2) 50%, transparent 100%); }
+.tsdx-hero-body { position:relative; z-index:2; width:100%; max-width:var(--maxw); margin:0 auto;
+                  padding:0 var(--gutter) 88px; }
+/* เส้น spine ของ hero */
+.tsdx-hero-body::before { content:""; position:absolute; left:var(--gutter); top:-40vh; bottom:0;
+                          width:1px; background:rgba(255,255,255,.22); }
+.tsdx-hero-inner { padding-left:34px; max-width:1040px; }
+.tsdx-hero-kicker { display:flex; align-items:center; gap:14px; margin-bottom:26px; flex-wrap:wrap; }
+.tsdx-hero-cat { font-family:var(--f-display); font-weight:700; text-transform:uppercase;
+                 font-size:clamp(34px,5.4vw,78px); line-height:.9; letter-spacing:-.02em;
+                 color:var(--accent); margin:0 0 2px; }
+.tsdx-hero-title { font-family:var(--f-display); font-weight:700; color:#fff;
+                   font-size:clamp(28px,3.5vw,54px); line-height:1.08; letter-spacing:-.01em;
+                   margin:0 0 26px; max-width:900px; cursor:pointer;
+                   text-wrap:balance; transition:color .2s; }
+.tsdx-hero-title:hover { color:var(--accent); }
+.tsdx-hero-lede { font-family:var(--f-serif); font-size:clamp(15px,1.25vw,19px); line-height:1.7;
+                  color:rgba(255,255,255,.78); max-width:620px; margin:0 0 32px; }
+.tsdx-hero-meta { font-family:var(--f-mono); font-size:10px; letter-spacing:.16em; text-transform:uppercase;
+                  color:rgba(255,255,255,.55); margin-bottom:30px; }
+.tsdx-hero-meta b { color:var(--accent); font-weight:500; }
+.tsdx-hero-actions { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+/* ตัวบอกให้เลื่อนลง */
+.tsdx-scroll { position:absolute; right:var(--gutter); bottom:88px; z-index:2; display:flex;
+               align-items:center; gap:10px; font-family:var(--f-mono); font-size:9px;
+               letter-spacing:.2em; text-transform:uppercase; color:rgba(255,255,255,.5); }
+.tsdx-scroll i { display:block; width:46px; height:1px; background:rgba(255,255,255,.4); position:relative;
+                 overflow:hidden; }
+.tsdx-scroll i::after { content:""; position:absolute; inset:0; background:var(--accent);
+                        animation:scrollLine 2.2s ease-in-out infinite; }
+@keyframes scrollLine { 0% { transform:translateX(-100%); } 60%,100% { transform:translateX(100%); } }
+
+/* ── Section head ────────────────────────────────────────────── */
+/* หัวข้อใหญ่แบบ ref: คำแรกชมพู คำที่เหลือขาว + ลิงก์ mono ชิดขวา */
+.tsdx-head { display:flex; align-items:flex-end; justify-content:space-between; gap:24px;
+             padding-bottom:22px; margin-bottom:38px; border-bottom:1px solid var(--bdr-2); }
+.tsdx-head h2 { font-family:var(--f-display); font-weight:700; text-transform:uppercase;
+                font-size:clamp(30px,4.4vw,62px); line-height:.9; letter-spacing:-.02em;
+                color:var(--txt); margin:0; }
+.tsdx-head h2 em { font-style:normal; color:var(--accent); display:block; }
+.tsdx-head-note { font-family:var(--f-mono); font-size:10px; letter-spacing:.16em; text-transform:uppercase;
+                  color:var(--txt-3); text-decoration:none; white-space:nowrap; padding-bottom:6px;
+                  display:inline-flex; align-items:center; gap:8px; transition:color .15s, gap .15s; }
+.tsdx-head-note:hover { color:var(--accent); gap:14px; }
+
+/* ── Card system ─────────────────────────────────────────────── */
+/* การ์ดทุกใบ: ภาพ + kicker mono + พาดหัว + เกริ่น — ต่างกันแค่ "ขนาด" */
+.tsdx-card { display:block; text-decoration:none; cursor:pointer; min-width:0; }
+.tsdx-frame { position:relative; overflow:hidden; background:var(--bg-alt); }
+.tsdx-frame > i { position:absolute; inset:0; background-size:cover !important;
+                  background-position:center !important; transition:transform .7s cubic-bezier(.16,1,.3,1); }
+.tsdx-card:hover .tsdx-frame > i { transform:scale(1.06); }
+/* เส้นชมพูวิ่งใต้ภาพเวลา hover */
+.tsdx-frame::after { content:""; position:absolute; left:0; right:0; bottom:0; height:3px;
+                     background:var(--accent); transform:scaleX(0); transform-origin:left;
+                     transition:transform .45s cubic-bezier(.16,1,.3,1); z-index:2; }
+.tsdx-card:hover .tsdx-frame::after { transform:scaleX(1); }
+.tsdx-body { min-width:0; }
+.tsdx-kicker { display:flex; align-items:center; gap:10px; margin:18px 0 10px;
+               font-family:var(--f-mono); font-size:9.5px; letter-spacing:.16em; text-transform:uppercase; }
+.tsdx-kicker span { color:var(--accent); }
+.tsdx-kicker time { color:var(--txt-4); margin-left:auto; white-space:nowrap; }
+.tsdx-card h3 { font-family:var(--f-body); font-weight:800; color:var(--txt); margin:0;
+                line-height:1.32; text-wrap:pretty; transition:color .18s; }
+.tsdx-card:hover h3 { color:var(--accent); }
+.tsdx-card p { font-family:var(--f-body); font-size:13.5px; line-height:1.65; color:var(--txt-3);
+               margin:10px 0 0; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;
+               overflow:hidden; }
+
+/* ขนาด XL — การ์ดนำของบล็อก */
+.tsdx-card.is-xl h3 { font-family:var(--f-display); font-weight:700; text-transform:uppercase;
+                      font-size:clamp(24px,2.5vw,38px); line-height:1.02; letter-spacing:-.015em; }
+.tsdx-card.is-xl p { font-family:var(--f-serif); font-size:16px; line-height:1.75; color:var(--txt-2);
+                     -webkit-line-clamp:3; max-width:58ch; }
+.tsdx-card.is-xl .tsdx-kicker { font-size:10px; margin-top:24px; }
+/* ขนาด L — การ์ดในกริดหลัก */
+.tsdx-card.is-l h3 { font-size:21px; }
+/* ขนาด M */
+.tsdx-card.is-m h3 { font-size:17px; }
+/* แนวนอน: ภาพซ้าย ข้อความขวา */
+.tsdx-card.is-row { display:grid; grid-template-columns:168px 1fr; gap:20px; align-items:start;
+                    padding:22px 0; border-bottom:1px solid var(--bdr-2); }
+.tsdx-card.is-row .tsdx-kicker { margin:0 0 8px; }
+.tsdx-card.is-row h3 { font-size:17px; }
+.tsdx-card.is-row p { display:none; }
+.tsdx-card.is-row:first-child { padding-top:0; }
+
+/* ── บล็อก "ข่าวเด่น": ใบใหญ่ 1 + รายการข้าง 3 ────────────────── */
+.tsdx-lead { display:grid; grid-template-columns:minmax(0,1.62fr) minmax(0,1fr); gap:56px; align-items:start; }
+.tsdx-leadlist { display:flex; flex-direction:column; }
+
+/* ── กริดข่าวล่าสุด: ใบแรกกว้าง 2 ช่อง แล้วไล่ลงมาเท่ากัน ─────── */
+.tsdx-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:56px 36px; }
+.tsdx-grid > .is-wide { grid-column:span 2; }
+.tsdx-grid > .is-wide h3 { font-family:var(--f-display); font-weight:700; text-transform:uppercase;
+                           font-size:clamp(22px,2.1vw,32px); line-height:1.04; letter-spacing:-.015em; }
+.tsdx-grid > .is-wide p { font-family:var(--f-serif); font-size:15px; color:var(--txt-2); }
+
+/* ── แถบคั่นเต็มจอ ───────────────────────────────────────────── */
+/* ครึ่งซ้ายเป็นภาพ ครึ่งขวาเป็นแผ่นดำ — ภาพปกของเรามีพาดหัวพิมพ์อยู่แล้ว
+   ถ้าเอาตัวหนังสือไปทับจะอ่านชนกันสองชั้น จึงแยกที่อยู่ให้ชัด */
+.tsdx-break { display:grid; grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);
+              align-items:stretch; cursor:pointer; background:var(--bg-alt);
+              margin-left:calc(50% - 50vw); margin-right:calc(50% - 50vw); width:100vw; }
+.tsdx-break-img { position:relative; overflow:hidden; min-height:clamp(320px,38vw,520px); }
+.tsdx-break-img > i { position:absolute; inset:0; background-size:cover !important;
+                      background-position:center !important;
+                      transition:transform 1.1s cubic-bezier(.16,1,.3,1); }
+.tsdx-break:hover .tsdx-break-img > i { transform:scale(1.05); }
+.tsdx-break-panel { display:flex; flex-direction:column; align-items:flex-start;
+                    justify-content:center; gap:4px; background:var(--bg-alt);
+                    padding:clamp(32px,4vw,68px) clamp(28px,5vw,88px); }
+.tsdx-break h3 { font-family:var(--f-display); font-weight:700; color:var(--txt);
+                 font-size:clamp(22px,2.4vw,38px); line-height:1.12; letter-spacing:-.015em;
+                 margin:22px 0 18px; transition:color .2s; }
+.tsdx-break:hover h3 { color:var(--accent); }
+.tsdx-break p { font-family:var(--f-serif); font-size:clamp(14px,1.1vw,16px); line-height:1.8;
+                color:var(--txt-3); margin:0 0 30px; max-width:46ch;
+                display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden; }
+
+/* ── Standings ───────────────────────────────────────────────── */
+.tsd-scoreduo { display:grid; grid-template-columns:minmax(0,1.25fr) minmax(0,1fr); gap:56px; align-items:start; }
+.tsd-rankcol, .tsd-newscol { min-width:0; }
+.tsd-rankcard { border:1px solid var(--bdr-2); background:var(--bg-alt); padding:0 28px 28px; }
+.tsd-tabhead { padding:26px 0 0; }
+.tsd-scoretitle { font-family:var(--f-display); font-weight:700; text-transform:uppercase;
+                  font-size:clamp(19px,1.8vw,26px); line-height:1.05; letter-spacing:-.01em;
+                  color:var(--txt); margin:0; }
+.tsd-tabs { display:flex; gap:0; margin:20px 0 20px; border-bottom:1px solid var(--bdr-2);
+            overflow-x:auto; scrollbar-width:none; }
+.tsd-tabs::-webkit-scrollbar { display:none; }
+.tsd-tab { flex:0 0 auto; border:0; background:none; padding:11px 16px; color:var(--txt-4);
+           border-bottom:1px solid transparent; margin-bottom:-1px;
+           font-family:var(--f-mono); font-size:9.5px; letter-spacing:.14em; text-transform:uppercase;
+           white-space:nowrap; transition:color .15s, border-color .15s; }
+.tsd-tab:first-child { padding-left:0; }
+.tsd-tab:hover { color:var(--txt-2); }
+.tsd-tab.is-active { color:var(--accent); border-bottom-color:var(--accent); }
+.tsd-standings-note { font-family:var(--f-mono); font-size:9px; letter-spacing:.14em;
+                      text-transform:uppercase; color:var(--txt-4); margin:0 0 18px; }
+.tsd-tblwrap { overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:thin; }
+.tsd-tbl { width:100%; border-collapse:collapse; min-width:min(100%,600px); }
+.tsd-tbl th { font-family:var(--f-mono); font-size:8.5px; letter-spacing:.14em; text-transform:uppercase;
+              color:var(--txt-4); text-align:right; padding:0 7px 12px; white-space:nowrap;
+              border-bottom:1px solid var(--bdr-2); }
+.tsd-tbl th:first-child, .tsd-tbl th.is-name { text-align:left; }
+.tsd-tbl td { font-family:var(--f-mono); font-size:12px; color:var(--txt-3); text-align:right;
+              padding:13px 7px; border-bottom:1px solid var(--bdr-2); white-space:nowrap; }
+.tsd-tbl td:first-child { text-align:left; color:var(--txt-4); width:34px; padding-left:0; }
+.tsd-tbl td.tsd-tbl-name { text-align:left; font-family:var(--f-body); font-weight:700;
+                           font-size:14px; color:var(--txt); white-space:normal; }
+.tsd-tbl td:last-child { color:var(--txt); font-weight:700; }
+/* จ่าฝูงได้สีประจำแบรนด์ */
+.tsd-tbl tbody tr:first-child td:first-child { color:var(--accent); }
+.tsd-tbl tbody tr:first-child td:last-child { color:var(--accent); }
+.tsd-tbl tbody tr:hover td { background:var(--bg-row); }
+.tsd-cell-name { display:inline-flex; align-items:center; gap:11px; }
+.tsd-avatar-img.is-square.is-sm { width:22px; height:22px; object-fit:contain; flex:0 0 auto; }
+.tsd-mono { width:22px; height:22px; flex:0 0 auto; display:flex; align-items:center; justify-content:center;
+            background:var(--bg-row); color:var(--txt-4); font-family:var(--f-mono); font-size:10px; }
+.tsd-rail { display:flex; flex-direction:column; }
+
+/* ── Shorts ──────────────────────────────────────────────────── */
+.sh-strip { display:flex; gap:20px; overflow-x:auto; padding-bottom:20px;
+            scrollbar-width:thin; scrollbar-color:var(--accent) transparent; }
+.sh-strip::-webkit-scrollbar { height:2px; }
+.sh-strip::-webkit-scrollbar-track { background:var(--bdr-2); }
+.sh-strip::-webkit-scrollbar-thumb { background:var(--accent); }
+.sh-card { flex:0 0 212px; }
+.sh-card h3 { font-size:14px !important; }
+
+/* ── Watch ───────────────────────────────────────────────────── */
+.rsp-ytmn { display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:56px; align-items:start; }
+.rsp-ytbt { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:36px; margin-top:56px; }
+.tsdx-dur { position:absolute; bottom:12px; right:12px; z-index:2; background:rgba(0,0,0,.8);
+            padding:4px 9px; font-family:var(--f-mono); font-size:9px; letter-spacing:.1em; color:#fff; }
+.tsdx-play { position:absolute; inset:0; z-index:1; display:flex; align-items:center; justify-content:center; }
+.tsdx-play span { width:64px; height:64px; border:1px solid rgba(255,255,255,.7); border-radius:50%;
+                  display:flex; align-items:center; justify-content:center;
+                  background:rgba(0,0,0,.35); transition:background .25s, border-color .25s; }
+.tsdx-card:hover .tsdx-play span { background:var(--accent); border-color:var(--accent); }
+.tsdx-card:hover .tsdx-play svg { fill:var(--on-accent); }
+.tsdx-play.is-sm span { width:40px; height:40px; }
+
+/* ── Footer ──────────────────────────────────────────────────── */
+.tsdx-foot { border-top:1px solid var(--bdr-2); padding:72px 0 40px; }
+.tsdx-foot-top { display:flex; align-items:flex-start; justify-content:space-between; gap:40px;
+                 flex-wrap:wrap; padding-bottom:56px; border-bottom:1px solid var(--bdr-2); }
+.tsdx-foot-logo img { height:40px; }
+.tsdx-foot-socials { display:flex; gap:8px; }
+.tsdx-soc { width:42px; height:42px; display:flex; align-items:center; justify-content:center;
+            border:1px solid var(--bdr); color:var(--txt-3); transition:all .18s; }
+.tsdx-soc svg { width:17px; height:17px; }
+.tsdx-soc:hover { background:var(--accent); border-color:var(--accent); color:var(--on-accent); }
+.tsdx-foot-bottom { display:flex; justify-content:space-between; gap:24px; flex-wrap:wrap;
+                    padding-top:26px; font-family:var(--f-mono); font-size:9px; letter-spacing:.14em;
+                    text-transform:uppercase; color:var(--txt-4); line-height:2.2; }
 
 /* ── Motion ──────────────────────────────────────────────────── */
-/* 1. Cover zoom on hover — frame stays square, image moves inside */
-.zoom-frame { overflow:hidden; }
-.zoom-img   { position:absolute; inset:0; transition:transform .55s cubic-bezier(.2,.6,.2,1); will-change:transform; }
-.zoom-frame:hover .zoom-img, .news-item:hover .zoom-img, article:hover .zoom-img { transform:scale(1.07); }
-.news-item:hover h3, article:hover h2, article:hover h3 { color:var(--accent-ink); }
-.news-item h3, article h2, article h3 { transition:color .18s ease; }
-/* 2. Scroll reveal */
-.reveal     { opacity:0; transform:translateY(18px); transition:opacity .6s ease, transform .6s cubic-bezier(.2,.6,.2,1); }
-.reveal.in  { opacity:1; transform:none; }
-/* 3. Count-up numbers use JS only — no styles needed beyond tabular figures */
+.reveal { opacity:0; transform:translateY(24px); transition:opacity .8s cubic-bezier(.16,1,.3,1),
+          transform .8s cubic-bezier(.16,1,.3,1); }
+.reveal.in { opacity:1; transform:none; }
 [data-count] { font-variant-numeric:tabular-nums; }
-/* 4. Speed streak — one pink sweep across the hero on first load */
-.streak     { position:absolute; top:0; bottom:0; left:0; width:26%; z-index:2; pointer-events:none;
-              background:#ffa5f7; opacity:.85; transform:skewX(-18deg) translateX(-300%);
-              animation:fx-sweep 1.15s cubic-bezier(.7,0,.25,1) .15s forwards; }
-@keyframes fx-sweep { to { transform:skewX(-18deg) translateX(500%); } }
-/* Respect users who ask for less motion */
-@media (prefers-reduced-motion: reduce) {
-  .zoom-img, .reveal { transition:none !important; }
-  .zoom-frame:hover .zoom-img, .news-item:hover .zoom-img, article:hover .zoom-img { transform:none; }
+/* คงคลาสเดิมไว้ให้หน้าบทความใช้ */
+.zoom-frame { overflow:hidden; }
+.zoom-img { position:absolute; inset:0; transition:transform .7s cubic-bezier(.16,1,.3,1); }
+.zoom-frame:hover .zoom-img { transform:scale(1.06); }
+@media (prefers-reduced-motion:reduce) {
+  *, *::before, *::after { animation:none !important; transition:none !important; }
   .reveal { opacity:1; transform:none; }
-  .streak { display:none; }
-  .ed-card { transition:none !important; }
 }
 
-/* ── Editorial system (label + hairline sections + display type) ─ */
-/* CI heading chip — pink block, dark text (same lockup as the SPORT logo) */
-.ed-label   { display:inline-block; background:var(--accent); color:var(--on-accent); font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:10px; font-weight:800; letter-spacing:.18em; text-transform:uppercase; padding:5px 12px; }
-.ed-tag     { font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:10px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--txt-3); border:1px solid var(--bdr); padding:3px 9px; white-space:nowrap; }
-.ed-head    { display:flex; align-items:center; justify-content:space-between; gap:16px; padding-bottom:14px; margin-bottom:20px; border-bottom:2px solid var(--accent); }
-.ed-head-all { font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:11px; font-weight:700; letter-spacing:.08em; color:var(--txt-3); white-space:nowrap; text-decoration:none; }
-.ed-head-all:hover { color:var(--accent-ink); }
-.ed-rule    { width:56px; height:4px; background:var(--accent); }
-.ed-display { font-family:"Chakra Petch","Space Grotesk",sans-serif; font-weight:800; text-transform:uppercase; line-height:.9; letter-spacing:-.025em; color:var(--txt); }
-.ed-lede    { font-size:17px; line-height:1.65; color:var(--txt-2); }
-/* Cards are separated by soft shadow, not borders (infographic style) */
-.ed-card    { background:var(--bg-card); box-shadow:var(--sh-2); overflow:hidden; }
-/* Full-bleed hero: the cover fills the whole band, headline sits on top of it */
-.rsp-edhero    { position:relative; min-height:620px; display:flex; overflow:hidden; background:#0b0b0d; }
-.ed-hero-cover { position:absolute; inset:0; background-size:cover !important; background-position:center !important; }
-/* Bottom-weighted rather than a flat wash: a wash dark enough for the
-   headline also buried the photograph, so the darkness is concentrated
-   where the text sits and the top of the cover comes back. */
-.ed-hero-scrim { position:absolute; inset:0; background:
-    linear-gradient(90deg, rgba(8,8,10,.78) 0%, rgba(8,8,10,.62) 32%, rgba(8,8,10,.28) 58%, rgba(8,8,10,.08) 100%),
-    linear-gradient(180deg, rgba(8,8,10,.10) 0%, transparent 28%, rgba(8,8,10,.38) 58%, rgba(8,8,10,.76) 100%); }
-.ed-hero-text  { position:relative; z-index:1; display:flex; flex-direction:column; width:100%; max-width:1280px;
-                 padding:34px 56px 44px max(40px, calc((100vw - 1280px)/2 + 40px)); }
-/* Hero copy always sits on the darkened cover, so it stays light in both themes */
-.ed-hero-text .ed-display { color:#fff; text-shadow:0 2px 28px rgba(0,0,0,.45); }
-.ed-hero-text .ed-lede    { color:rgba(255,255,255,.82); }
-.ed-hero-text .ed-tag     { color:rgba(255,255,255,.72); border-color:rgba(255,255,255,.32); }
-.ed-hero-note             { color:rgba(255,255,255,.6) !important; }
-.ed-hero-note span        { border-color:rgba(255,255,255,.4) !important; color:rgba(255,255,255,.6) !important; }
-.ed-hero-meta             { color:rgba(255,255,255,.55); }
-.ed-hero-meta b           { color:#ffa5f7; font-weight:600; }
-.ed-read { display:inline-flex; align-items:center; gap:10px; align-self:flex-start; margin-top:22px;
-           padding:11px 18px; background:var(--accent); color:#0d0d0d; text-decoration:none;
-           border:0; cursor:pointer;
-           font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:11px; font-weight:800;
-           letter-spacing:.08em; text-transform:uppercase; }
-.ed-read:hover { background:#fff; color:#0d0d0d; }
-@media (max-width:768px) {
-  .rsp-edhero    { min-height:520px; }
-  .ed-hero-scrim { background:linear-gradient(180deg, rgba(8,8,10,.58) 0%, rgba(8,8,10,.30) 32%, rgba(8,8,10,.55) 58%, rgba(8,8,10,.90) 100%); }
-  .ed-hero-text  { padding:24px 16px 32px; }
+/* ── Responsive ──────────────────────────────────────────────── */
+@media (max-width:1280px) {
+  .tsdx-lead { grid-template-columns:minmax(0,1.45fr) minmax(0,1fr); gap:40px; }
+  .tsdx-grid { gap:48px 28px; }
+  .nav-dd-top { padding:0 10px; font-size:9.5px; letter-spacing:.1em; }
 }
-/* ── Responsive layout ─────────────────────────────────────── */
-.rsp-wrap  { max-width:1280px; margin:0 auto; padding:0 40px; }
-/* One page, one rhythm — the WordPress .tsd-wrap-flow. Sections used to sit
-   on alternating bands, which made each look like a separate widget. */
-.rsp-flow  { padding-top:44px; padding-bottom:44px; }
-.rsp-flow > *          { margin-top:44px; }
-.rsp-flow > :first-child { margin-top:0; }
-.rsp-picks-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:24px; }
-.rsp-pick-card { min-width:0; }
-.rsp-pick-meta { display:flex; justify-content:space-between; gap:8px; margin-bottom:7px;
-                 font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:10px;
-                 font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
-.rsp-pick-meta span { color:var(--accent-ink); }
-.rsp-pick-meta time { color:var(--txt-3); white-space:nowrap; }
-.rsp-pick-card h3 { font-family:"Sarabun",system-ui,sans-serif; font-size:16px; line-height:1.35;
-                   font-weight:800; color:var(--txt); margin:0 0 7px; }
-.rsp-pick-card p { font-family:"Sarabun",system-ui,sans-serif; font-size:12px; line-height:1.55;
-                   color:var(--txt-2); margin:0; display:-webkit-box; -webkit-line-clamp:2;
-                   -webkit-box-orient:vertical; overflow:hidden; }
-/* Shorts strip: scrolls in the column, not edge to edge, with the accent
-   carried into the scrollbar so the rail reads as part of the design. */
-.sh-strip  { display:flex; gap:16px; overflow-x:auto; padding-bottom:14px;
-             scrollbar-width:thin; scrollbar-color:var(--accent) transparent; }
-.sh-strip::-webkit-scrollbar { height:6px; }
-.sh-strip::-webkit-scrollbar-track { background:transparent; }
-.sh-strip::-webkit-scrollbar-thumb { background:var(--accent); border-radius:3px; }
-.sh-strip::-webkit-scrollbar-thumb:hover { background:var(--accent-ink); }
-.sh-card   { flex:0 0 120px; }
-.rsp-hero  { display:grid; grid-template-columns:1fr 360px; gap:48px; align-items:start; }
-.rsp-hgrid { display:grid; grid-template-columns:7fr 3fr; gap:20px; }
-.rsp-ytmn  { display:grid; grid-template-columns:1.55fr 1fr; gap:28px; align-items:start; }
-.rsp-ytbt  { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; margin-top:28px; }
-.rsp-tbl   { overflow-x:auto; -webkit-overflow-scrolling:touch; }
-@media (max-width:768px) {
-  .ed-tag    { font-size:10px; letter-spacing:.1em; }
-  .ed-head   { padding-bottom:12px; margin-bottom:16px; }
-  /* Comfortable touch targets on phones (44px guideline) */
-  nav button { min-height:44px; }
-  nav .nav-mob, nav button[title] { min-width:44px; }
-}
-
-/* ── Navbar: 8 ช่อง + ดรอปดาวน์ + ปุ่มถาวรชิดขวา ──────────────────────────
-ยึด IA ตาม assets/tsd-menu.js — เดสก์ท็อปเปิดดรอปดาวน์ด้วย hover/โฟกัส,
-จอเล็ก (.nav-bar.open) กลายเป็นแผงแนวตั้งที่กางรายการย่อยในที่แบบแอกคอร์เดียน */
-.nav-bar   { position:relative; display:flex; align-items:center; justify-content:center;
-         gap:2px; padding:0 20px; background:#0d0d0d;
-         border-top:1px solid rgba(255,255,255,.1); }
-.nav-items { display:flex; align-items:center; justify-content:center; gap:2px; flex-wrap:wrap; }
-.nav-dd    { position:static; }
-.nav-dd-top{ display:flex; align-items:center; gap:7px; height:46px; padding:0 12px;
-         text-decoration:none; white-space:nowrap;
-         font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:13px; font-weight:600;
-         letter-spacing:.06em; text-transform:uppercase; color:rgba(255,255,255,.62);
-         border-bottom:2px solid transparent; transition:color .15s, border-color .15s; }
-.nav-dd-top:hover, .nav-dd.open .nav-dd-top { color:#fff; border-bottom-color:var(--accent); }
-/* ลูกศรบอกว่าช่องนั้นมีรายการย่อย */
-.nav-caret { font-size:9px; line-height:1; color:rgba(255,255,255,.34);
-             transition:transform .15s, color .15s; }
-.nav-dd.open .nav-caret { color:var(--accent); transform:rotate(180deg); }
-.nav-dd-top:hover .nav-caret { color:rgba(255,255,255,.7); }
-/* จุดบอกช่องอีเวนต์ที่ยัง active (เอเชียนเกมส์) */
-.nav-live-dot { width:7px; height:7px; border-radius:50%; background:var(--accent); flex:0 0 auto;
-            animation:navPulse 1.9s ease-in-out infinite; }
-@keyframes navPulse { 0%,100% { opacity:1; } 50% { opacity:.35; } }
-
-/* Desktop mega menu: full width under the entire navigation row.
-   Direct children become columns; dividers and the event note span all columns. */
-.nav-dd-panel { display:none; position:absolute; top:100%; left:0; right:0; z-index:300;
-                grid-template-columns:repeat(3, minmax(0, 1fr)); gap:0 22px;
-                padding:20px max(24px, calc((100vw - 1280px)/2 + 24px)) 24px;
-                background:#111; border:1px solid rgba(255,255,255,.12);
-                box-shadow:0 18px 44px rgba(0,0,0,.55); }
-.nav-dd.open .nav-dd-panel { display:grid; }
-.nav-dd-note { grid-column:1 / -1; padding:0 0 12px; margin:0 0 8px;
-               border-bottom:1px solid rgba(255,255,255,.08);
-               font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:10px; font-weight:600;
-               letter-spacing:.1em; text-transform:uppercase; color:rgba(255,255,255,.35); }
-.nav-dd-link { display:flex; align-items:center; justify-content:space-between; gap:14px; min-height:42px;
-               padding:10px 12px; text-decoration:none;
-               font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:13px; font-weight:600;
-               letter-spacing:.03em; color:rgba(255,255,255,.78); transition:background .12s, color .12s; }
-.nav-dd-link > span:first-child { white-space:nowrap; }
-.nav-dd-link:hover { background:rgba(255,165,247,.14); color:#fff; }
-/* รายการเครื่องมือ (หน้าเฉพาะ/ตาราง) แยกจากรายการข่าวด้วยสีชมพู */
-.nav-dd-link.is-tool { color:var(--accent); }
-.nav-dd-link.is-tool:hover { background:var(--accent); color:#0d0d0d; }
-.nav-dd-sep { grid-column:1 / -1; height:1px; background:rgba(255,255,255,.12); margin:10px 0; }
-.nav-dd-tag { font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:9.5px; font-weight:700;
-              letter-spacing:.12em; text-transform:uppercase; color:rgba(255,255,255,.32); white-space:nowrap; }
-.nav-dd-link.is-tool .nav-dd-tag { color:inherit; opacity:.75; }
-
-/* ปุ่มถาวรชิดขวา — ไม่นับเป็นรายการในเมนู */
-.nav-cta { margin-left:auto; display:inline-flex; align-items:center; gap:8px; height:34px; padding:0 16px;
-       background:var(--accent); color:#0d0d0d; text-decoration:none;
-       font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:11px; font-weight:800;
-       letter-spacing:.09em; text-transform:uppercase; white-space:nowrap; }
-.nav-cta:hover { background:#fff; }
-
-
 @media (max-width:1100px) {
-  .nav-dd-top { font-size:12px; padding:0 9px; letter-spacing:.04em; }
-  .nav-cta    { padding:0 12px; font-size:10px; }
+  :root { --gutter:28px; }
+  .nav-dd-panel { grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .rsp-ytmn { grid-template-columns:1fr; gap:40px; }
+  .tsd-scoreduo { grid-template-columns:1fr; gap:56px; }
+}
+/* เมนู 8 ช่อง + ปุ่มถาวร กว้างเกินกว่าจะอยู่แถวเดียวได้ต่ำกว่านี้
+   จึงยุบเป็นแผงเต็มจอตั้งแต่ 1024 ไม่ต้องรอถึงขนาดมือถือ */
+@media (max-width:1024px) {
+  .nav-mob { display:flex; }
+  .tsdx-navrow { height:58px; }
+  .tsdx-navlogo img { height:23px; }
+  .nav-bar { display:none; }
+  /* absolute ไม่ใช่ fixed: .tsdx-nav ใส่ backdrop-filter ไว้ ซึ่งทำให้มันกลาย
+     เป็นกรอบอ้างอิงของลูกที่เป็น fixed แผงจึงสูงเท่าแถบเมนูแทนที่จะเต็มจอ */
+  .nav-bar.open { display:flex; flex-direction:column; align-items:stretch; position:absolute;
+                  top:100%; left:0; right:0; height:calc(100svh - 58px); z-index:390;
+                  padding:18px var(--gutter) 40px; background:var(--bg);
+                  overflow-y:auto; -webkit-overflow-scrolling:touch; }
+  .nav-items { flex-direction:column; align-items:stretch; }
+  .nav-dd { border-bottom:1px solid var(--bdr-2); }
+  .nav-dd-top { height:auto; min-height:52px; padding:14px 0; font-size:11px; letter-spacing:.14em;
+                color:var(--txt); justify-content:space-between; }
+  /* ป้ายชื่อหมวด (span ที่ไม่มีคลาส) ต้องกินที่ที่เหลือ ไม่งั้นช่องที่มีจุด live
+     จะถูกดันไปอยู่กลางแถวช่องเดียว */
+  .nav-dd-top > span:not([class]) { flex:1; text-align:left; }
+  .nav-dd-panel { position:static; display:none !important; grid-template-columns:1fr;
+                  padding:0 0 14px; background:none; border:0;
+                  -webkit-backdrop-filter:none; backdrop-filter:none; }
+  .nav-dd.open .nav-dd-panel { display:block !important; }
+  .nav-dd-note { padding-bottom:10px; margin-bottom:6px; }
+  .nav-dd-link { padding:12px 0 12px 14px; font-size:13px; }
+  .nav-dd-sep { margin:8px 0; }
+  .nav-cta { margin-top:24px; height:48px; justify-content:center; }
 }
 @media (max-width:900px) {
-  /* แท็บเล็ตเล็ก: ยอมให้ตกสองบรรทัดดีกว่าล้นออกนอกจอ */
-  .nav-items { flex-wrap:wrap; }
-  .nav-bar   { flex-wrap:wrap; }
-  .nav-cta   { margin:6px auto 6px 8px; }
+  .tsdx-lead { grid-template-columns:1fr; gap:48px; }
+  .tsdx-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:44px 24px; }
+  .tsdx-grid > .is-wide { grid-column:span 2; }
+  .rsp-ytbt { grid-template-columns:repeat(2,minmax(0,1fr)); gap:28px; }
+  .tsdx-break { grid-template-columns:1fr; }
+  .tsdx-break-img { min-height:0; padding-bottom:52.3%; }
 }
 @media (max-width:768px) {
-.nav-mob { display:flex !important; }
-.nav-bar { display:none; }
-.nav-bar.open { display:flex; flex-direction:column; align-items:stretch; justify-content:flex-start;
-                position:absolute; top:100%; left:0; right:0; z-index:200; padding:6px 0 14px;
-                max-height:calc(100vh - 96px); overflow-y:auto; -webkit-overflow-scrolling:touch;
-              border-top:0; border-bottom:2px solid var(--accent);
-              box-shadow:0 12px 34px rgba(0,0,0,.45); }
-.nav-items { flex-direction:column; align-items:stretch; gap:0; }
-.nav-dd { border-bottom:1px solid rgba(255,255,255,.06); }
-.nav-dd-top { height:auto; min-height:48px; padding:12px 18px; font-size:13px;
-            justify-content:flex-start; border-bottom:0; }
-.nav-dd.open .nav-dd-top { background:rgba(255,165,247,.12); }
-.nav-count { display:inline; }
-/* จอเล็กดรอปดาวน์ไม่ลอยทับ แต่กางในที่แบบแอกคอร์เดียน */
-.nav-dd-panel { position:static; display:none !important; min-width:0; border:0; border-top:1px solid rgba(255,255,255,.08);
-                 box-shadow:none; background:#0a0a0a; padding:6px 0 10px; grid-template-columns:1fr; }
-.nav-dd.open .nav-dd-panel { display:block !important; }
-.nav-dd-note { grid-column:auto; padding:6px 18px 10px; margin-bottom:6px; }
-.nav-dd-link { min-height:0; padding:11px 18px 11px 30px; }
-.nav-dd-sep { grid-column:auto; margin:8px 18px; }
-.nav-cta { margin:16px 18px 0; height:44px; justify-content:center; }
-}
-@media (prefers-reduced-motion: reduce) {
-.nav-live-dot { animation:none; }
-}
-
-@media (max-width:1024px) {
-  .rsp-wrap  { padding:0 24px; }
-  .rsp-hero  { grid-template-columns:1fr 280px; gap:28px; }
-  .rsp-ytmn  { grid-template-columns:1.1fr 1fr; }
-  .rsp-ytbt  { grid-template-columns:repeat(2,1fr); }
-}
-@media (max-width:768px) {
-  .rsp-wrap  { padding:0 16px; }
-  .rsp-flow  { padding-top:28px; padding-bottom:28px; }
-  .rsp-flow > * { margin-top:28px; }
-  .sh-card   { flex-basis:104px; }
-  .rsp-hero  { grid-template-columns:1fr; }
-  .rsp-picks-grid { grid-template-columns:repeat(2,1fr); gap:22px 16px; }
-  .rsp-hgrid { grid-template-columns:1fr; }
-  .rsp-ytmn  { grid-template-columns:1fr; }
-  .rsp-ytbt  { grid-template-columns:repeat(2,1fr); }
-}
-@media (max-width:480px) {
-  .rsp-picks-grid { grid-template-columns:1fr; }
-  .rsp-ytbt  { grid-template-columns:1fr; }
-}
-
-/* ── Standings + Latest News ───────────────────────────────
-   Mirrors the WordPress .tsd-scoreduo: a drawn card holding the table on the
-   left, a headline rail on the right. No dark band — the card sits inside
-   the reading column at its own size. */
-.tsd-head   { display:flex; align-items:center; justify-content:space-between; gap:16px;
-              padding-bottom:14px; margin-bottom:20px; border-bottom:2px solid var(--accent); }
-.tsd-label  { display:inline-block; background:var(--accent); color:var(--on-accent);
-              font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:10px; font-weight:700;
-              letter-spacing:.18em; text-transform:uppercase; padding:5px 12px; }
-.tsd-scoreduo { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.05fr); gap:40px; align-items:start; }
-.tsd-rankcol, .tsd-newscol { min-width:0; }
-/* --card ไม่มีนิยามในไฟล์นี้ (ตัวจริงคือ --bg-card) เดิมพื้นการ์ดจึงโปร่งใส */
-.tsd-rankcard { border:1px solid var(--bdr); background:var(--bg-card); padding:4px 20px 20px; }
-.tsd-tabhead { padding:16px 0 0; }
-.tsd-scoretitle { font-family:"Chakra Petch","Space Grotesk",sans-serif; font-weight:800; text-transform:uppercase;
-              font-size:clamp(18px,2.4vw,26px); line-height:1.15; letter-spacing:-.01em; color:var(--txt); margin:0; }
-.tsd-tabs  { display:flex; gap:3px; margin:14px 0 14px; border-bottom:1px solid var(--bdr); overflow-x:auto;
-              scrollbar-width:thin; scrollbar-color:var(--accent) transparent; }
-.tsd-tabs::-webkit-scrollbar { height:3px; }
-.tsd-tabs::-webkit-scrollbar-thumb { background:var(--accent); }
-.tsd-tab    { flex:0 0 auto; border:0; cursor:pointer; padding:9px 16px; background:none;
-              color:var(--txt-3); border-bottom:2px solid transparent; margin-bottom:-1px;
-              font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:12px; font-weight:700;
-              letter-spacing:.08em; text-transform:uppercase; white-space:nowrap;
-              transition:color .15s, border-color .15s; }
-.tsd-tab:hover     { color:var(--txt); }
-.tsd-tab.is-active { color:var(--txt); border-bottom-color:var(--accent); }
-.tsd-standings-note { font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:11px; font-weight:700;
-              letter-spacing:.1em; text-transform:uppercase; color:var(--txt-3); margin:0 0 14px; }
-.tsd-tblwrap{ overflow-x:auto; -webkit-overflow-scrolling:touch;
-              scrollbar-width:thin; scrollbar-color:var(--accent) transparent; }
-.tsd-tblwrap::-webkit-scrollbar { height:6px; }
-.tsd-tblwrap::-webkit-scrollbar-thumb { background:var(--accent); border-radius:3px; }
-.tsd-tbl   { width:auto; border-collapse:collapse; min-width:min(100%,640px); margin:0 auto; }
-.tsd-tbl th { font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:9.5px; font-weight:700;
-              letter-spacing:.07em; text-transform:uppercase; color:var(--txt-3);
-              text-align:right; padding:0 6px 9px; white-space:nowrap; }
-.tsd-tbl th:first-child, .tsd-tbl th.is-name { text-align:left; }
-.tsd-tbl td { font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:12px; color:var(--txt-2);
-              text-align:right; padding:9px 6px; border-bottom:1px solid var(--bdr-2); white-space:nowrap; }
-.tsd-tbl td:first-child { text-align:left; font-weight:700; color:var(--txt); width:34px; padding-left:8px; }
-.tsd-tbl td.tsd-tbl-name { text-align:left; font-weight:700; color:var(--txt); white-space:normal; }
-.tsd-tbl td:last-child { font-weight:700; color:var(--txt); }
-.tsd-tbl tbody tr:hover td { background:var(--bg-row); }
-.tsd-cell-name { display:inline-flex; align-items:center; gap:8px; }
-.tsd-avatar-img.is-square.is-sm { width:24px; height:24px; object-fit:contain; flex:0 0 auto; display:block; border-radius:0; }
-.tsd-mono  { width:24px; height:24px; flex:0 0 auto; display:flex; align-items:center; justify-content:center;
-              background:var(--bg-alt); color:var(--txt-3);
-              font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:11px; font-weight:800; }
-.tsd-rail  { display:grid; grid-template-columns:1fr 1fr; gap:24px 22px; }
-.tsd-railitem { display:grid; grid-template-columns:76px 1fr; gap:12px; align-items:start; min-width:0; text-decoration:none; }
-.tsd-rail-img { display:block; height:56px; background:var(--bg-alt);
-              background-size:cover !important; background-position:center !important; box-shadow:var(--sh-1); }
-.tsd-rail-body { display:flex; flex-direction:column; gap:5px; min-width:0; }
-.tsd-cm-cat { font-family:"Chakra Petch","Space Grotesk",sans-serif; font-size:10px; font-weight:700;
-              letter-spacing:.12em; text-transform:uppercase; color:var(--accent-ink); }
-.tsd-rail-title { font-weight:700; font-size:13px; line-height:1.42; color:var(--txt);
-              display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
-.tsd-railitem:hover .tsd-rail-title { color:var(--accent-ink); }
-@media (max-width:768px) {
-  .tsd-scoreduo { grid-template-columns:1fr; gap:32px; }
-  .tsd-rail    { grid-template-columns:1fr; gap:18px; }
-  .tsd-rankcard { padding:4px 14px 16px; }
-  .tsd-tbl th, .tsd-tbl td { padding-left:6px; padding-right:6px; }
+  :root { --gutter:18px; }
+  .rsp-flow { padding-bottom:64px; }
+  .rsp-flow > * { margin-top:68px; }
+  .tsdx-hero { min-height:92svh; }
+  .tsdx-hero-body { padding-bottom:56px; }
+  .tsdx-hero-body::before { display:none; }
+  .tsdx-hero-inner { padding-left:0; }
+  .tsdx-hero-scrim { background:linear-gradient(180deg, rgba(0,0,0,.5) 0%, rgba(0,0,0,.2) 24%,
+                     rgba(0,0,0,.66) 60%, rgba(0,0,0,.96) 100%); }
+  .tsdx-scroll { display:none; }
+  .tsdx-head { margin-bottom:28px; padding-bottom:16px; }
+  .tsdx-grid { grid-template-columns:1fr; gap:40px; }
+  .tsdx-grid > .is-wide { grid-column:span 1; }
+  .tsdx-card.is-row { grid-template-columns:120px 1fr; gap:14px; padding:18px 0; }
+  .tsdx-card.is-row h3 { font-size:15px; }
+  .rsp-ytbt { grid-template-columns:1fr; gap:40px; }
+  .sh-card { flex-basis:162px; }
+  .tsd-rankcard { padding:0 18px 20px; }
+  .tsdx-foot { padding-top:52px; }
 }
