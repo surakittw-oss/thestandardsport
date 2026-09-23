@@ -246,16 +246,11 @@ html:not(.tsd-locked) #tsd-logout { display:block; }
 .tsdx-card h3 { font-family:var(--f-body); font-weight:800; color:var(--txt); margin:0;
                 line-height:1.32; text-wrap:pretty; transition:color .18s; }
 .tsdx-card:hover h3 { color:var(--accent-ink); }
-.tsdx-card p { font-family:var(--f-body); font-size:13.5px; line-height:1.65; color:var(--txt-3);
-               margin:10px 0 0; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;
-               overflow:hidden; }
 
 /* ขนาด XL — การ์ดนำของบล็อก */
 .tsdx-card.is-xl .tsdx-meta { font-size:11px; }
 .tsdx-card.is-xl h3 { font-family:var(--f-display); font-weight:700; text-transform:uppercase;
                       font-size:clamp(24px,2.5vw,38px); line-height:1.02; letter-spacing:-.015em; }
-.tsdx-card.is-xl p { font-family:var(--f-serif); font-size:16px; line-height:1.75; color:var(--txt-2);
-                     -webkit-line-clamp:3; max-width:58ch; }
 .tsdx-card.is-xl .tsdx-kicker { font-size:10px; margin-top:24px; }
 /* ขนาด L — การ์ดในกริดหลัก */
 .tsdx-card.is-l h3 { font-size:21px; }
@@ -267,7 +262,6 @@ html:not(.tsd-locked) #tsd-logout { display:block; }
                                   gap:20px; align-items:start; }
 .tsdx-card.is-row .tsdx-kicker { display:none; }   /* หมวดซ้ำกับแถววันที่ที่อยู่บนสุดแล้ว */
 .tsdx-card.is-row h3 { font-size:15px; line-height:1.42; }
-.tsdx-card.is-row p { font-size:13px; margin-top:9px; }
 
 /* ── บล็อก "ข่าวเด่น": ใบใหญ่ 1 + รายการข้าง 3 ────────────────── */
 .tsdx-lead { display:grid; grid-template-columns:minmax(0,1.72fr) minmax(0,1fr); gap:48px; align-items:start; }
@@ -278,7 +272,6 @@ html:not(.tsd-locked) #tsd-logout { display:block; }
 .tsdx-grid > .is-wide { grid-column:span 2; }
 .tsdx-grid > .is-wide h3 { font-family:var(--f-display); font-weight:700; text-transform:uppercase;
                            font-size:clamp(22px,2.1vw,32px); line-height:1.04; letter-spacing:-.015em; }
-.tsdx-grid > .is-wide p { font-family:var(--f-serif); font-size:15px; color:var(--txt-2); }
 
 /* ── แถบคั่นเต็มจอ ───────────────────────────────────────────── */
 /* ครึ่งซ้ายเป็นภาพ ครึ่งขวาเป็นแผ่นดำ — ภาพปกของเรามีพาดหัวพิมพ์อยู่แล้ว

@@ -185,7 +185,7 @@ function MetaRow({ date }) {
   );
 }
 
-function NewsCard({ post, size = "l", ratio, lede = true, className = "" }) {
+function NewsCard({ post, size = "l", ratio, className = "" }) {
   if (!post) return null;
   return (
     <article className={"tsdx-card reveal is-" + size + (className ? " " + className : "")}
@@ -198,7 +198,6 @@ function NewsCard({ post, size = "l", ratio, lede = true, className = "" }) {
         <div className="tsdx-body">
           <div className="tsdx-kicker"><span>{post.cat}</span></div>
           <h3>{post.title}</h3>
-          {lede && post.excerpt && post.excerpt.length > 20 && <p>{post.excerpt}</p>}
         </div>
       </div>
     </article>
