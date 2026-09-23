@@ -109,10 +109,9 @@ html:not(.tsd-locked) #tsd-logout { display:block; }
 /* แถบบางแถวเดียว โปร่งใสบน hero แล้วทึบเมื่อเลื่อน */
 .tsdx-nav { position:fixed; top:0; left:0; right:0; z-index:400;
             background:transparent; border-bottom:1px solid transparent;
-            transition:background .3s, border-color .3s, backdrop-filter .3s; }
-.tsdx-nav.is-stuck { background:rgba(8,8,10,.92); -webkit-backdrop-filter:blur(18px);
-                     backdrop-filter:blur(18px); border-bottom-color:var(--bdr-2); }
-[data-theme="light"] .tsdx-nav.is-stuck { background:rgba(250,249,247,.92); }
+            transition:background .3s, border-color .3s; }
+/* ทึบไปเลย ไม่ใช่ดำโปร่ง — ภาพข่าวที่ไหลผ่านใต้แถบทำให้ตัวเมนูอ่านยาก */
+.tsdx-nav.is-stuck { background:var(--bg); border-bottom-color:var(--bdr-2); }
 /* nav อยู่บนภาพ hero เสมอ ตัวหนังสือจึงขาวตลอดจนกว่าจะ stuck ในโหมดกระดาษ
    แถบนี้กินเต็มความกว้างจอ ไม่หุบตามคอลัมน์อ่าน โลโก้จึงชิดขอบซ้ายจริง ๆ
    และเมนูมีที่พอให้วางกลางโดยไม่ต้องบีบตัวอักษร */
@@ -147,9 +146,7 @@ html:not(.tsd-locked) #tsd-logout { display:block; }
 .nav-dd-panel { display:none; position:absolute; top:100%; left:0; right:0; z-index:300;
                 grid-template-columns:repeat(4,minmax(0,1fr)); gap:0 24px;
                 padding:30px 40px 36px;
-                background:rgba(10,10,12,.97); -webkit-backdrop-filter:blur(20px); backdrop-filter:blur(20px);
-                border-top:1px solid var(--bdr-2); }
-[data-theme="light"] .nav-dd-panel { background:rgba(255,255,255,.98); }
+                background:var(--bg); border-top:1px solid var(--bdr-2); }
 .nav-dd.open .nav-dd-panel { display:grid; }
 .nav-dd-note { grid-column:1/-1; padding:0 0 14px; margin:0 0 10px; border-bottom:1px solid var(--bdr-2);
                font-family:var(--f-mono); font-size:9px; letter-spacing:.2em; text-transform:uppercase;
@@ -271,28 +268,6 @@ html:not(.tsd-locked) #tsd-logout { display:block; }
 .tsdx-grid > .is-wide h3 { font-family:var(--f-display); font-weight:700; text-transform:uppercase;
                            font-size:clamp(22px,2.1vw,32px); line-height:1.04; letter-spacing:-.015em; }
 
-/* ── แถบคั่นเต็มจอ ───────────────────────────────────────────── */
-/* ครึ่งซ้ายเป็นภาพ ครึ่งขวาเป็นแผ่นดำ — ภาพปกของเรามีพาดหัวพิมพ์อยู่แล้ว
-   ถ้าเอาตัวหนังสือไปทับจะอ่านชนกันสองชั้น จึงแยกที่อยู่ให้ชัด */
-.tsdx-break { display:grid; grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);
-              align-items:stretch; cursor:pointer; background:var(--bg-alt);
-              margin-left:calc(50% - 50vw); margin-right:calc(50% - 50vw); width:100vw; }
-.tsdx-break-img { position:relative; overflow:hidden; min-height:clamp(320px,38vw,520px); }
-.tsdx-break-img > i { position:absolute; inset:0; background-size:cover !important;
-                      background-position:center !important;
-                      transition:transform 1.1s cubic-bezier(.16,1,.3,1); }
-.tsdx-break:hover .tsdx-break-img > i { transform:scale(1.05); }
-.tsdx-break-panel { display:flex; flex-direction:column; align-items:flex-start;
-                    justify-content:center; gap:4px; background:var(--bg-alt);
-                    padding:clamp(32px,4vw,68px) clamp(28px,5vw,88px); }
-.tsdx-break h3 { font-family:var(--f-display); font-weight:700; color:var(--txt);
-                 font-size:clamp(22px,2.4vw,38px); line-height:1.12; letter-spacing:-.015em;
-                 margin:22px 0 18px; transition:color .2s; }
-.tsdx-break:hover h3 { color:var(--accent-ink); }
-.tsdx-break p { font-family:var(--f-serif); font-size:clamp(14px,1.1vw,16px); line-height:1.8;
-                color:var(--txt-3); margin:0 0 30px; max-width:46ch;
-                display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden; }
-
 /* ── Shorts ──────────────────────────────────────────────────── */
 .sh-strip { display:flex; gap:20px; overflow-x:auto; padding-bottom:20px;
             scrollbar-width:thin; scrollbar-color:var(--accent) transparent; }
@@ -356,24 +331,14 @@ html:not(.tsd-locked) #tsd-logout { display:block; }
   transition:opacity .55s cubic-bezier(.16,1,.3,1) .16s, transform .55s cubic-bezier(.16,1,.3,1) .16s,
              background-size .9s cubic-bezier(.16,1,.3,1); }
 
-/* แถบคั่นเต็มจอ: ภาพเปิดแบบเดียวกัน แผ่นข้อความตามมา */
-.tsdx-break.reveal { opacity:1; transform:none; }
-.tsdx-break.reveal .tsdx-break-img > i { clip-path:inset(100% 0 0 0); }
-.tsdx-break.reveal.in .tsdx-break-img > i { clip-path:inset(0 0 0 0);
-  transition:clip-path 1s cubic-bezier(.16,1,.3,1), transform 1.1s cubic-bezier(.16,1,.3,1); }
-.tsdx-break.reveal .tsdx-break-panel { opacity:0; transform:translateY(18px); }
-.tsdx-break.reveal.in .tsdx-break-panel { opacity:1; transform:none;
-  transition:opacity .7s cubic-bezier(.16,1,.3,1) .2s, transform .7s cubic-bezier(.16,1,.3,1) .2s; }
 /* คงคลาสเดิมไว้ให้หน้าบทความใช้ */
 .zoom-frame { overflow:hidden; }
 .zoom-img { position:absolute; inset:0; transition:transform .7s cubic-bezier(.16,1,.3,1); }
 .zoom-frame:hover .zoom-img { transform:scale(1.06); }
 @media (prefers-reduced-motion:reduce) {
   *, *::before, *::after { animation:none !important; transition:none !important; }
-  .reveal, .tsdx-card.reveal .tsdx-meta, .tsdx-card.reveal .tsdx-body,
-  .tsdx-break.reveal .tsdx-break-panel { opacity:1; transform:none; }
-  .tsdx-card.reveal .tsdx-frame > i,
-  .tsdx-break.reveal .tsdx-break-img > i { clip-path:none; }
+  .reveal, .tsdx-card.reveal .tsdx-meta, .tsdx-card.reveal .tsdx-body { opacity:1; transform:none; }
+  .tsdx-card.reveal .tsdx-frame > i { clip-path:none; }
   .tsdx-card.reveal .tsdx-meta { border-top-color:var(--bdr); background-image:none; }
 }
 
@@ -393,8 +358,8 @@ html:not(.tsd-locked) #tsd-logout { display:block; }
   .tsdx-navpad { padding-top:64px; }
   .tsdx-navlogo img { height:28px; }
   .nav-bar { display:none; }
-  /* absolute ไม่ใช่ fixed: .tsdx-nav ใส่ backdrop-filter ไว้ ซึ่งทำให้มันกลาย
-     เป็นกรอบอ้างอิงของลูกที่เป็น fixed แผงจึงสูงเท่าแถบเมนูแทนที่จะเต็มจอ */
+  /* absolute ไม่ใช่ fixed: .tsdx-nav เป็น position:fixed อยู่แล้ว จึงเป็นกรอบ
+     อ้างอิงให้ลูก และ absolute จะวัดจากตัวมันได้ตรงกว่าในทุกกรณี */
   .nav-bar.open { display:flex; flex-direction:column; align-items:stretch; position:absolute;
                   top:100%; left:0; right:0; height:calc(100svh - 64px); z-index:390;
                   padding:18px 18px 40px; background:var(--bg);
@@ -409,8 +374,7 @@ html:not(.tsd-locked) #tsd-logout { display:block; }
      จะถูกดันไปอยู่กลางแถวช่องเดียว */
   .nav-dd-top > span:not([class]) { flex:1; text-align:left; }
   .nav-dd-panel { position:static; display:none !important; grid-template-columns:1fr;
-                  padding:0 0 14px; background:none; border:0;
-                  -webkit-backdrop-filter:none; backdrop-filter:none; }
+                  padding:0 0 14px; background:none; border:0; }
   .nav-dd.open .nav-dd-panel { display:block !important; }
   .nav-dd-note { padding-bottom:10px; margin-bottom:6px; }
   .nav-dd-link { padding:12px 0 12px 14px; font-size:13px; }
@@ -428,8 +392,6 @@ html:not(.tsd-locked) #tsd-logout { display:block; }
   .tsdx-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:44px 24px; }
   .tsdx-grid > .is-wide { grid-column:span 2; }
   .rsp-ytbt { grid-template-columns:repeat(2,minmax(0,1fr)); gap:28px; }
-  .tsdx-break { grid-template-columns:1fr; }
-  .tsdx-break-img { min-height:0; padding-bottom:52.3%; }
 }
 @media (max-width:768px) {
   :root { --gutter:18px; }

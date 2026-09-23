@@ -255,23 +255,6 @@ function LeadBlock() {
   );
 }
 
-// ── แถบคั่นเต็มจอ: หยิบเรื่องยาวหนึ่งเรื่องมาขยายเต็มความกว้างจอ ─────────────
-// ทำหน้าที่เดียวกับแบนด์ภาพใหญ่ในเว็บ ref คือตัดจังหวะไม่ให้กริดไหลยาวจนล้า
-function BreakBand({ post }) {
-  if (!post) return null;
-  return (
-    <section className="tsdx-break reveal" onClick={()=>openPost(post)}>
-      <div className="tsdx-break-img"><i style={{ background:post.bg }} /></div>
-      <div className="tsdx-break-panel">
-        <span className="tx-chip">{post.cat}</span>
-        <h3>{post.title}</h3>
-        {post.excerpt && post.excerpt.length > 20 && <p>{post.excerpt}</p>}
-        <span className="btn is-ghost">อ่านต่อ <span aria-hidden="true">→</span></span>
-      </div>
-    </section>
-  );
-}
-
 // ── ข่าวล่าสุด: ใบแรกกินสองช่องเป็นภาพแนวนอนยาว ที่เหลือไล่เป็นกริดสามช่อง ──
 function LatestGrid() {
   const items = POSTS.slice(6, 15);
@@ -341,7 +324,7 @@ function Footer() {
     </footer>
   );
 }
-Object.assign(window, { Hero, LeadBlock, BreakBand, LatestGrid, NewsCard, MetaRow, Footer, SectionHead, RATIO });
+Object.assign(window, { Hero, LeadBlock, LatestGrid, NewsCard, MetaRow, Footer, SectionHead, RATIO });
 </script>
 
 <!-- ③ MAIN APP + YOUTUBE -->
@@ -488,19 +471,13 @@ function App() {
     return () => { mo.disconnect(); io.disconnect(); window.removeEventListener('scroll', sweep); };
   }, []);
 
-  // จังหวะของหน้า: ภาพเต็มจอ → ข่าวเด่น → แถบคั่นเต็มจอ → ข่าวล่าสุด
-  // → คลิปสั้น → วิดีโอ   สลับกริดกับภาพเต็มความกว้างไปมา
-  // ไม่ให้เป็นกริดไหลยาวต่อกันหมดจนสายตาไม่มีที่พัก
-  const breakPost = POSTS[15] || POSTS[6];
+  // จังหวะของหน้า: ภาพเต็มจอ → ข่าวเด่น → ข่าวล่าสุด → คลิปสั้น → วิดีโอ
   return (
     <div>
       <window.Navbar dark={dark} onToggleDark={()=>setDark(d=>!d)} />
       <window.Hero post={POSTS[0]} />
       <div className="rsp-wrap rsp-flow">
         <window.LeadBlock />
-      </div>
-      <window.BreakBand post={breakPost} />
-      <div className="rsp-wrap rsp-flow">
         <window.LatestGrid />
         <ShortsSection />
         <YouTubeSection />
