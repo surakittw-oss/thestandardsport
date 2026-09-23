@@ -191,8 +191,6 @@ html:not(.tsd-locked) #tsd-logout { display:block; }
                    margin:0 0 26px; max-width:900px; cursor:pointer;
                    text-wrap:balance; transition:color .2s; }
 .tsdx-hero-title:hover { color:var(--accent); }
-.tsdx-hero-lede { font-family:var(--f-serif); font-size:clamp(15px,1.25vw,19px); line-height:1.7;
-                  color:rgba(255,255,255,.78); max-width:620px; margin:0 0 32px; }
 .tsdx-hero-meta { font-family:var(--f-mono); font-size:10px; letter-spacing:.16em; text-transform:uppercase;
                   color:rgba(255,255,255,.55); margin-bottom:30px; }
 .tsdx-hero-meta b { color:var(--accent); font-weight:500; }

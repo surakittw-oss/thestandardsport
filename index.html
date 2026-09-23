@@ -221,8 +221,6 @@ function Hero({ post }) {
           </div>
           <p className="tsdx-hero-cat">{post.cat}</p>
           <h1 className="tsdx-hero-title" onClick={()=>openPost(post)}>{post.title}</h1>
-          {post.excerpt && post.excerpt.length > 20 &&
-            <p className="tsdx-hero-lede">{post.excerpt}</p>}
           <div className="tsdx-hero-meta">เรื่อง <b>{post.author}</b></div>
           <div className="tsdx-hero-actions">
             <button type="button" className="btn" onClick={()=>openPost(post)}>อ่านเรื่องนี้</button>
