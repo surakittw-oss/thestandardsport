@@ -225,18 +225,32 @@ const bgThumb = (n) => "url('" + (n.thumb || n.img) + "') center/cover no-repeat
 // กรอบภาพตรึงสัดส่วนไว้ตามขนาดการ์ด ไม่ใช้สัดส่วนจริงของรูป เพราะในกริด
 // ภาพสูงต่ำไม่เท่ากันทำให้แถวเบี้ยวและอ่านยาก
 const RATIO = { xl:"52.3%", l:"52.3%", m:"52.3%", row:"52.3%", wide:"52.3%" };
+
+// แถววันที่: วันซ้าย ปีขวา คร่อมเส้นบาง — โครงเดินเรื่องแบบตารางของ ref
+// ชุดดาต้าส่งวันที่มาเป็นสตริงเดียว ("19 ก.ย. 2026") จึงตัดคำท้ายออกมาเป็นปี
+function MetaRow({ date }) {
+  const parts = String(date || "").trim().split(/\s+/).filter(Boolean);
+  const year = parts.length > 1 ? parts.pop() : "";
+  return (
+    <div className="tsdx-meta"><span>{parts.join(" ")}</span><span>{year}</span></div>
+  );
+}
+
 function NewsCard({ post, size = "l", ratio, lede = true, className = "" }) {
   if (!post) return null;
   return (
     <article className={"tsdx-card is-" + size + (className ? " " + className : "")}
              onClick={()=>openPost(post)}>
-      <div className="tsdx-frame" style={{ paddingBottom: ratio || RATIO[size] || "66%" }}>
-        <i style={{ background: size === "row" ? bgThumb(post) : post.bg }} />
-      </div>
-      <div className="tsdx-body">
-        <div className="tsdx-kicker"><span>{post.cat}</span><time>{post.date}</time></div>
-        <h3>{post.title}</h3>
-        {lede && post.excerpt && post.excerpt.length > 20 && <p>{post.excerpt}</p>}
+      <MetaRow date={post.date} />
+      <div className="tsdx-rowbody">
+        <div className="tsdx-frame" style={{ paddingBottom: ratio || RATIO[size] || "52.3%" }}>
+          <i style={{ background: size === "row" ? bgThumb(post) : post.bg }} />
+        </div>
+        <div className="tsdx-body">
+          <div className="tsdx-kicker"><span>{post.cat}</span></div>
+          <h3>{post.title}</h3>
+          {lede && post.excerpt && post.excerpt.length > 20 && <p>{post.excerpt}</p>}
+        </div>
       </div>
     </article>
   );
@@ -380,7 +394,7 @@ function Hero({ post }) {
 // ไม่ใช่การ์ดขนาดเท่ากันสี่ใบที่มองแล้วไม่รู้ว่าอันไหนสำคัญ
 function LeadBlock() {
   const lead = POSTS[1];
-  const rest = POSTS.slice(2, 5);
+  const rest = POSTS.slice(2, 6);
   if (!lead) return null;
   return (
     <section className="reveal">
@@ -390,7 +404,7 @@ function LeadBlock() {
       <div className="tsdx-lead">
         <NewsCard post={lead} size="xl" />
         <div className="tsdx-leadlist">
-          {rest.map(p => <NewsCard key={p.id} post={p} size="row" lede={false} />)}
+          {rest.map(p => <NewsCard key={p.id} post={p} size="row" />)}
         </div>
       </div>
     </section>
@@ -416,7 +430,7 @@ function BreakBand({ post }) {
 
 // ── ข่าวล่าสุด: ใบแรกกินสองช่องเป็นภาพแนวนอนยาว ที่เหลือไล่เป็นกริดสามช่อง ──
 function LatestGrid() {
-  const items = POSTS.slice(5, 14);
+  const items = POSTS.slice(6, 15);
   if (!items.length) return null;
   return (
     <section id="latest" className="reveal">
@@ -520,7 +534,7 @@ function StandingsBand({ font, onOpen }) {
             <h2 style={{ fontSize:"clamp(22px,2.2vw,30px)" }}>จาก<em>สนาม</em></h2>
           </div>
           <div className="tsd-rail">
-            {rail.map(p => <NewsCard key={p.id} post={p} size="row" lede={false} />)}
+            {rail.map(p => <NewsCard key={p.id} post={p} size="row" />)}
           </div>
         </div>
       </div>
@@ -611,16 +625,19 @@ function VideoCard({ video, size = "l" }) {
   return (
     <a className={"tsdx-card is-" + size} href={`https://www.youtube.com/watch?v=${video.id}`}
        target="_blank" rel="noopener noreferrer">
-      <div className="tsdx-frame" style={{ paddingBottom:"56.25%" }}>
-        <i style={{ background:video.bg }} />
-        <span className={"tsdx-play" + (size === "row" ? " is-sm" : "")}>
-          <span><svg width={size === "row" ? 12 : 18} height={size === "row" ? 12 : 18} viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></span>
-        </span>
-        {video.dur && <span className="tsdx-dur">{video.dur}</span>}
-      </div>
-      <div className="tsdx-body">
-        <div className="tsdx-kicker"><span>Watch</span><time>{video.date}</time></div>
-        <h3>{video.title}</h3>
+      <MetaRow date={video.date} />
+      <div className="tsdx-rowbody">
+        <div className="tsdx-frame" style={{ paddingBottom:"56.25%" }}>
+          <i style={{ background:video.bg }} />
+          <span className={"tsdx-play" + (size === "row" ? " is-sm" : "")}>
+            <span><svg width={size === "row" ? 12 : 18} height={size === "row" ? 12 : 18} viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></span>
+          </span>
+          {video.dur && <span className="tsdx-dur">{video.dur}</span>}
+        </div>
+        <div className="tsdx-body">
+          <div className="tsdx-kicker"><span>Watch</span></div>
+          <h3>{video.title}</h3>
+        </div>
       </div>
     </a>
   );
@@ -630,11 +647,13 @@ function ShortCard({ video }) {
   return (
     <a className="tsdx-card is-m sh-card" href={`https://www.youtube.com/shorts/${video.id}`}
        target="_blank" rel="noopener noreferrer">
-      <div className="tsdx-frame" style={{ paddingBottom:"177.7%" }}>
-        <i style={{ background:video.bg }} />
-        <span className="tsdx-play is-sm"><span><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></span></span>
+      <div className="tsdx-rowbody">
+        <div className="tsdx-frame" style={{ paddingBottom:"177.7%" }}>
+          <i style={{ background:video.bg }} />
+          <span className="tsdx-play is-sm"><span><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></span></span>
+        </div>
+        <div className="tsdx-body"><h3 style={{ marginTop:14 }}>{video.title}</h3></div>
       </div>
-      <div className="tsdx-body"><h3 style={{ marginTop:14 }}>{video.title}</h3></div>
     </a>
   );
 }
@@ -746,7 +765,7 @@ function App() {
   // จังหวะของหน้า: ภาพเต็มจอ → ข่าวเด่น → แถบคั่นเต็มจอ → ข่าวล่าสุด
   // → ตารางคะแนน → คลิปสั้น → วิดีโอ   สลับกริดกับภาพเต็มความกว้างไปมา
   // ไม่ให้เป็นกริดไหลยาวต่อกันหมดจนสายตาไม่มีที่พัก
-  const breakPost = POSTS[14] || POSTS[5];
+  const breakPost = POSTS[15] || POSTS[6];
   return (
     <div>
       <window.Navbar dark={dark} onToggleDark={()=>setDark(d=>!d)} />

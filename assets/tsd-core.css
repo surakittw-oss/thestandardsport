@@ -32,9 +32,9 @@
   --bg:#faf9f7; --bg-alt:#f1efec; --bg-card:#ffffff; --bg-row:#f6f5f3;
   --txt:#0a0a0c; --txt-2:rgba(10,10,12,.72); --txt-3:rgba(10,10,12,.5); --txt-4:rgba(10,10,12,.34);
   --bdr:rgba(10,10,12,.16); --bdr-2:rgba(10,10,12,.08);
-  /* ชมพู CI (#ffa5f7) อ่อนเกินกว่าจะวางบนกระดาษขาวได้ โหมดนี้จึงใช้ชมพูเข้ม
-     ซึ่งเป็นสีเดียวกันแค่ลดความสว่างลงให้ผ่านเกณฑ์ contrast */
-  --accent:#cc179b; --accent-ink:#cc179b; --accent-2:#a8127f; --on-accent:#ffffff;
+  /* พื้นชมพูยังเป็น CI ตัวเดิม (#ffa5f7) เปลี่ยนเฉพาะ --accent-ink ที่ใช้กับ
+     ตัวหนังสือเล็ก ๆ เพราะชมพู CI บนกระดาษขาวอ่านไม่ออก */
+  --accent-ink:#d81b8f; --accent-2:#ff8cf3;
 }
 
 *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
@@ -58,7 +58,7 @@ html.tsd-locked #tsd-gate { display:flex; }
 #tsd-gate-logo img { height:38px; width:auto; display:block; }
 #tsd-gate p { color:var(--txt-3); font-family:var(--f-mono); font-size:11px; letter-spacing:.08em;
               line-height:2; max-width:360px; text-transform:uppercase; }
-#tsd-gate-err { color:var(--accent); font-size:12px; display:none; max-width:340px; text-transform:none; }
+#tsd-gate-err { color:var(--accent-ink); font-size:12px; display:none; max-width:340px; text-transform:none; }
 #tsd-logout { display:none; position:fixed; right:14px; bottom:14px; z-index:999998;
   font-family:var(--f-mono); font-size:9px; letter-spacing:.16em; text-transform:uppercase;
   color:var(--txt-3); background:transparent; border:1px solid var(--bdr); padding:8px 12px; }
@@ -71,7 +71,7 @@ html:not(.tsd-locked) #tsd-logout { display:block; }
               letter-spacing:-.015em; text-transform:uppercase; color:var(--txt); }
 /* พาดหัวไทยไม่ควร uppercase (ไม่มีผล) แต่ต้องการบรรทัดหายใจกว่านิดหนึ่ง */
 .tx-display.is-th { line-height:1.06; letter-spacing:-.01em; }
-.tx-pink { color:var(--accent); }
+.tx-pink { color:var(--accent-ink); }
 /* ป้ายเล็ก monospace — kicker, meta, ปุ่ม, เมนู */
 .tx-mono { font-family:var(--f-mono); font-size:10px; font-weight:500; letter-spacing:.16em;
            text-transform:uppercase; color:var(--txt-3); }
@@ -88,11 +88,11 @@ html:not(.tsd-locked) #tsd-logout { display:block; }
        background:var(--accent); color:var(--on-accent); text-decoration:none;
        font-family:var(--f-mono); font-size:10px; font-weight:500; letter-spacing:.18em;
        text-transform:uppercase; transition:background .18s, color .18s, border-color .18s; }
-.btn:hover { background:transparent; color:var(--accent); }
+.btn:hover { background:transparent; color:var(--accent-ink); }
 .btn.is-ghost { background:transparent; border-color:var(--bdr); color:var(--txt); }
-.btn.is-ghost:hover { border-color:var(--accent); color:var(--accent); }
+.btn.is-ghost:hover { border-color:var(--accent); color:var(--accent-ink); }
 .btn.is-bare { background:none; border:0; padding:15px 0; color:var(--txt-2); }
-.btn.is-bare:hover { color:var(--accent); }
+.btn.is-bare:hover { color:var(--accent-ink); }
 
 /* ── Shell ───────────────────────────────────────────────────── */
 .rsp-wrap { max-width:var(--maxw); margin:0 auto; padding:0 var(--gutter); }
@@ -119,8 +119,11 @@ html:not(.tsd-locked) #tsd-logout { display:block; }
 .tsdx-navtools { margin-left:auto; display:flex; align-items:center; gap:6px; }
 .tsdx-iconbtn { width:34px; height:34px; display:flex; align-items:center; justify-content:center;
                 background:none; border:1px solid transparent; color:#fff; transition:border-color .15s, color .15s; }
-.tsdx-iconbtn:hover { border-color:var(--bdr); color:var(--accent); }
+.tsdx-iconbtn:hover { border-color:var(--bdr); color:var(--accent-ink); }
 [data-theme="light"] .tsdx-nav.is-stuck .tsdx-iconbtn { color:var(--txt); }
+/* ตอนยังไม่ stuck แถบลอยอยู่บนภาพ hero ที่มืดเสมอ ใช้ชมพู CI ตัวสว่างได้ */
+.tsdx-nav:not(.is-stuck) .tsdx-iconbtn:hover,
+.tsdx-nav:not(.is-stuck) .nav-dd-top:hover { color:var(--accent); }
 
 .nav-bar { display:flex; align-items:center; gap:0; }
 .nav-items { display:flex; align-items:center; gap:0; }
@@ -129,7 +132,7 @@ html:not(.tsd-locked) #tsd-logout { display:block; }
               text-decoration:none; white-space:nowrap; color:rgba(255,255,255,.7);
               font-family:var(--f-mono); font-size:10px; font-weight:500; letter-spacing:.14em;
               text-transform:uppercase; transition:color .15s; }
-.nav-dd-top:hover, .nav-dd.open .nav-dd-top { color:var(--accent); }
+.nav-dd-top:hover, .nav-dd.open .nav-dd-top { color:var(--accent-ink); }
 [data-theme="light"] .tsdx-nav.is-stuck .nav-dd-top { color:var(--txt-2); }
 [data-theme="light"] .tsdx-nav.is-stuck .nav-dd-top:hover { color:var(--accent-ink); }
 .nav-caret { font-size:7px; line-height:1; opacity:.5; transition:transform .15s; }
@@ -147,12 +150,12 @@ html:not(.tsd-locked) #tsd-logout { display:block; }
 .nav-dd.open .nav-dd-panel { display:grid; }
 .nav-dd-note { grid-column:1/-1; padding:0 0 14px; margin:0 0 10px; border-bottom:1px solid var(--bdr-2);
                font-family:var(--f-mono); font-size:9px; letter-spacing:.2em; text-transform:uppercase;
-               color:var(--accent); }
+               color:var(--accent-ink); }
 .nav-dd-link { display:flex; align-items:center; justify-content:space-between; gap:14px;
                padding:11px 0; text-decoration:none; border-bottom:1px solid var(--bdr-2);
                font-family:var(--f-body); font-size:14px; font-weight:600; color:var(--txt-2);
                transition:color .12s, padding-left .12s; }
-.nav-dd-link:hover { color:var(--accent); padding-left:8px; }
+.nav-dd-link:hover { color:var(--accent-ink); padding-left:8px; }
 .nav-dd-link.is-tool { color:var(--accent-ink); }
 .nav-dd-sep { grid-column:1/-1; height:1px; background:var(--bdr-2); margin:12px 0; }
 .nav-dd-tag { font-family:var(--f-mono); font-size:9px; letter-spacing:.14em; text-transform:uppercase;
@@ -213,15 +216,21 @@ html:not(.tsd-locked) #tsd-logout { display:block; }
 .tsdx-head h2 { font-family:var(--f-display); font-weight:700; text-transform:uppercase;
                 font-size:clamp(30px,4.4vw,62px); line-height:.9; letter-spacing:-.02em;
                 color:var(--txt); margin:0; }
-.tsdx-head h2 em { font-style:normal; color:var(--accent); display:block; }
+.tsdx-head h2 em { font-style:normal; color:var(--accent-ink); display:block; }
 .tsdx-head-note { font-family:var(--f-mono); font-size:10px; letter-spacing:.16em; text-transform:uppercase;
                   color:var(--txt-3); text-decoration:none; white-space:nowrap; padding-bottom:6px;
                   display:inline-flex; align-items:center; gap:8px; transition:color .15s, gap .15s; }
-.tsdx-head-note:hover { color:var(--accent); gap:14px; }
+.tsdx-head-note:hover { color:var(--accent-ink); gap:14px; }
 
 /* ── Card system ─────────────────────────────────────────────── */
-/* การ์ดทุกใบ: ภาพ + kicker mono + พาดหัว + เกริ่น — ต่างกันแค่ "ขนาด" */
+/* การ์ดทุกใบมีสามส่วนเรียงกัน: แถววันที่ > ภาพ > ตัวหนังสือ
+   ต่างกันแค่ "ขนาด" (xl / l / m / row) ไม่ใช่คนละแบบ */
 .tsdx-card { display:block; text-decoration:none; cursor:pointer; min-width:0; }
+/* แถววันที่คร่อมเส้นบาง วันที่ซ้าย ปีขวา — โครงแบบตารางเดินเรื่องของ ref */
+.tsdx-meta { display:flex; align-items:baseline; justify-content:space-between; gap:12px;
+             padding:0 0 14px; border-top:1px solid var(--bdr); padding-top:14px;
+             font-family:var(--f-mono); font-size:10px; font-weight:500; letter-spacing:.16em;
+             text-transform:uppercase; color:var(--txt); }
 .tsdx-frame { position:relative; overflow:hidden; background:var(--bg-alt); }
 .tsdx-frame > i { position:absolute; inset:0; background-size:cover !important;
                   background-position:center !important; transition:transform .7s cubic-bezier(.16,1,.3,1); }
@@ -231,19 +240,20 @@ html:not(.tsd-locked) #tsd-logout { display:block; }
                      background:var(--accent); transform:scaleX(0); transform-origin:left;
                      transition:transform .45s cubic-bezier(.16,1,.3,1); z-index:2; }
 .tsdx-card:hover .tsdx-frame::after { transform:scaleX(1); }
+.tsdx-rowbody { min-width:0; }
 .tsdx-body { min-width:0; }
 .tsdx-kicker { display:flex; align-items:center; gap:10px; margin:18px 0 10px;
                font-family:var(--f-mono); font-size:9.5px; letter-spacing:.16em; text-transform:uppercase; }
-.tsdx-kicker span { color:var(--accent); }
-.tsdx-kicker time { color:var(--txt-4); margin-left:auto; white-space:nowrap; }
+.tsdx-kicker span { color:var(--accent-ink); }
 .tsdx-card h3 { font-family:var(--f-body); font-weight:800; color:var(--txt); margin:0;
                 line-height:1.32; text-wrap:pretty; transition:color .18s; }
-.tsdx-card:hover h3 { color:var(--accent); }
+.tsdx-card:hover h3 { color:var(--accent-ink); }
 .tsdx-card p { font-family:var(--f-body); font-size:13.5px; line-height:1.65; color:var(--txt-3);
                margin:10px 0 0; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;
                overflow:hidden; }
 
 /* ขนาด XL — การ์ดนำของบล็อก */
+.tsdx-card.is-xl .tsdx-meta { font-size:11px; }
 .tsdx-card.is-xl h3 { font-family:var(--f-display); font-weight:700; text-transform:uppercase;
                       font-size:clamp(24px,2.5vw,38px); line-height:1.02; letter-spacing:-.015em; }
 .tsdx-card.is-xl p { font-family:var(--f-serif); font-size:16px; line-height:1.75; color:var(--txt-2);
@@ -253,17 +263,17 @@ html:not(.tsd-locked) #tsd-logout { display:block; }
 .tsdx-card.is-l h3 { font-size:21px; }
 /* ขนาด M */
 .tsdx-card.is-m h3 { font-size:17px; }
-/* แนวนอน: ภาพซ้าย ข้อความขวา */
-.tsdx-card.is-row { display:grid; grid-template-columns:168px 1fr; gap:20px; align-items:start;
-                    padding:22px 0; border-bottom:1px solid var(--bdr-2); }
-.tsdx-card.is-row .tsdx-kicker { margin:0 0 8px; }
-.tsdx-card.is-row h3 { font-size:17px; }
-.tsdx-card.is-row p { display:none; }
-.tsdx-card.is-row:first-child { padding-top:0; }
+/* แนวนอน: แถววันที่เต็มความกว้าง แล้วภาพเล็กซ้าย ข้อความขวา */
+.tsdx-card.is-row { padding-bottom:26px; }
+.tsdx-card.is-row .tsdx-rowbody { display:grid; grid-template-columns:150px minmax(0,1fr);
+                                  gap:20px; align-items:start; }
+.tsdx-card.is-row .tsdx-kicker { display:none; }   /* หมวดซ้ำกับแถววันที่ที่อยู่บนสุดแล้ว */
+.tsdx-card.is-row h3 { font-size:15px; line-height:1.42; }
+.tsdx-card.is-row p { font-size:13px; margin-top:9px; }
 
 /* ── บล็อก "ข่าวเด่น": ใบใหญ่ 1 + รายการข้าง 3 ────────────────── */
-.tsdx-lead { display:grid; grid-template-columns:minmax(0,1.62fr) minmax(0,1fr); gap:56px; align-items:start; }
-.tsdx-leadlist { display:flex; flex-direction:column; }
+.tsdx-lead { display:grid; grid-template-columns:minmax(0,1.72fr) minmax(0,1fr); gap:48px; align-items:start; }
+.tsdx-leadlist { display:flex; flex-direction:column; min-width:0; }
 
 /* ── กริดข่าวล่าสุด: ใบแรกกว้าง 2 ช่อง แล้วไล่ลงมาเท่ากัน ─────── */
 .tsdx-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:56px 36px; }
@@ -289,7 +299,7 @@ html:not(.tsd-locked) #tsd-logout { display:block; }
 .tsdx-break h3 { font-family:var(--f-display); font-weight:700; color:var(--txt);
                  font-size:clamp(22px,2.4vw,38px); line-height:1.12; letter-spacing:-.015em;
                  margin:22px 0 18px; transition:color .2s; }
-.tsdx-break:hover h3 { color:var(--accent); }
+.tsdx-break:hover h3 { color:var(--accent-ink); }
 .tsdx-break p { font-family:var(--f-serif); font-size:clamp(14px,1.1vw,16px); line-height:1.8;
                 color:var(--txt-3); margin:0 0 30px; max-width:46ch;
                 display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden; }
@@ -311,7 +321,7 @@ html:not(.tsd-locked) #tsd-logout { display:block; }
            white-space:nowrap; transition:color .15s, border-color .15s; }
 .tsd-tab:first-child { padding-left:0; }
 .tsd-tab:hover { color:var(--txt-2); }
-.tsd-tab.is-active { color:var(--accent); border-bottom-color:var(--accent); }
+.tsd-tab.is-active { color:var(--accent-ink); border-bottom-color:var(--accent); }
 .tsd-standings-note { font-family:var(--f-mono); font-size:9px; letter-spacing:.14em;
                       text-transform:uppercase; color:var(--txt-4); margin:0 0 18px; }
 .tsd-tblwrap { overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:thin; }
@@ -327,8 +337,8 @@ html:not(.tsd-locked) #tsd-logout { display:block; }
                            font-size:14px; color:var(--txt); white-space:normal; }
 .tsd-tbl td:last-child { color:var(--txt); font-weight:700; }
 /* จ่าฝูงได้สีประจำแบรนด์ */
-.tsd-tbl tbody tr:first-child td:first-child { color:var(--accent); }
-.tsd-tbl tbody tr:first-child td:last-child { color:var(--accent); }
+.tsd-tbl tbody tr:first-child td:first-child { color:var(--accent-ink); }
+.tsd-tbl tbody tr:first-child td:last-child { color:var(--accent-ink); }
 .tsd-tbl tbody tr:hover td { background:var(--bg-row); }
 .tsd-cell-name { display:inline-flex; align-items:center; gap:11px; }
 .tsd-avatar-img.is-square.is-sm { width:22px; height:22px; object-fit:contain; flex:0 0 auto; }
@@ -449,8 +459,8 @@ html:not(.tsd-locked) #tsd-logout { display:block; }
   .tsdx-head { margin-bottom:28px; padding-bottom:16px; }
   .tsdx-grid { grid-template-columns:1fr; gap:40px; }
   .tsdx-grid > .is-wide { grid-column:span 1; }
-  .tsdx-card.is-row { grid-template-columns:120px 1fr; gap:14px; padding:18px 0; }
-  .tsdx-card.is-row h3 { font-size:15px; }
+  .tsdx-card.is-row .tsdx-rowbody { grid-template-columns:118px minmax(0,1fr); gap:14px; }
+  .tsdx-card.is-row { padding-bottom:20px; }
   .rsp-ytbt { grid-template-columns:1fr; gap:40px; }
   .sh-card { flex-basis:162px; }
   .tsd-rankcard { padding:0 18px 20px; }
