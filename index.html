@@ -147,46 +147,6 @@ if (!POSTS.length) {
     'รัน <code>python3 scripts/build_data.py</code> ที่รากโปรเจกต์ก่อน แล้วเปิดหน้านี้ใหม่</p></div>';
 }
 
-// ตารางคะแนนยังเป็นข้อมูลตัวอย่าง - ชุดดาต้าที่ให้มาเป็น "บทความ" ไม่มีผลการแข่งขัน
-const STANDINGS = {
-  premier: { label:"Premier League 2026-27", rows:[
-    {name:"Arsenal",    mp:4,w:3,d:1, l:0, gf:9, ga:2, pts:10,logo:"https://crests.football-data.org/57.png"},
-    {name:"Liverpool",  mp:4,w:3,d:0, l:1, gf:8, ga:4, pts:9, logo:"https://crests.football-data.org/64.png"},
-    {name:"Chelsea",    mp:4,w:2,d:2, l:0, gf:7, ga:3, pts:8, logo:"https://crests.football-data.org/61.png"},
-    {name:"Man City",   mp:4,w:2,d:1, l:1, gf:9, ga:5, pts:7, logo:"https://crests.football-data.org/65.png"},
-    {name:"Tottenham",  mp:4,w:2,d:1, l:1, gf:6, ga:4, pts:7, logo:"https://crests.football-data.org/73.png"},
-    {name:"Newcastle",  mp:4,w:2,d:0, l:2, gf:5, ga:4, pts:6, logo:"https://crests.football-data.org/67.png"},
-    {name:"Aston Villa",mp:4,w:2,d:0, l:2, gf:4, ga:5, pts:6, logo:"https://crests.football-data.org/58.png"},
-    {name:"Man United", mp:4,w:1,d:1, l:2, gf:3, ga:5, pts:4, logo:"https://crests.football-data.org/66.png"},
-    {name:"Brighton",   mp:4,w:1,d:1, l:2, gf:4, ga:6, pts:4, logo:"https://crests.football-data.org/397.png"},
-    {name:"West Ham",   mp:4,w:0,d:1, l:3, gf:2, ga:8, pts:1},
-  ]},
-  thai: { label:"Thai League 1 · 2026", rows:[
-    {name:"บุรีรัมย์ ยูไนเต็ด",mp:30,w:22,d:5,l:3, gf:68,ga:20,pts:71},
-    {name:"ชลบุรี เอฟซี",      mp:30,w:18,d:8,l:4, gf:52,ga:24,pts:62},
-    {name:"เมืองทอง ยูไนเต็ด", mp:30,w:17,d:7,l:6, gf:48,ga:26,pts:58},
-    {name:"ราชบุรี มิตรผล",     mp:30,w:15,d:8,l:7, gf:42,ga:30,pts:53},
-    {name:"พอร์ต เอฟซี",        mp:30,w:14,d:9,l:7, gf:38,ga:29,pts:51},
-    {name:"ขอนแก่น ยูไนเต็ด",   mp:30,w:13,d:8,l:9, gf:34,ga:30,pts:47},
-    {name:"สุพรรณบุรี เอฟซี",   mp:30,w:11,d:9,l:10,gf:30,ga:32,pts:42},
-    {name:"ราชประชา เอฟซี",     mp:30,w:10,d:8,l:12,gf:28,ga:36,pts:38},
-    {name:"เชียงราย ยูไนเต็ด",  mp:30,w:8, d:9,l:13,gf:24,ga:39,pts:33},
-    {name:"กรุงเทพ คริสเตียน",  mp:30,w:5, d:6,l:19,gf:18,ga:56,pts:21},
-  ]},
-  laliga: { label:"La Liga 2025/26", rows:[
-    {name:"Real Madrid",    mp:38,w:27,d:7, l:4, gf:96,ga:28,pts:88},
-    {name:"Barcelona",      mp:38,w:26,d:6, l:6, gf:88,ga:33,pts:84},
-    {name:"Atlético Madrid",mp:38,w:22,d:9, l:7, gf:70,ga:35,pts:75},
-    {name:"Athletic Bilbao",mp:38,w:19,d:8, l:11,gf:60,ga:42,pts:65},
-    {name:"Real Sociedad",  mp:38,w:17,d:9, l:12,gf:52,ga:42,pts:60},
-    {name:"Villarreal",     mp:38,w:16,d:8, l:14,gf:52,ga:47,pts:56},
-    {name:"Sevilla",        mp:38,w:14,d:10,l:14,gf:48,ga:50,pts:52},
-    {name:"Valencia",       mp:38,w:13,d:9, l:16,gf:42,ga:50,pts:48},
-    {name:"Real Betis",     mp:38,w:12,d:11,l:15,gf:46,ga:51,pts:47},
-    {name:"Osasuna",        mp:38,w:11,d:9, l:18,gf:36,ga:54,pts:42},
-  ]},
-};
-
 // ── Components ────────────────────────────────────────────────────────────────
 // Official THE STANDARD SPORT lockup (supplied artwork, transparent PNG).
 // White wordmark — only place it on dark surfaces.
@@ -447,101 +407,6 @@ function LatestGrid() {
   );
 }
 
-// ── Standings + Latest News ─────────────────────────────────────────────────
-// Mirrors the WordPress .tsd-scoreduo: a drawn card holding the 10-column table
-// on the left, a column of headlines ("Latest News") on the right. No full-bleed
-// dark band — the table sits at its own size inside the reading column.
-function StandingsBand({ font, onOpen }) {
-  const ff = font==="serif"?"Noto Serif Thai,serif":"Sarabun,sans-serif";
-  const leagues = Object.keys(STANDINGS);
-  const [tab, setTab] = useState(leagues[0]);
-  const data = STANDINGS[tab];
-
-  // Ordered by points and renumbered, the same rule the WordPress tables use.
-  const rows = data.rows
-    .map((r, i) => ({ ...r, _i:i }))
-    .sort((a, b) => (b.pts - a.pts) || (a._i - b._i))
-    .map((r, i) => ({ ...r, pos:i + 1 }));
-
-  const cols = ["Rank", "Club", "MP", "W", "D", "L", "GF", "GA", "GD", "Pts"];
-  const hasCrests = rows.some(r => r.logo);
-  // Rail ข่าวล่าสุด: ใช้โพสต์ใหม่สุดถัดจากที่ hero (1) + picks (4) ใช้ไปแล้ว
-  const rail = POSTS.slice(4, 10);
-
-  return (
-    <section>
-      <SectionHead line1="ตาราง" line2="คะแนน" />
-      <div className="tsd-scoreduo">
-        <div className="tsd-rankcol">
-          <div className="tsd-rankcard">
-            <div className="tsd-tabhead">
-              <h3 className="tsd-scoretitle">{data.label}</h3>
-              <div className="tsd-tabs" role="tablist" aria-label="Standings">
-                {leagues.map(k => (
-                  <button key={k} type="button" role="tab"
-                          aria-selected={tab===k ? "true" : "false"}
-                          tabIndex={tab===k ? 0 : -1}
-                          className={"tsd-tab" + (tab===k ? " is-active" : "")}
-                          onClick={()=>setTab(k)}>
-                    {STANDINGS[k].label}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <p className="tsd-standings-note">ตารางคะแนน (ข้อมูลตัวอย่าง ไม่ได้มาจากชุดดาต้า)</p>
-            <div className="tsd-tblwrap">
-              <table className="tsd-tbl is-ranked">
-                <thead>
-                  <tr>
-                    {cols.map((c, j) => (
-                      <th key={c} className={j===1 ? "is-name" : undefined}>{c}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {rows.map(t => {
-                    const gd = t.gf - t.ga;
-                    return (
-                      <tr key={t.name} className="reveal">
-                        <td>{t.pos}</td>
-                        <td className="tsd-tbl-name" style={{ fontFamily:ff }}>
-                          <span className="tsd-cell-name">
-                            {hasCrests && (t.logo
-                              ? <img className="tsd-avatar-img is-square is-sm" src={t.logo} alt="" width="24" height="24" loading="lazy" decoding="async" />
-                              : <span className="tsd-mono" aria-hidden="true">{t.name.trim().charAt(0)}</span>)}
-                            <span>{t.name}</span>
-                          </span>
-                        </td>
-                        <td>{t.mp}</td>
-                        <td>{t.w}</td>
-                        <td>{t.d}</td>
-                        <td>{t.l}</td>
-                        <td>{t.gf}</td>
-                        <td>{t.ga}</td>
-                        <td>{gd > 0 ? "+" + gd : gd}</td>
-                        <td><span data-count={t.pts}>0</span></td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <div className="tsd-newscol">
-          <div className="tsdx-head" style={{ marginBottom:24 }}>
-            <h2 style={{ fontSize:"clamp(22px,2.2vw,30px)" }}>จาก<em>สนาม</em></h2>
-          </div>
-          <div className="tsd-rail">
-            {rail.map(p => <NewsCard key={p.id} post={p} size="row" />)}
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
 // ── Footer ────────────────────────────────────────────────────────────────────
 // ── Social icon component ─────────────────────────────────────────────────────
 const SOCIALS = [
@@ -592,7 +457,7 @@ function Footer() {
     </footer>
   );
 }
-Object.assign(window, { Navbar, Hero, LeadBlock, BreakBand, LatestGrid, NewsCard, StandingsBand, Footer, SectionHead, LogoLockup, RATIO });
+Object.assign(window, { Navbar, Hero, LeadBlock, BreakBand, LatestGrid, NewsCard, MetaRow, Footer, SectionHead, LogoLockup, RATIO });
 </script>
 
 <!-- ③ MAIN APP + YOUTUBE -->
@@ -704,47 +569,25 @@ function App() {
   // ── Motion: scroll reveal + count-up. Honours prefers-reduced-motion. ──
   useE2(() => {
     const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const settle = el => {
-      el.classList.add('in');
-      if (el.dataset.count != null && !el.dataset.counted) {
-        el.dataset.counted = '1';
-        el.textContent = el.dataset.count;
-      }
-    };
+    const settle = el => el.classList.add('in');
     if (reduce || !('IntersectionObserver' in window)) {
-      const paint = () => document.querySelectorAll('.reveal, [data-count]').forEach(settle);
+      const paint = () => document.querySelectorAll('.reveal').forEach(settle);
       paint();
       const mo = new MutationObserver(paint);
       mo.observe(document.body, { childList:true, subtree:true });
       return () => mo.disconnect();
     }
 
-    const countTo = (el, target) => {
-      const dur = 900, t0 = performance.now();
-      const step = now => {
-        const p = Math.min((now - t0) / dur, 1);
-        el.textContent = Math.round(target * (1 - Math.pow(1 - p, 3)));
-        if (p < 1) requestAnimationFrame(step);
-      };
-      requestAnimationFrame(step);
-    };
-
     const io = new IntersectionObserver(entries => {
       entries.forEach(e => {
         if (!e.isIntersecting) return;
-        const el = e.target;
-        io.unobserve(el);
-        el.classList.add('in');
-        if (el.dataset.count != null && !el.dataset.counted) {
-          el.dataset.counted = '1';
-          const n = parseFloat(el.dataset.count);
-          isNaN(n) ? el.textContent = el.dataset.count : countTo(el, n);
-        }
+        io.unobserve(e.target);
+        settle(e.target);
       });
     }, { threshold: 0, rootMargin: '0px 0px -5% 0px' });
 
     const seen = new WeakSet();
-    const scan = () => document.querySelectorAll('.reveal, [data-count]').forEach(el => {
+    const scan = () => document.querySelectorAll('.reveal').forEach(el => {
       if (seen.has(el)) return;
       seen.add(el);
       io.observe(el);
@@ -753,17 +596,16 @@ function App() {
     // กวาดซ้ำตอนเลื่อน: ถ้าผู้ใช้กระโดดข้ามทีเดียวหลายจอ (ลากสกรอลล์บาร์,
     // กดลิงก์ยึดตำแหน่ง, เบราว์เซอร์คืนตำแหน่งเดิม) IntersectionObserver
     // อาจไม่ทันเห็นบล็อกที่ผ่านไป แล้วบล็อกนั้นจะค้างจางหายทั้งก้อน
-    const sweep = () => document
-      .querySelectorAll('.reveal:not(.in), [data-count]:not([data-counted])')
+    const sweep = () => document.querySelectorAll('.reveal:not(.in)')
       .forEach(el => { if (el.getBoundingClientRect().top < window.innerHeight) settle(el); });
     window.addEventListener('scroll', sweep, { passive:true });
-    const mo = new MutationObserver(scan);   // re-arm when tabs swap content in
+    const mo = new MutationObserver(scan);
     mo.observe(document.body, { childList:true, subtree:true });
     return () => { mo.disconnect(); io.disconnect(); window.removeEventListener('scroll', sweep); };
   }, []);
 
   // จังหวะของหน้า: ภาพเต็มจอ → ข่าวเด่น → แถบคั่นเต็มจอ → ข่าวล่าสุด
-  // → ตารางคะแนน → คลิปสั้น → วิดีโอ   สลับกริดกับภาพเต็มความกว้างไปมา
+  // → คลิปสั้น → วิดีโอ   สลับกริดกับภาพเต็มความกว้างไปมา
   // ไม่ให้เป็นกริดไหลยาวต่อกันหมดจนสายตาไม่มีที่พัก
   const breakPost = POSTS[15] || POSTS[6];
   return (
@@ -776,7 +618,6 @@ function App() {
       <window.BreakBand post={breakPost} />
       <div className="rsp-wrap rsp-flow">
         <window.LatestGrid />
-        <window.StandingsBand onOpen={window.tsdOpenPost} />
         <ShortsSection />
         <YouTubeSection />
       </div>
