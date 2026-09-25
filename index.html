@@ -213,22 +213,18 @@ function Hero({ post }) {
     <header className="tsdx-hero">
       <div className="tsdx-hero-img" style={{ background:post.bg }} />
       <div className="tsdx-hero-scrim" />
+      {/* ม่านเปิดตอนโหลด: แผ่นดำขอบชมพูเฉียงกวาดออกไปทางขวา (ตกแต่งล้วน) */}
+      <span className="tsdx-hero-curtain" aria-hidden="true" />
       <div className="tsdx-hero-body">
         <div className="tsdx-hero-inner">
-          <div className="tsdx-hero-kicker">
-            <span className="tx-chip">เรื่องเด่นวันนี้</span>
-            <span className="tx-mono">{post.date}</span>
-          </div>
           <p className="tsdx-hero-cat">{post.cat}</p>
           <h1 className="tsdx-hero-title" onClick={()=>openPost(post)}>{post.title}</h1>
           <div className="tsdx-hero-meta">เรื่อง <b>{post.author}</b></div>
           <div className="tsdx-hero-actions">
             <button type="button" className="btn" onClick={()=>openPost(post)}>อ่านเรื่องนี้</button>
-            <a className="btn is-bare" href="#latest">ข่าวทั้งหมด</a>
           </div>
         </div>
       </div>
-      <div className="tsdx-scroll"><i /><span>Scroll</span></div>
     </header>
   );
 }

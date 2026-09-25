@@ -170,11 +170,7 @@ html:not(.tsd-locked) #tsd-logout { display:block; }
     linear-gradient(90deg, rgba(0,0,0,.62) 0%, rgba(0,0,0,.2) 50%, transparent 100%); }
 .tsdx-hero-body { position:relative; z-index:2; width:100%; max-width:var(--maxw); margin:0 auto;
                   padding:0 var(--gutter) 88px; }
-/* เส้น spine ของ hero */
-.tsdx-hero-body::before { content:""; position:absolute; left:var(--gutter); top:-40vh; bottom:0;
-                          width:1px; background:rgba(255,255,255,.22); }
 .tsdx-hero-inner { padding-left:34px; max-width:1040px; }
-.tsdx-hero-kicker { display:flex; align-items:center; gap:14px; margin-bottom:26px; flex-wrap:wrap; }
 .tsdx-hero-cat { font-family:var(--f-display); font-weight:700; text-transform:uppercase;
                  font-size:clamp(34px,5.4vw,78px); line-height:.9; letter-spacing:-.02em;
                  color:var(--accent); margin:0 0 2px; }
@@ -187,15 +183,31 @@ html:not(.tsd-locked) #tsd-logout { display:block; }
                   color:rgba(255,255,255,.55); margin-bottom:30px; }
 .tsdx-hero-meta b { color:var(--accent); font-weight:500; }
 .tsdx-hero-actions { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
-/* ตัวบอกให้เลื่อนลง */
-.tsdx-scroll { position:absolute; right:var(--gutter); bottom:88px; z-index:2; display:flex;
-               align-items:center; gap:10px; font-family:var(--f-mono); font-size:9px;
-               letter-spacing:.2em; text-transform:uppercase; color:rgba(255,255,255,.5); }
-.tsdx-scroll i { display:block; width:46px; height:1px; background:rgba(255,255,255,.4); position:relative;
-                 overflow:hidden; }
-.tsdx-scroll i::after { content:""; position:absolute; inset:0; background:var(--accent);
-                        animation:scrollLine 2.2s ease-in-out infinite; }
-@keyframes scrollLine { 0% { transform:translateX(-100%); } 60%,100% { transform:translateX(100%); } }
+
+/* ── Hero entrance: จังหวะแบบ F1 ────────────────────────────────
+   ใช้เฉพาะ hero ซึ่งเป็น "แบรนด์โมเมนต์" ของหน้า — การ์ดข่าวทั่วไปคง mask reveal
+   1) ม่านดำขอบชมพู CI + เส้นขาวบาง (ลายลิเวอรี่) กวาดเฉียงออกขวา เผยภาพ
+   2) ชื่อหมวด/พาดหัวเปิดจากซ้ายด้วย easing ออกตัวแรง-เบรกกึก ไม่มีเด้ง
+   3) เส้น spine ลากลงเหมือนเส้นข้อมูล timing แล้วรายละเอียดที่เหลือตามมา
+   สถานะตั้งต้นอยู่ใน keyframes เท่านั้น (fill-mode both) ถ้าปิดแอนิเมชัน
+   (prefers-reduced-motion) ทุกอย่างจะอยู่ในสถานะจบทันที ม่านอยู่นอกจอ */
+.tsdx-hero-curtain { --band:clamp(28px,5vw,88px);
+  position:absolute; top:-10%; bottom:-10%; z-index:3; pointer-events:none;
+  left:calc(-1 * var(--band) - 180px); width:calc(100% + var(--band) + 360px);
+  background:linear-gradient(90deg, var(--accent) 0, var(--accent) var(--band),
+    #fff var(--band), #fff calc(var(--band) + 5px), #000 calc(var(--band) + 5px));
+  transform:translateX(100%) skewX(-12deg);
+  animation:heroCurtain .95s cubic-bezier(.45,0,.1,1) .05s both; }
+@keyframes heroCurtain { from { transform:translateX(0) skewX(-12deg); }
+                         to   { transform:translateX(100%) skewX(-12deg); } }
+
+@keyframes heroWipe { from { clip-path:inset(-25% 100% -25% 0); transform:translateX(-28px); }
+                      to   { clip-path:inset(-25% -4% -25% 0); transform:none; } }
+@keyframes heroRise { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:none; } }
+.tsdx-hero-cat   { animation:heroWipe .75s cubic-bezier(.7,0,.1,1) .38s both; }
+.tsdx-hero-title { animation:heroWipe .8s cubic-bezier(.7,0,.1,1) .5s both; }
+.tsdx-hero-meta   { animation:heroRise .5s cubic-bezier(.2,.8,.2,1) .82s both; }
+.tsdx-hero-actions{ animation:heroRise .5s cubic-bezier(.2,.8,.2,1) .92s both; }
 
 /* ── Section head ────────────────────────────────────────────── */
 /* หัวข้อใหญ่แบบ ref: คำแรกชมพู คำที่เหลือขาว + ลิงก์ mono ชิดขวา */
@@ -394,11 +406,9 @@ html:not(.tsd-locked) #tsd-logout { display:block; }
   .rsp-flow > * { margin-top:68px; }
   .tsdx-hero { min-height:92svh; }
   .tsdx-hero-body { padding-bottom:56px; }
-  .tsdx-hero-body::before { display:none; }
   .tsdx-hero-inner { padding-left:0; }
   .tsdx-hero-scrim { background:linear-gradient(180deg, rgba(0,0,0,.5) 0%, rgba(0,0,0,.2) 24%,
                      rgba(0,0,0,.66) 60%, rgba(0,0,0,.96) 100%); }
-  .tsdx-scroll { display:none; }
   .tsdx-head { margin-bottom:28px; padding-bottom:16px; }
   .tsdx-grid { grid-template-columns:1fr; gap:40px; }
   .tsdx-grid > .is-wide { grid-column:span 1; }
