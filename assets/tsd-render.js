@@ -68,9 +68,7 @@
 	var ARROW = '<span aria-hidden="true">&rarr;</span>';
 
 	/* ── masthead ────────────────────────────────────────────────────── */
-	// The two sports with a hub page open it; every other slot keeps its hook.
-	var HUBS = { football: 'football.html', motorsport: 'motorsport.html' };
-	function hrefOf(item) { return HUBS[item.key] || item.href || 'index.html'; }
+	function hrefOf(item) { return item.href || 'index.html'; }
 
 	function masthead(opts) {
 		opts = opts || {};
@@ -80,14 +78,14 @@
 			var subs = (item.items || []).filter(function (s) { return !s.divider; });
 			var cls = 'menu-item menu-item-' + mine + (subs.length ? ' menu-item-has-children' : '') +
 				(opts.current === item.key ? ' current-menu-item' : '');
-			var li = '<li id="menu-item-' + mine + '" class="' + cls + '"><a href="' + esc(hrefOf(item)) + '">' + esc(String(item.label).toUpperCase()) + '</a>';
+			var li = '<li id="menu-item-' + mine + '" class="' + cls + '"><a href="' + esc(hrefOf(item)) + '">' + esc(item.label) + '</a>';
 			if (subs.length) {
 				li += '<ul class="sub-menu">' + subs.map(function (s) {
 					return '<li class="menu-item"><a href="' + esc(s.href) + '">' + esc(s.label) + '</a></li>';
 				}).join('') + '</ul>';
 				megas += '<div class="tsd-mega" data-tsd-mega="' + mine + '" hidden><div class="tsd-wrap tsd-mega-in">' +
-					'<div class="tsd-mega-head"><a class="tsd-mega-title" href="' + esc(hrefOf(item)) + '">' + esc(String(item.label).toUpperCase()) + '</a>' +
-					'<a class="tsd-mega-all" href="' + esc(hrefOf(item)) + '">ดูทั้งหมด →</a></div>' +
+					'<div class="tsd-mega-head"><a class="tsd-mega-title" href="' + esc(hrefOf(item) === '#' ? '' : hrefOf(item)) + '">' + esc(item.label) + '</a>' +
+					'<a class="tsd-mega-all" href="' + esc(hrefOf(item) === '#' ? '' : hrefOf(item)) + '">ดูทั้งหมด →</a></div>' +
 					'<ul class="tsd-mega-list">' + subs.map(function (s) {
 						return '<li><a href="' + esc(s.href) + '">' + esc(s.label) + '</a></li>';
 					}).join('') + '</ul></div></div>';
