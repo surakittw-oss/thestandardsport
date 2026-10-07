@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Football · THE STANDARD SPORT</title>
+  <!-- Access gate: runs before paint so a visitor with no verified session never
+       sees the page. Full logic in assets/tsd-gate.js. -->
+  <script>
+    (function () {
+      try {
+        var raw = localStorage.getItem('tsdGate');
+        var s = raw ? JSON.parse(raw) : null;
+        var ok = s && typeof s.email === 'string' && s.exp > Date.now() &&
+          s.email.toLowerCase().endsWith('@thestandard.co');
+        if (!ok) document.documentElement.classList.add('tsd-locked');
+      } catch (e) {
+        document.documentElement.classList.add('tsd-locked');
+      }
+      /* Saved light/dark choice, applied before first paint (as on the WP plugin). */
+      try {
+        var t = localStorage.getItem('tsdSportTheme');
+        if ('dark' === t || 'light' === t) document.documentElement.setAttribute('data-tsd-theme', t);
+      } catch (e) {}
+    })();
+  </script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <link rel="icon" type="image/png" href="uploads/favicon.png">
+  <link rel="apple-touch-icon" href="uploads/apple-touch-icon.png">
+  <meta name="theme-color" content="#141416">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700;800&family=Chakra+Petch:wght@400;500;600;700&family=Kanit:ital,wght@0,600;0,700;0,800;1,800&display=swap" rel="stylesheet">
+  <!-- Same stylesheet as the WordPress SPORT plugin (tsd-sport-skin/assets/sport.css). -->
+  <link rel="stylesheet" href="assets/sport.css">
+  <link rel="stylesheet" href="assets/tsd-gate.css">
+</head>
+<body class="tsd-sport tsd-fbhub">
+
+<div id="tsd-gate">
+  <div id="tsd-gate-logo"><img src="uploads/logo-sport-lockup.png" alt="THE STANDARD SPORT"></div>
+  <p>หน้านี้จำกัดการเข้าถึงเฉพาะอีเมล @thestandard.co<br>กรุณาเข้าสู่ระบบด้วย Google เพื่อดูเนื้อหา</p>
+  <div id="tsd-gate-btn"></div>
+  <p id="tsd-gate-err"></p>
+</div>
+<button id="tsd-logout" onclick="tsdLogout()">ออกจากระบบ</button>
+<script src="assets/tsd-gate.js"></script>
+
+<div id="root"></div>
+
+<!-- Real data (scripts/build_data.py, scripts/fetch_youtube.py) and the 8-slot menu. -->
+<script src="assets/tsd-menu.js"></script>
+<script src="data/sport-posts.js"></script>
+<script src="data/standings.js"></script>
+<!-- Prints the plugin's markup from that data, then the plugin's own scripts run on it. -->
+<script src="assets/tsd-render.js"></script>
+<script>TSDR.render('football');</script>
+<script src="assets/sport.js"></script>
+</body>
+</html>

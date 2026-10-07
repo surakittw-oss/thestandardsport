@@ -1,0 +1,2163 @@
+/* TSD Sport Skin — everything is scoped under .tsd-sport so the main theme is untouched. */
+
+.tsd-sport {
+  /* Palette ported from the Vercel design. That design is dark-first; here the
+     paper set is the default and the dark set answers the toggle, which is the
+     way round this site has always run. Same two palettes either way — only
+     which one starts is different. */
+  --bg:#faf9f7; --bg-alt:#f1efec; --card:#ffffff; --bg-row:#f6f5f3;
+  --txt:#0a0a0c; --txt-2:rgba(10,10,12,.72); --txt-3:rgba(10,10,12,.5); --txt-4:rgba(10,10,12,.34);
+  --bdr:rgba(10,10,12,.16); --bdr-2:rgba(10,10,12,.08);
+  /* CI pink. One value, both themes: #ffa5f7. --accent-ink is kept as a name
+     because the rules that set pink *type* use it, but it no longer switches to
+     a darker pink on paper — the brand colour is this one and only this one. */
+  --accent:#ffa5f7; --on-accent:#0a0a0c; --accent-ink:#ffa5f7;
+  /* The Special Columns band is the one place the pink covers a whole section
+     rather than a chip. Named tokens so the dark palette can answer separately
+     (see below) without any rule hard-coding a pink. */
+  --spec-bg:var(--accent); --spec-ink:var(--on-accent);
+  /* The design draws with hairlines, not shadows. Kept as tokens rather than
+     deleted so any rule still asking for one gets nothing instead of breaking. */
+  --sh-1:none; --sh-2:none;
+  /* Type. The reference design introduces its own faces; this skin keeps the
+     publication's — Chakra Petch for labels, meta and buttons, Sarabun for
+     running text, and the theme's own display face for every headline. */
+  --f-disp:"Chakra Petch",system-ui,sans-serif;
+  --f-body:"Sarabun",system-ui,sans-serif;
+  /* The headline face, for every story title on the page. The theme's display
+     font wins when it defines one (--display: Kanit), so sport headlines match
+     the rest of the publication; Kanit is the fallback for a theme with none. */
+  --f-head:var(--display,"Kanit","IBM Plex Sans Thai",system-ui,sans-serif);
+  /* Shell */
+  --maxw:1240px; --gutter:64px;
+  margin:0; background:var(--bg); color:var(--txt);
+  font-family:var(--f-body); -webkit-font-smoothing:antialiased;
+}
+/* Dark palette. Applied when the system asks for it and the reader has not
+   overridden, and again when the reader explicitly picks dark — so the toggle
+   wins in both directions. */
+@media (prefers-color-scheme: dark) {
+  html:not([data-tsd-theme="light"]) .tsd-sport {
+    --bg:#08080a; --bg-alt:#0f0f12; --card:#141417; --bg-row:#1a1a1e;
+    --txt:#ffffff; --txt-2:rgba(255,255,255,.74); --txt-3:rgba(255,255,255,.5); --txt-4:rgba(255,255,255,.34);
+    --bdr:rgba(255,255,255,.14); --bdr-2:rgba(255,255,255,.07);
+  }
+}
+html[data-tsd-theme="dark"] .tsd-sport {
+  --bg:#08080a; --bg-alt:#0f0f12; --card:#141417; --bg-row:#1a1a1e;
+  --txt:#ffffff; --txt-2:rgba(255,255,255,.74); --txt-3:rgba(255,255,255,.5); --txt-4:rgba(255,255,255,.34);
+  --bdr:rgba(255,255,255,.14); --bdr-2:rgba(255,255,255,.07);
+}
+.tsd-sport *,.tsd-sport *::before,.tsd-sport *::after { box-sizing:border-box; }
+.tsd-sport img { max-width:100%; }
+.tsd-sport a { text-decoration:none; color:inherit; }
+
+/* ── Masthead ─────────────────────────────────────────────── */
+/* The bar floats over the cover until the reader leaves it behind, which is
+   what lets the hero run the full height of the window — a solid bar above a
+   full-window picture just makes the picture shorter.
+   `is-stuck` is added by sport.js past 40px, and is also present from the start
+   on any page that has no cover under the bar (an article, a term archive),
+   where white type would otherwise sit on nothing. */
+.tsd-nav { position:fixed; top:0; left:0; right:0; z-index:100;
+  background:transparent; border-bottom:1px solid transparent; box-shadow:none;
+  transition:background .3s ease, border-color .3s ease, box-shadow .3s ease; }
+.tsd-nav.is-stuck { background:#0d0d0d;
+  border-bottom-color:rgba(255,255,255,.1); box-shadow:0 2px 10px rgba(0,0,0,.35); }
+/* An open mega panel makes the bar solid too. The panel is opaque, so over a
+   cover the pair otherwise read as a dark box hanging under a photograph with
+   the menu floating in between. */
+.tsd-nav:has(.tsd-mega:not([hidden])) { background:#0d0d0d;
+  border-bottom-color:rgba(255,255,255,.1); }
+/* On a sport hub the artwork is busy right up to the top edge (helmets,
+   flags, floodlights), so the bar at rest carries its own dark ground —
+   near-solid behind the menu, fading out below it — instead of being fully
+   transparent and lost in the picture. */
+.tsd-hub-page .tsd-nav:not(.is-stuck):not(:has(.tsd-mega:not([hidden]))):not(:has(.tsd-nav-menu.is-open)),
+.tsd-fbhub .tsd-nav:not(.is-stuck):not(:has(.tsd-mega:not([hidden]))):not(:has(.tsd-nav-menu.is-open)) {
+  background:linear-gradient(to bottom, rgba(0,0,0,.88) 0%, rgba(0,0,0,.72) 62%, rgba(0,0,0,0) 100%) border-box no-repeat; }
+/* Pages without a cover behind the bar have to reserve its height themselves,
+   because a fixed bar is out of the flow. One number, matched to .tsd-nav-top's
+   own height — if the bar changes height, this has to change with it. */
+.tsd-navpad { padding-top:104px; }
+/* One row: burger, logo, menu, toggle. The logo no longer needs to be optically
+   centred, so the two buttons come out of absolute positioning and just sit at
+   the ends of the row. */
+.tsd-nav-top { position:relative; display:flex; align-items:center; gap:clamp(12px,2vw,34px);
+  height:104px; padding:10px clamp(18px,2.6vw,40px) 0; }
+.tsd-logo { flex:0 1 auto; min-width:0; }
+.tsd-logo img { display:block; height:30px; width:auto; max-width:100%; }
+/* Theme toggle sits to the right without pushing the centred logo off-axis. */
+.tsd-theme-btn { flex:0 0 auto; margin-left:auto;
+  width:38px; height:38px; display:flex; align-items:center; justify-content:center;
+  background:none; border:1px solid rgba(255,255,255,.22); color:rgba(255,255,255,.8);
+  cursor:pointer; transition:color .15s, border-color .15s; }
+.tsd-theme-btn:hover { color:var(--accent); border-color:var(--accent); }
+/* Same size and treatment as the theme toggle, on the opposite side. Hidden
+   until the menu stops fitting — see the breakpoint further down. */
+.tsd-burger { display:none; flex:0 0 auto; order:-1;
+  width:44px; height:44px; align-items:center; justify-content:center;
+  background:none; border:1px solid rgba(255,255,255,.22); color:rgba(255,255,255,.8);
+  cursor:pointer; transition:color .15s, border-color .15s; }
+.tsd-burger:hover { color:var(--accent); border-color:var(--accent); }
+.tsd-burger:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+/* Show the icon for what pressing it does next. */
+.tsd-burger .tsd-ico-close { display:none; }
+.tsd-burger[aria-expanded="true"] .tsd-ico-close { display:block; }
+.tsd-burger[aria-expanded="true"] .tsd-ico-bars { display:none; }
+/* Show the icon for the mode you would switch *to*. */
+.tsd-theme-btn .tsd-ico-sun { display:none; }
+html[data-tsd-theme="dark"] .tsd-theme-btn .tsd-ico-sun { display:block; }
+html[data-tsd-theme="dark"] .tsd-theme-btn .tsd-ico-moon { display:none; }
+@media (prefers-color-scheme: dark) {
+  html:not([data-tsd-theme="light"]) .tsd-theme-btn .tsd-ico-sun { display:block; }
+  html:not([data-tsd-theme="light"]) .tsd-theme-btn .tsd-ico-moon { display:none; }
+}
+/* wp_nav_menu outputs <ul><li><a>, so the bar is styled on that structure. */
+.tsd-nav-menu { flex:1 1 auto; min-width:0;
+  display:flex; align-items:center; gap:0; margin:0; padding:0; list-style:none;
+  background:none; border-top:0;
+  overflow-x:auto; scrollbar-width:none;
+  -webkit-overflow-scrolling:touch; scroll-snap-type:x proximity; }
+.tsd-nav-menu::-webkit-scrollbar { display:none; }
+/*
+ * Centred with flexible spacers rather than justify-content:center, which puts
+ * the start of an overflowing strip at a negative offset the scroller cannot
+ * reach — on a phone that left the first three items permanently untappable.
+ * The spacers collapse to nothing the moment the items need the room, so a
+ * short menu still sits in the middle and a long one starts at the left edge.
+ */
+.tsd-nav-menu::before, .tsd-nav-menu::after { content:""; flex:1 1 0; min-width:0; }
+.tsd-nav-menu li { flex:0 0 auto; list-style:none; margin:0; scroll-snap-align:start; }
+/* The strip stays centred at every width it is shown at (1025px and up): the
+   label size and the padding shrink with the viewport before the row can
+   outgrow the bar. A strip that overflows loses its centring spacers and reads
+   as left-aligned, which is why the fit matters more than the exact numbers.
+   Below 1025px the burger takes over — see the media query near the end. */
+/* The item is the size of its label plus a little, not the size of the bar.
+   At full bar height the underline that marks the open item sat 50px below the
+   word it belongs to, pinned to the bottom edge — which read as the whole row
+   of labels having been pushed to the top of the bar. */
+.tsd-nav-menu a { padding:7px clamp(8px, 1vw, 18px); display:flex; align-items:center;
+  font-family:var(--f-disp); font-weight:600; font-size:clamp(12px, .95vw, 15px); letter-spacing:.05em; text-transform:uppercase;
+  color:rgba(255,255,255,.62); border-bottom:2px solid transparent; transition:color .15s, border-color .15s; }
+.tsd-nav-menu a:hover { color:#fff; border-bottom-color:var(--accent); }
+/* WordPress marks the page you are on — highlight it with the CI underline. */
+.tsd-nav-menu .current-menu-item > a,
+.tsd-nav-menu .current-menu-ancestor > a,
+.tsd-nav-menu .current-category-ancestor > a,
+.tsd-nav-menu .current-menu-parent > a { color:#fff; border-bottom-color:var(--accent); }
+/* The sub-items are in the markup for the phone's benefit. On a pointer device
+   the mega panel is what shows them, so they stay out of the horizontal strip —
+   and the strip's own overflow-x would clip them anyway. */
+.tsd-nav-menu .sub-menu { display:none; }
+.tsd-navsub { display:none; }
+
+/* ── Mega panel: one per sport ────────────────────────────────
+   The panel belongs to the item that opens it and holds only that sport's own
+   submenu. It wears the bar's black rather than the page's white: it hangs off
+   the bar, reads as the bar growing downwards, and keeps the same white-on-
+   black type the items above it already use — a white slab here looked like a
+   second, unrelated surface arriving over the page. */
+.tsd-mega { position:absolute; left:0; right:0; top:100%; z-index:99;
+  background:#0d0d0d; color:#fff; border-top:1px solid rgba(255,255,255,.1);
+  border-bottom:2px solid var(--accent);
+  box-shadow:0 18px 38px rgba(0,0,0,.42); }
+.tsd-mega[hidden] { display:none; }
+/* Scoped under .tsd-mega on purpose: this element also carries .tsd-wrap, whose
+   `padding:0 var(--gutter)` shorthand comes later in the file and was resetting
+   the top and bottom to zero — the title sat 1px under the bar and the last link
+   2px above the pink edge.
+   Full width with the bar's own side padding, not the centred page column: the
+   panel is the bar growing downwards, so its title lines up under the logo and
+   "see all" under the theme button, instead of starting at some third position
+   that matched neither. */
+.tsd-mega .tsd-mega-in { max-width:none; margin:0;
+  padding:30px clamp(18px,2.6vw,40px) 30px; }
+/* The rule sits halfway: 16px under the title, 10px plus the links' own 7px
+   above them — so the space either side of it reads the same. */
+.tsd-mega-head { display:flex; align-items:baseline; justify-content:space-between;
+  gap:16px; flex-wrap:wrap; margin:0 0 10px;
+  padding-bottom:16px; border-bottom:1px solid rgba(255,255,255,.12); }
+/* Scoped to .tsd-mega on purpose: `.tsd-sport a { color:inherit }` is a (0,1,1)
+   selector, so a bare `.tsd-mega-title` (0,1,0) loses to it and the heading came
+   out white instead of CI pink. */
+.tsd-mega .tsd-mega-title { font-family:var(--f-disp); font-weight:700; font-size:15px;
+  letter-spacing:.14em; text-transform:uppercase; color:var(--accent); }
+.tsd-mega .tsd-mega-title:hover { color:#fff; }
+.tsd-mega .tsd-mega-all { font-family:var(--f-disp); font-size:11px; font-weight:700;
+  letter-spacing:.08em; color:rgba(255,255,255,.55); white-space:nowrap; }
+.tsd-mega .tsd-mega-all:hover { color:var(--accent); }
+/* A row, not a column stack: four sub-topics in one full-width column left most
+   of the panel empty, and a row of them reads as the bar continuing downwards —
+   which is what the panel is. Wraps by itself when a desk has a long list. */
+.tsd-mega-list { list-style:none; margin:0; padding:0;
+  display:flex; flex-wrap:wrap; gap:0 34px; }
+.tsd-mega-list li { margin:0; }
+.tsd-mega-list a,
+.tsd-mega-list .tsd-mega-unset { display:block; padding:7px 0; font-family:var(--f-disp);
+  font-size:13.5px; font-weight:600; line-height:1.45; color:rgba(255,255,255,.72);
+  border-bottom:1px solid transparent; transition:color .15s, border-color .15s; }
+.tsd-mega-list a:hover { color:#fff; border-bottom-color:var(--accent); }
+/* An item with nothing bound to it yet. Same row, half the presence, and no
+   hover — it is there to be seen in the layout, not to be clicked. */
+.tsd-mega-list .tsd-mega-unset { color:rgba(255,255,255,.34); cursor:default; }
+.tsd-mega-list .tsd-mega-unset::after { content:"·"; margin-left:8px; color:var(--accent); opacity:.5; }
+.tsd-mega-soon { margin:0; font-family:var(--f-disp); font-size:11px; font-weight:600;
+  letter-spacing:.08em; color:rgba(255,255,255,.4); }
+/* On touch the bar's own links are the navigation; a panel that opens on tap is
+   a detour, and a phone has no hover to open it with anyway. */
+@media (hover: none), (max-width:768px) {
+  .tsd-mega { display:none !important; }
+}
+
+/* ── Hero slider ──────────────────────────────────────────────
+ * Up to four pinned stories across the full width of the window, one at a
+ * time. Edge to edge because a cover is the one thing on the page entitled to
+ * the whole window; everything below it stays on the 1280px column.
+ *
+ * `cover`, not `contain`. Contain was tried first, to keep every picture whole
+ * inside the band — but every desktop window is wider than it is tall, and the
+ * band is capped in height, so the picture was scaled down until its height
+ * fitted and the leftover width printed as a black column down each side of
+ * every slide. The band is filled instead; the few percent taken off the top
+ * and bottom of a 1200×628 photograph costs far less than a photograph
+ * floating in the middle of the page with the page's own dark ground either
+ * side of it.
+ *
+ * The band's shape is still measured from the pinned covers, so all four
+ * slides are the same height and the page never jumps as the slider advances.
+ */
+/* ── Hero ─────────────────────────────────────────────────────
+   Full-window now, not a band. The design opens on a picture that fills the
+   screen with the masthead floating over it, so the first thing a reader meets
+   is the photograph rather than a strip of one.
+
+   It is still the pinned-posts slider — four stories, one at a time — which the
+   Vercel page does not have. What changed is the frame around it: every slide
+   is the height of the window instead of the shape of the tallest cover, so the
+   slider no longer has to agree on one aspect ratio before it can start. */
+.tsd-hero { position:relative; background:#000; overflow:hidden; }
+.tsd-slides { position:relative; width:100%; height:100svh; min-height:560px; }
+.tsd-slide { position:absolute; inset:0; display:flex; align-items:flex-end;
+  opacity:0; visibility:hidden;
+  transition:opacity .8s ease, visibility .8s ease; }
+/* A cross-fade, not a cut: the outgoing cover is still in view while the next
+   one arrives under it, so the band reads as one story changing rather than the
+   page blinking. The first slide carries is-active in the markup, so with the
+   script off the hero still shows a cover. */
+.tsd-slide.is-active { opacity:1; visibility:visible; }
+/* The photograph drifts: a slow push-in across the whole hold, which is what
+   makes the change feel filmed rather than switched. Kept on its own layer so
+   the type stays put — scaling the slide itself would scale the words too. */
+.tsd-slide-bg { position:absolute; inset:0; z-index:0;
+  background-repeat:no-repeat; background-position:center; background-size:cover;
+  transform:scale(1.075); transform-origin:center;
+  transition:transform 7.4s linear; }
+.tsd-slide.is-active .tsd-slide-bg { transform:scale(1); }
+/* Two scrims crossed: heavy at the foot where the words are, and along the left
+   edge. The picture keeps its top two thirds, which is the point of running it
+   full-window in the first place. */
+.tsd-slide::before { content:""; position:absolute; inset:0; z-index:1; pointer-events:none;
+  background:
+    linear-gradient(180deg, rgba(0,0,0,.55) 0%, rgba(0,0,0,.12) 26%, rgba(0,0,0,.55) 62%, rgba(0,0,0,.94) 100%),
+    linear-gradient(90deg, rgba(0,0,0,.62) 0%, rgba(0,0,0,.2) 50%, transparent 100%); }
+/* Scoped to .tsd-slide on purpose: this element also carries .tsd-wrap, whose
+   `padding:0 var(--gutter)` shorthand is declared later in the file and would
+   otherwise reset the bottom padding to zero — which put the read button flat
+   on the bottom edge of the window, on top of the slider dots.
+   The reserve clears the dots as well as the edge. */
+.tsd-slide .tsd-slide-in { position:relative; z-index:2; width:100%;
+  padding-bottom:clamp(104px,12vh,140px); }
+/* The words leave quickly and arrive late: fading them at the cover's own pace
+   would put two headlines on top of each other for most of the change. */
+.tsd-slide-copy { display:flex; flex-direction:column; align-items:flex-start;
+  padding-left:34px; max-width:1040px;
+  opacity:0; transform:translateY(18px);
+  transition:opacity .26s ease, transform .26s ease; }
+.tsd-slide.is-active .tsd-slide-copy { opacity:1; transform:none;
+  transition:opacity .55s ease .18s, transform .6s cubic-bezier(.2,.6,.2,1) .18s; }
+/* The sport, on its own line above the headline — a label, not a second
+   headline: the display face at a small size, wide-tracked, with a pink slash
+   in front, so it reads as a different voice from the Kanit title under it.
+   It links to the sport's page. */
+.tsd-slide-kicker { font-family:var(--f-disp); font-weight:600; text-transform:uppercase;
+  font-size:clamp(13px,1.05vw,16px); line-height:1.2; letter-spacing:.22em;
+  color:var(--accent); margin:0 0 16px; }
+.tsd-slide-kicker a { display:inline-flex; align-items:center; gap:12px; color:inherit; transition:color .18s ease; }
+.tsd-slide-kicker a::before { content:""; width:5px; height:1.15em; background:currentColor; transform:skewX(-14deg); }
+.tsd-slide-kicker a:hover { color:#fff; }
+.tsd-slide-title { font-family:var(--f-head); font-weight:800;
+  line-height:1.12; letter-spacing:-.01em; font-size:clamp(24px,3vw,46px);
+  margin:0 0 26px; max-width:900px; color:#fff; text-wrap:balance; }
+.tsd-slide-title a { transition:color .18s ease; }
+.tsd-slide-title a:hover { color:var(--accent); }
+/* The rule and the standfirst are gone from the hero: at this size the picture,
+   the sport and the headline are the whole message, and a paragraph under them
+   was three more lines between the reader and the page. */
+.tsd-slide-meta { font-family:var(--f-disp); font-size:10px; font-weight:500; letter-spacing:.16em;
+  text-transform:uppercase; color:rgba(255,255,255,.55); margin:0 0 30px; }
+.tsd-slide-meta b { color:var(--accent); font-weight:500; }
+/* The rule and the standfirst are gone from the hero: at this size the picture,
+   the sport and the headline are the whole message, and a paragraph under them
+   was three more lines between the reader and the page. */
+
+/* Square, on the band's own edges, vertically centred. */
+.tsd-slidenav { position:absolute; top:50%; transform:translateY(-50%); z-index:2;
+  width:52px; height:52px; display:flex; align-items:center; justify-content:center;
+  border:1px solid rgba(255,255,255,.55); border-radius:0; background:rgba(8,8,10,.22);
+  color:#fff; cursor:pointer; opacity:0; pointer-events:none;
+  transition:opacity .16s, background .16s, border-color .16s, color .16s; }
+.tsd-hero:hover .tsd-slidenav,
+.tsd-hero:focus-within .tsd-slidenav { opacity:1; pointer-events:auto; }
+.tsd-slidenav.is-prev { left:clamp(12px,2.5vw,44px); }
+.tsd-slidenav.is-next { right:clamp(12px,2.5vw,44px); }
+.tsd-slidenav:hover { background:var(--accent); border-color:var(--accent); color:var(--on-accent); }
+.tsd-slidenav:focus-visible { outline:2px solid var(--accent); outline-offset:3px; }
+
+.tsd-slidedots { position:absolute; z-index:2; left:50%; transform:translateX(-50%);
+  bottom:clamp(12px,2vh,22px); display:flex; gap:8px; }
+.tsd-slidedot { width:26px; height:4px; padding:0; border:0; cursor:pointer;
+  background:rgba(255,255,255,.4); transition:background .16s, width .16s; }
+.tsd-slidedot:hover { background:rgba(255,255,255,.75); }
+.tsd-slidedot.is-active { width:40px; background:var(--accent); }
+.tsd-slidedot:focus-visible { outline:2px solid var(--accent); outline-offset:3px; }
+
+.tsd-display { font-family:var(--f-head); font-weight:800; text-transform:uppercase; line-height:1.02;
+  letter-spacing:-.02em; font-size:clamp(28px,3.1vw,46px); margin:0 0 18px; color:var(--txt); }
+.tsd-display a { transition:color .18s ease; }
+.tsd-display a:hover { color:var(--accent-ink); }
+.tsd-lede { font-size:15px; line-height:1.68; color:var(--txt-2); margin:0 0 4px; max-width:420px; }
+
+/* The one call-to-action on the archive. Square, like everything else here — a
+   capsule would be the only rounded shape on the page. */
+.tsd-btn { align-self:flex-start; display:inline-flex; align-items:center; gap:12px;
+  padding:16px 30px; border:2px solid var(--accent); background:var(--accent);
+  font-family:var(--f-head); font-size:16px; font-weight:700; letter-spacing:.04em;
+  transition:background .18s, color .18s, border-color .18s, box-shadow .18s; }
+/* Filled and outlined in the same pink, so it holds its shape against a
+   photograph of any brightness. No glow — a flat block, like the rest of
+   the page. */
+.tsd-sport .tsd-btn { color:var(--on-accent); box-shadow:none; }
+.tsd-sport .tsd-btn:hover { background:transparent; color:var(--accent); box-shadow:none; }
+.tsd-btn span { transition:transform .18s ease; }
+.tsd-btn:hover span { transform:translateX(4px); }
+.tsd-btn span { transition:transform .16s ease; }
+.tsd-btn:hover span { transform:translateX(3px); }
+.tsd-btn:focus-visible { outline:2px solid var(--accent-ink); outline-offset:3px; }
+
+/* ── Section headers ──────────────────────────────────────── */
+/* The chip. Still used where a label has to sit inside something else — the
+   term nameplate, the hero — but no longer the way a section announces itself. */
+.tsd-label { display:inline-block; background:var(--accent); color:var(--on-accent);
+  font-family:var(--f-disp); font-size:10px; font-weight:500; letter-spacing:.16em;
+  text-transform:uppercase; padding:6px 12px; }
+/* A section now opens with its own name set at headline size over a hairline,
+   rather than a small pink chip. The chip made every block read as a separate
+   widget bolted to the page; at this size the sections read as one publication. */
+/* Wraps as a last resort: a one-word name like MOTORSPORT cannot break, so on
+   the narrowest phones the "see all" key drops under it instead of pushing the
+   row past the edge of the screen. */
+.tsd-head { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between;
+  gap:12px 24px; padding-bottom:0; margin-bottom:30px; border-bottom:0; }
+/* The slash. A leaning bar of CI pink — the one mark on the page that is about
+   speed rather than information, which is why it is a pseudo-element on the
+   heading rather than anything the templates have to print. Skewed, not italic:
+   the heading is set in the theme's display face and that face has no italic to
+   fall back on. Flat colour, no halo: everything else on this page is drawn
+   with edges rather than light, and a glow here was the only soft thing on it. */
+.tsd-headline { position:relative; padding-left:clamp(20px,1.9vw,32px);
+  font-family:var(--f-head); font-weight:800; text-transform:uppercase;
+  font-size:clamp(26px,2.6vw,40px); line-height:1.04; letter-spacing:-.015em;
+  color:var(--txt); margin:0; }
+.tsd-headline::before { content:""; position:absolute; left:0; top:.08em; bottom:.08em;
+  width:clamp(7px,.78vw,12px); background:var(--accent-ink);
+  transform:skewX(-14deg); transform-origin:bottom left; }
+/* Second word in CI pink, on the same line. The reference stacks the two lines,
+   which works for its short Thai words; these headings are English and setting
+   them over two lines left a lot of air above every block for no gain. The
+   colour still does the dividing — it just does it across, not down. */
+.tsd-headline em { font-style:normal; color:var(--accent-ink); }
+/* "See all" as a label with a round key beside it, the way the reference sets
+   it — the circle is what the eye lands on, not the words. */
+.tsd-headnote { font-family:var(--f-disp); font-size:12px; font-weight:700; letter-spacing:.08em;
+  text-transform:uppercase; color:var(--txt-2); white-space:nowrap;
+  display:inline-flex; align-items:center; gap:12px; transition:color .15s ease; }
+.tsd-headnote span { display:flex; align-items:center; justify-content:center;
+  width:34px; height:34px; border-radius:0; border:1px solid var(--bdr);
+  font-size:14px; line-height:1; color:var(--txt-2);
+  transition:background .18s ease, border-color .18s ease, color .18s ease, transform .18s ease; }
+.tsd-headnote:hover { color:var(--accent-ink); }
+.tsd-headnote:hover span { background:var(--accent); border-color:var(--accent);
+  color:var(--on-accent); transform:translateX(3px); }
+.tsd-headnote:focus-visible { outline:2px solid var(--accent-ink); outline-offset:4px; }
+/* A page counter is not a destination — it reads as small print, not as a key. */
+.tsd-headnote.is-static { font-weight:600; font-size:11px; letter-spacing:.12em; color:var(--txt-3); }
+
+/* ── Layout ───────────────────────────────────────────────── */
+.tsd-wrap { max-width:var(--maxw); margin:0 auto; padding:0 var(--gutter); }
+/* Four stories of equal weight. align-items:start matters: covers keep their
+   own aspect ratio rather than being cropped to a common one, so the frames in
+   a row are not all the same height and stretching them would only move the
+   raggedness from the pictures to the text under them. */
+
+/* ── Article item ─────────────────────────────────────────── */
+/* Clamped to two lines so a long standfirst cannot push one card in a row far
+   below the rest. */
+
+/* ── Card byline ──────────────────────────────────────────────
+ * Section left, date right, on one line above the headline. The run-on
+ * "Football · Somchai · 3 Jun 2025" this replaces gave three facts of unequal
+ * usefulness the same size, and buried the date — the one a reader scans a news
+ * grid for — in the middle of the string.
+ */
+.tsd-cardmeta { display:flex; align-items:center; justify-content:space-between; gap:10px;
+  margin:0 0 9px; }
+.tsd-cm-cat, .tsd-cm-date { font-family:var(--f-disp); font-size:10.5px; font-weight:600;
+  letter-spacing:.08em; text-transform:uppercase; }
+.tsd-cm-cat { display:inline-flex; align-items:center; gap:6px; min-width:0;
+  color:var(--accent-ink); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.tsd-cm-cat::before { content:""; flex:0 0 auto; width:5px; height:5px; background:var(--accent); }
+.tsd-cm-date { color:var(--txt-3); white-space:nowrap; }
+
+/* Square cover frame — image zooms inside, frame stays put */
+.tsd-zoom { position:relative; display:block; overflow:hidden; margin-bottom:12px; box-shadow:var(--sh-1); }
+.tsd-zoom-img { position:absolute; inset:0; transition:transform .55s cubic-bezier(.2,.6,.2,1); will-change:transform; }
+/* Section name on the picture itself. Only the article cards carry it — their
+   byline row is a face and a name, so the section has nowhere else to sit. */
+
+/* The writer, ahead of the headline: a face, then a name. */
+.tsd-byline { display:flex; align-items:center; gap:9px; margin-bottom:10px; min-width:0; }
+.tsd-byline-name { font-family:var(--f-disp); font-size:12px; font-weight:600; color:var(--txt-2);
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+/* ── Standings tabs ───────────────────────────────────────────
+ * One league often needs two tables — this round's results and the season
+ * totals. Tables sharing a group render as a tab strip instead of stacking,
+ * so the second one is not buried under the first.
+ */
+/*
+ * Sections are printed in whatever order the editor arranged, so the gaps have
+ * to come from the flow rather than from each section's own margins — a margin
+ * that looks right in one position is wrong the moment the section moves.
+ */
+/* Section rhythm. Each block is closed with a rule and opened with space, so
+   the page reads as a run of chapters. The gap alone was not enough — with
+   every section on one ground and no colour to separate them, a reader
+   scrolling past could not tell where one block ended and the next began. */
+.tsd-wrap-flow { padding-top:0; padding-bottom:80px; }
+.tsd-wrap-flow > * { margin-top:56px; padding-bottom:56px; border-bottom:1px solid var(--bdr); }
+.tsd-wrap-flow > :first-child { margin-top:56px; }
+/* The last block closes on the footer's own edge; a second rule directly above
+   it would read as a mistake. */
+.tsd-wrap-flow > :last-child { border-bottom:0; padding-bottom:0; }
+.tsd-wrap-flow > .tsd-pager { border-bottom:0; padding-bottom:0; }
+@media (max-width:768px) {
+  .tsd-wrap-flow { padding-bottom:52px; }
+  .tsd-wrap-flow > *, .tsd-wrap-flow > :first-child { margin-top:40px; }
+  .tsd-wrap-flow > * { padding-bottom:40px; }
+}
+
+/* ── One sport's archive: nameplate + switcher ─────────────────
+ * The section front announces itself with a cover story. A sport's own page
+ * has no single story to lead with before the reader has scrolled, so the
+ * sport's name does the job instead — set at cover size, on the same light
+ * ground the hero uses, so the two pages read as the same publication.
+ */
+.tsd-termhead { background:var(--bg-alt); }
+.tsd-termhead-in { display:flex; align-items:flex-end; justify-content:space-between;
+  gap:28px; flex-wrap:wrap; padding-top:38px; padding-bottom:34px; }
+.tsd-termhead-copy { min-width:0; }
+.tsd-termhead .tsd-label { margin-bottom:16px; transition:background .16s, color .16s; }
+.tsd-termhead .tsd-label:hover { background:var(--accent-ink); color:#fff; }
+.tsd-termhead .tsd-display { margin:0; }
+.tsd-termhead .tsd-lede { margin:14px 0 0; }
+/* The size of the archive, stated once. A reader deciding whether to scroll a
+   list wants to know how long it is before they start. */
+.tsd-termcount { display:flex; align-items:baseline; gap:8px; flex:0 0 auto; }
+.tsd-termcount b { font-family:var(--f-disp); font-weight:700; font-size:clamp(30px,3.4vw,46px);
+  line-height:1; color:var(--accent-ink); }
+.tsd-termcount i { font-family:var(--f-disp); font-style:normal; font-size:12px; font-weight:600;
+  letter-spacing:.14em; text-transform:uppercase; color:var(--txt-3); }
+
+/* Every sport, with the current one marked — the way between sports without
+   going back to the front page. Scrolls sideways rather than wrapping: a strip
+   that changes height as you move along it is harder to aim at than one that
+   stays put. */
+/* The page you are on is filled, not outlined — the same lockup the active tab
+   and the current pager number already use. */
+
+.tsd-empty { display:flex; flex-direction:column; align-items:flex-start; gap:6px; padding:40px 0; }
+.tsd-empty .tsd-lede { color:var(--txt-2); margin:0; }
+
+
+/* 768x402 is the source family used by the tiles. `contain` preserves every
+   edge pixel; the exact source ratio means there is no crop or visible bar. */
+/* Headline is deliberately outside the cover, like the reference rail. */
+
+
+/* ── Standings + Latest News ──────────────────────────────────
+ * The table used to take a dark band across the whole window. At full width it
+ * had to be capped and centred to stay readable, which left a wide empty margin
+ * either side of it; pairing it with a column of headlines fills that space
+ * with something worth reading and lets the table sit at the size it wants.
+ */
+.tsd-scoreduo { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);
+  gap:40px; align-items:start; }
+/* Nothing to pair with — a table alone across 1200px would be the widely
+   spaced islands of numbers this design already fixed once. */
+.tsd-scoreduo.is-solo { grid-template-columns:minmax(0,1fr); max-width:760px; margin-inline:auto; }
+/* News with no table beside it. One column, but at full page width — the news
+   column is itself a cover plus a list, and capping it at reading width would
+   squeeze both. */
+.tsd-scoreduo.is-newsonly { grid-template-columns:minmax(0,1fr); }
+.tsd-rankcol, .tsd-newscol { min-width:0; }
+/* A drawn box, because the table is the one panel here that is not a picture —
+   without an edge it would read as loose numbers on the page. */
+.tsd-rankcard { border:1px solid var(--bdr); background:var(--card); padding:4px 20px 20px; }
+
+/* Paging between leagues. Hidden by sport.js unless there is a second one. */
+.tsd-rank-nav { display:flex; gap:6px; }
+.tsd-rank-nav[hidden] { display:none; }
+.tsd-navbtn { width:30px; height:30px; flex:0 0 auto; display:flex; align-items:center;
+  justify-content:center; border:1px solid var(--bdr); background:none; color:var(--txt-2);
+  font-family:var(--f-disp); font-size:14px; line-height:1; cursor:pointer;
+  transition:background .15s, color .15s, border-color .15s; }
+.tsd-navbtn:hover { background:var(--accent); color:var(--on-accent); border-color:var(--accent); }
+.tsd-navbtn:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+
+/* Recent News: one tall card holding the column's weight, with a short stack
+   of headlines beside it — the same pairing the trending row uses, at half the
+   scale, so the two rows rhyme without repeating. */
+/* "ดูทั้งหมด" beside a section label — small, on the right edge. */
+/* Two per-sport blocks stacked in the news column, sharing the row with the
+   ranking table: same cell, so the table never moves when the desk switches
+   the row to sports. */
+/* Each sport is its own block with its own heading, so they need the room two
+   sections need — 34px put FOOTBALL's last headline almost against MOTORSPORT's
+   nameplate and the two read as one long list. A rule between them as well, for
+   the same reason the page's own sections carry one. */
+.tsd-sportblocks { display:flex; flex-direction:column; gap:0; }
+.tsd-sportblock + .tsd-sportblock { margin-top:52px; padding-top:52px;
+  border-top:1px solid var(--bdr); }
+/* Picture first, caption under it on the page — the headline is not burned over
+   the cover, which on a portrait or a busy photograph meant the type landed on
+   a face as often as on sky. Same arrangement as the bento tiles. */
+/* The cover arrives as an inline `background` shorthand, which sets the colour
+   too — so there is no fallback colour to declare here. The frame is cut to the
+   picture's own ratio, so `cover` has nothing left to trim. */
+/* No panel behind the list. The big card beside it sits on the page now, and a
+   tinted box next to it read as a second, competing surface. The rows start
+   flush with the top of that card's picture instead of being pushed down by a
+   panel's padding. */
+
+/* Headline row: a picture small enough to identify the story, never large
+   enough to compete with the covers further up the page. */
+
+/* The league name is the useful label, so it is the one set large. */
+.tsd-scoretitle { font-family:var(--f-disp); font-weight:700; text-transform:uppercase;
+  font-size:clamp(17px,1.6vw,21px); line-height:1.15; letter-spacing:-.01em;
+  color:var(--txt); margin:0; display:flex; align-items:center; gap:10px; }
+/* Same wedge as the rank numbers and the tabs, so the heading reads as part of
+   the same graphic set instead of a plain line of type. */
+.tsd-scoretitle::before { content:""; flex:0 0 auto; width:14px; height:18px;
+  background:var(--accent); clip-path:polygon(0 0, 100% 0, 68% 100%, 0 100%); }
+
+.tsd-tabhead { padding:16px 0 0; }
+
+/* Inside the card everything is on a half-width column, so the table's own
+   desktop proportions — sized for a 1200px band — are stepped down to match. */
+.tsd-rankcard .tsd-tabs { margin:14px 0 14px; }
+.tsd-rankcard .tsd-tbl { min-width:100%; }
+.tsd-rankcard .tsd-tbl th { font-size:9.5px; letter-spacing:.07em; padding:0 6px 9px; }
+.tsd-rankcard .tsd-tbl td { font-size:12px; padding:9px 6px; }
+.tsd-rankcard .tsd-tbl td:first-child { width:34px; padding-left:8px; }
+
+/*
+ * A twenty-team league is twenty rows — over 1200px of table beside a column of
+ * six headlines, which left the section lopsided and pushed everything under it
+ * off the screen. The card scrolls its own table instead of setting the height
+ * of the whole row. Every row is still in the page, so nothing is hidden from a
+ * reader without JavaScript or from a crawler; only the viewport onto them is
+ * capped.
+ */
+.tsd-rankcard .tsd-tblwrap,
+.tsd-rankcard .tsd-standings { margin-bottom:0; max-height:400px; overflow-y:auto;
+  scrollbar-width:thin; scrollbar-color:var(--accent) transparent; }
+.tsd-rankcard .tsd-standings { max-width:none; }
+.tsd-rankcard .tsd-standings::-webkit-scrollbar,
+.tsd-rankcard .tsd-tblwrap::-webkit-scrollbar { width:6px; }
+.tsd-rankcard .tsd-standings::-webkit-scrollbar-thumb { background:var(--accent); border-radius:3px; }
+/* Scrolling past the header would leave eight abbreviated columns with nothing
+   to name them, so it rides along at the top of the scroller. */
+.tsd-rankcard .tsd-tbl thead th { position:sticky; top:0; z-index:3; background:var(--card); }
+/* The caption centred itself over a capped table on the old band; in the card
+   it has the card's own edges to line up with. */
+.tsd-rankcard .tsd-caption-compact { max-width:none; margin-left:0; margin-right:0; }
+
+.tsd-tabset { margin-bottom:26px; }
+.tsd-tabset:last-child { margin-bottom:0; }
+.tsd-tabset[hidden] { display:none; }
+
+.tsd-tabs { display:flex; gap:3px; margin:30px 0 20px; border-bottom:1px solid var(--bdr);
+  overflow-x:auto; scrollbar-width:thin; scrollbar-color:var(--accent) transparent; }
+.tsd-tabs::-webkit-scrollbar { height:3px; }
+.tsd-tabs::-webkit-scrollbar-track { background:transparent; }
+.tsd-tabs::-webkit-scrollbar-thumb { background:var(--accent); }
+/*
+ * Left-aligned, sharing the league heading's edge directly above them, so the
+ * two read as one block of chrome rather than two separately placed pieces.
+ * This was centred with a pair of flexible spacers before; flex-start needs no
+ * such trick, and it keeps the left end of an overflowing strip reachable.
+ */
+
+/* Folder tabs: straight on the left, cut away on the right, so the gap between
+   two of them reads as one diagonal. */
+.tsd-tab { --slant:18px;
+  flex:0 0 auto; border:0; cursor:pointer; position:relative;
+  padding:11px calc(14px + var(--slant)) 11px 20px;
+  background:var(--bg-alt); color:var(--txt-3);
+  clip-path:polygon(0 0, calc(100% - var(--slant)) 0, 100% 100%, 0 100%);
+  font-family:var(--f-disp); font-size:12px; font-weight:700; letter-spacing:.1em;
+  text-transform:uppercase; white-space:nowrap;
+  transition:background .15s, color .15s; }
+.tsd-tab:hover { background:var(--bdr); color:var(--txt); }
+/* CI pink with dark text — the same lockup as .tsd-label. */
+.tsd-tab.is-active { background:var(--accent); color:var(--on-accent); z-index:2; }
+/* clip-path would slice an outline off, so the focus ring is drawn inside. */
+.tsd-tab:focus-visible { outline:none; box-shadow:inset 0 0 0 2px var(--txt); }
+.tsd-panel[hidden] { display:none; }
+@media (max-width:480px) {
+  .tsd-tab { --slant:14px; padding:9px calc(10px + var(--slant)) 9px 14px;
+    font-size:11px; letter-spacing:.06em; }
+}
+
+/* ── Row images ───────────────────────────────────────────────
+ * Portraits are cropped from the TOP, never the centre: a headshot centred in a
+ * short box loses the top of the head and keeps the shoulders, which is exactly
+ * backwards. A crest is the opposite case — contained, never cropped at all.
+ */
+.tsd-avatar-img { flex:0 0 auto; display:block; background:var(--bg-alt); }
+.tsd-avatar-img.is-portrait { width:44px; height:34px; object-fit:cover;
+  object-position:center top; border-radius:0; }
+.tsd-avatar-img.is-square { width:34px; height:34px; border-radius:3px;
+  object-fit:contain; padding:2px; }
+.tsd-avatar-img.is-sm { width:34px; height:26px; }
+.tsd-avatar-img.is-square.is-sm, .tsd-avatar-img.is-square.is-xs { width:26px; }
+.tsd-avatar-img.is-xs { width:28px; height:22px; }
+.tsd-avatar-img.is-square.is-xs { width:22px; }
+
+/*
+ * In the poster row the portrait always bleeds to the full height of the row,
+ * as it does on the broadcast graphics — whether or not a crest sits ahead of
+ * it. Only the crest is small and centred; the face is the one meant to be big.
+ */
+.tsd-row .tsd-avatar-img.is-portrait { align-self:stretch; height:auto; width:48px; }
+/*
+ * Flush against the team colour: whichever image comes first — a lone photo,
+ * or the logo when both are configured — cancels .tsd-name's left padding so
+ * it sits right against the swatch with no gap.
+ */
+.tsd-name > .tsd-avatar-img:first-child { margin-left:-16px; }
+
+/* Name + picture travel together inside a table cell. */
+.tsd-cell-name { display:inline-flex; align-items:center; gap:8px; }
+
+/* ── Standings ────────────────────────────────────────────── */
+.tsd-standings-title { font-family:var(--f-disp); font-weight:700; font-size:15px; letter-spacing:.02em;
+  text-transform:uppercase; color:var(--txt); margin:0 0 4px; }
+.tsd-standings-note { font-family:var(--f-disp); font-size:11px; font-weight:600; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--txt-3); margin:0 0 18px; }
+.tsd-standings-title + .tsd-standings { margin-top:14px; }
+/* Same cap-and-centre as .tsd-standings, so the caption sits directly above
+   the card it describes instead of spanning the full section width on its
+   own. Only applied when that table renders as the centred card — a wide
+   .tsd-tbl keeps its full-width caption to match. */
+.tsd-standings-title.tsd-caption-compact,
+.tsd-standings-note.tsd-caption-compact { max-width:720px; margin-left:auto; margin-right:auto; }
+
+/* Wide tables (a full league table) — scrollable, accent bar per row */
+.tsd-tblwrap { overflow-x:auto; margin-bottom:30px; -webkit-overflow-scrolling:touch;
+  scrollbar-width:thin; scrollbar-color:var(--accent) transparent; }
+.tsd-tblwrap::-webkit-scrollbar { height:6px; }
+.tsd-tblwrap::-webkit-scrollbar-track { background:transparent; }
+.tsd-tblwrap::-webkit-scrollbar-thumb { background:var(--accent); border-radius:3px; }
+/*
+ * Sized by its contents, not stretched to the container. A league table's
+ * columns are short — the Premier League one measures 549px of actual content
+ * — so `width:100%` on a desktop was inflating it to nearly 1200px and pulling
+ * the numbers into widely spaced islands, nothing like the compact F1 card
+ * above it. The floor matches that card's 720px so the two line up on the same
+ * centre axis; a table with enough columns to need more simply takes more, and
+ * only scrolls once it outgrows the page.
+ */
+.tsd-tbl { width:auto; border-collapse:collapse; min-width:min(100%, 720px); margin:0 auto; }
+.tsd-tbl th { font-family:var(--f-disp); font-size:10px; font-weight:700; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--txt-3); text-align:right; padding:0 10px 10px;
+  border-bottom:2px solid var(--accent); white-space:nowrap; }
+/* .is-name marks a column whose cells carry a crest, so its heading leans the
+   same way the pictures below it do. */
+.tsd-tbl th:first-child, .tsd-tbl th:nth-child(2), .tsd-tbl th.is-name { text-align:left; }
+.tsd-tbl td { font-family:var(--f-disp); font-size:13px; color:var(--txt-2); text-align:right;
+  padding:11px 10px; border-bottom:1px solid var(--bdr); white-space:nowrap; }
+.tsd-tbl td:first-child { text-align:left; font-weight:700; color:var(--txt); width:46px;
+  border-left:4px solid var(--row-accent, transparent); padding-left:12px; }
+.tsd-tbl td.tsd-tbl-name { text-align:left; font-weight:700; color:var(--txt); white-space:normal; }
+.tsd-tbl td:last-child { font-weight:700; color:var(--txt); }
+.tsd-tbl tbody tr:hover td { background:var(--bg-alt); }
+/* Capped, not full-bleed: this is a compact poster card, not a data table —
+   the wide `.tsd-tbl` below still runs edge-to-edge because it genuinely needs
+   the room for its extra columns. Centred (margin auto) rather than left-
+   aligned, so it doesn't sit stranded against the left edge of a wide
+   desktop viewport with nothing balancing it on the right. */
+.tsd-standings { display:flex; flex-direction:column; gap:7px; margin:0 auto 30px; max-width:720px; }
+/*
+ * background is load-bearing, not decoration: .tsd-pos slants its own right
+ * edge with clip-path, which cuts a triangular notch out of ITS OWN box —
+ * that notch was always there, but with no colour behind it the row's own
+ * background (white in light mode) showed straight through as a pale sliver
+ * jammed against the black number tile. Painting the row the same dark tone
+ * as the tiles beside it means a clipped corner just reveals more of that
+ * same tone, so the cut reads as a shape, not a hole.
+ */
+.tsd-row { display:grid; grid-template-columns:52px 74px 1fr 84px; align-items:stretch; min-height:56px;
+  background:#141416; overflow:hidden; box-shadow:0 2px 6px rgba(0,0,0,.22), 0 8px 20px rgba(0,0,0,.18);
+  transition:transform .16s ease, box-shadow .16s ease; }
+/* No COLOR column configured — drop the swatch's 74px track entirely rather
+   than leave it as an empty gap. */
+.tsd-row.is-flat { grid-template-columns:52px 1fr 84px; }
+.tsd-row:hover { transform:translateY(-1px); box-shadow:0 4px 10px rgba(0,0,0,.26), 0 14px 30px rgba(0,0,0,.24); }
+/* --slant controls how far the point cuts in — a bold wedge, not the subtle
+   corner-nip this used to be. */
+.tsd-pos { --slant:20px;
+  display:flex; align-items:center; justify-content:center; background:#141416; color:#fff;
+  font-family:var(--f-disp); font-weight:700; font-size:22px;
+  clip-path:polygon(0 0,100% 0,calc(100% - var(--slant)) 100%,0 100%);
+  padding-right:calc(6px + var(--slant) * .25); }
+/* Leader gets the CI colour instead of the plain dark tile — same lockup as
+   the pink chips used everywhere else (dark text on the pink fill). */
+.tsd-pos.is-lead { background:var(--accent); color:var(--on-accent); }
+.tsd-swatch { display:block; }
+/* Row across: optional picture, then the name stacked over its subtitle. */
+.tsd-name { display:flex; flex-direction:row; align-items:center; gap:10px; padding:0 16px; min-width:0; background-color:#1b1b1d; }
+.tsd-name-text { display:flex; flex-direction:column; justify-content:center; min-width:0; }
+.tsd-name b { font-family:var(--f-disp); font-weight:700; font-style:italic; font-size:17px;
+  letter-spacing:.03em; color:#fff; text-transform:uppercase; text-shadow:0 1px 3px rgba(0,0,0,.35); line-height:1.1; }
+.tsd-name i { font-family:var(--f-disp); font-style:normal; font-weight:600; font-size:10.5px;
+  letter-spacing:.06em; color:rgba(255,255,255,.5); text-transform:uppercase; margin-top:3px; }
+.tsd-pts { display:flex; align-items:center; justify-content:center; background:#E8002D; color:#fff;
+  font-family:var(--f-disp); font-weight:700; font-size:22px; }
+
+/* ── YouTube ──────────────────────────────────────────────── */
+/* Headers reuse the site-wide .tsd-head / .tsd-label system so YouTube reads as
+   part of the same page rather than a YouTube-branded island. */
+.tsd-head-right { display:flex; align-items:center; gap:12px; }
+
+/* ── Watch: the uploads and the Shorts, one row ─────────────
+   Two zones share one row and one bottom edge. The video column is sized by its
+   own content; the Shorts column stretches to match that height and divides it
+   between its rows, so the two zones end level however many clips there are.
+
+   A portrait card is therefore sized by the height it is given, not by its own
+   width — the only way to put 16:9 video and 9:16 Shorts in one row without a
+   scrollbar. The trade is a small crop top and bottom on a Short's thumbnail,
+   which is cheaper than the alternatives: a scrollbar (the Shorts disappear off
+   the right edge on a desktop) or a uniform card aspect (the portrait frame is
+   destroyed). */
+.watch-hub { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.62fr);
+  gap:30px; align-items:start; }
+.hub-left { min-width:0; order:2; }
+.hub-rows { display:grid; grid-template-columns:1fr 1fr; gap:16px 20px; margin-top:22px; }
+.hub-side { display:flex; flex-direction:column; height:100%; min-width:0; order:1; }
+.hub-shorts { flex:1; display:grid; grid-template-columns:repeat(3,1fr);
+  grid-auto-rows:1fr; gap:16px 12px; min-height:0; }
+.hub-shorts .tsd-short { display:flex; flex-direction:column; min-height:0; }
+.hub-shorts .tsd-short-img { flex:1; height:100%; padding-bottom:0; margin-bottom:8px; min-height:0; }
+.hub-shorts .tsd-short-img img.tsd-zoom-img { position:absolute; inset:0; width:100%; height:100%;
+  object-fit:cover; }
+
+/* Only one of the two zones has anything to show: give it the whole row rather
+   than half of it with an empty column beside. */
+.watch-hub:not(.has-shorts) > .hub-left { display:grid;
+  grid-template-columns:minmax(0,1.5fr) minmax(0,1fr); gap:28px; align-items:start; }
+.watch-hub:not(.has-shorts) .hub-rows { grid-template-columns:1fr; margin-top:0; }
+
+/* Keep Watch visually subordinate to the article feed: the feature thumbnail
+   gets a narrower editorial column instead of taking the whole content width. */
+.tsd-yt { max-width:1080px; margin-left:auto; margin-right:auto; }
+
+.tsd-yt-thumb { position:relative; display:block; padding-bottom:56.25%; overflow:hidden;
+  background:#1b1b1d; box-shadow:var(--sh-1); }
+/* Thumbnails are real <img> so the browser can pick the right size and lazy-load;
+   object-fit keeps YouTube's 4:3 fallback from stretching inside the 16:9 frame. */
+img.tsd-zoom-img { width:100%; height:100%; object-fit:cover; display:block; border:0; }
+.tsd-yt-date { position:absolute; right:8px; bottom:8px; background:rgba(0,0,0,.82); color:#fff;
+  font-family:var(--f-disp); font-size:10px; font-weight:600; padding:2px 7px; }
+.tsd-yt-feature { display:block; }
+.tsd-yt-feature .tsd-yt-thumb { margin-bottom:12px; }
+/* Video titles set in the headline face (Kanit) like every other card title —
+   they were falling back to the body face, Sarabun. */
+.tsd-yt-name { display:block; font-family:var(--f-head); font-weight:700; font-size:16px; line-height:1.45; color:var(--txt);
+  transition:color .18s ease; }
+.tsd-yt-name-sm { font-size:14px; }
+.tsd-yt-feature:hover .tsd-yt-name { color:var(--accent-ink); }
+.tsd-yt-feature:hover .tsd-zoom-img,
+.tsd-yt-row:hover .tsd-zoom-img,
+.tsd-short:hover .tsd-zoom-img { transform:scale(1.07); }
+
+/* minmax(0,1fr), not 1fr: a plain fr track will not shrink below the widest
+   unbreakable run in it, and a long Thai video title has no break opportunity —
+   so at 320px the row pushed the whole page 48px wider than the screen. */
+.tsd-yt-row { display:grid; grid-template-columns:104px minmax(0,1fr); gap:11px; align-items:start; }
+.tsd-yt-thumb-sm { padding-bottom:0; height:59px; }
+.tsd-yt-row-name { display:block; min-width:0; overflow-wrap:anywhere;
+  font-family:var(--f-head); font-weight:600; font-size:14px; line-height:1.42; color:var(--txt);
+  margin-bottom:4px; transition:color .18s ease; }
+.tsd-yt-row:hover .tsd-yt-row-name { color:var(--accent-ink); }
+.tsd-yt-row-date { display:block; font-family:var(--f-disp); font-size:10px; color:var(--txt-3); }
+
+.tsd-play { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }
+.tsd-play::after { content:""; width:46px; height:46px; border-radius:50%; background:rgba(0,0,0,.6);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M8 5v14l11-7z'/%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:center; background-size:20px; }
+.tsd-play-sm::after { width:30px; height:30px; background-size:14px; }
+
+/* Shorts — vertical 9:16 cards.
+   On a desktop they are a grid inside the row (sized by .hub-shorts, above); on
+   a narrow screen the row cannot hold both zones, so this is where the Shorts
+   become a swipeable rail again — every card its true 9:16, and the next one
+   always half in view as the hint that the row slides. */
+.tsd-short { display:block; }
+.tsd-short-img { position:relative; display:block; padding-bottom:177.7%; overflow:hidden;
+  background:#1b1b1d; box-shadow:var(--sh-1); margin-bottom:8px; }
+.tsd-short-title { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+  font-family:var(--f-head); font-weight:600; font-size:13px; line-height:1.42; color:var(--txt); transition:color .18s ease; }
+.tsd-short:hover .tsd-short-title { color:var(--accent-ink); }
+
+/* ── YouTube lightbox ─────────────────────────────────────── */
+html.tsd-lb-open, html.tsd-lb-open body { overflow:hidden; }
+.tsd-lb { position:fixed; inset:0; z-index:9999; background:rgba(8,8,10,.92);
+  display:flex; align-items:center; justify-content:center; padding:24px;
+  animation:tsd-lb-in .18s ease; }
+.tsd-lb[hidden] { display:none; }
+@keyframes tsd-lb-in { from { opacity:0 } to { opacity:1 } }
+.tsd-lb-inner { position:relative; width:100%; max-width:1040px;
+  display:flex; align-items:center; justify-content:center; }
+.tsd-lb-stage { width:100%; aspect-ratio:16/9; background:#000; box-shadow:0 20px 60px rgba(0,0,0,.6); }
+/* Shorts are portrait — cap by height so the player never runs off screen. */
+.tsd-lb-stage.is-short { aspect-ratio:9/16; width:auto; height:min(86vh,720px); }
+.tsd-lb-stage iframe { width:100%; height:100%; border:0; display:block; }
+.tsd-lb-close { position:absolute; top:-46px; right:0; width:38px; height:38px;
+  background:none; border:1px solid rgba(255,255,255,.35); color:#fff;
+  font-size:22px; line-height:1; cursor:pointer; transition:background .15s, border-color .15s; }
+.tsd-lb-close:hover { background:var(--accent); color:var(--on-accent); border-color:var(--accent); }
+@media (max-width:768px) {
+  .tsd-lb { padding:16px; }
+  .tsd-lb-close { top:-42px; }
+  .tsd-lb-stage.is-short { height:min(74vh,600px); }
+}
+@media (prefers-reduced-motion: reduce) { .tsd-lb { animation:none; } }
+
+/* ── Motion ───────────────────────────────────────────────── */
+.tsd-reveal { opacity:0; transform:translateY(18px);
+  transition:opacity .6s ease, transform .6s cubic-bezier(.2,.6,.2,1); }
+.tsd-reveal.in { opacity:1; transform:none; }
+
+/* ── Pager + footer ───────────────────────────────────────── */
+.tsd-pager { margin-top:48px; display:flex; justify-content:center; }
+.tsd-pager .page-numbers { font-family:var(--f-disp); font-weight:600; font-size:13px;
+  min-width:40px; min-height:40px; display:inline-flex; align-items:center; justify-content:center;
+  border:1px solid var(--bdr); margin:0 3px; color:var(--txt-2); }
+.tsd-pager .page-numbers.current { background:var(--accent); color:var(--on-accent); border-color:var(--accent); }
+.tsd-footer { background:#0d0d0d; margin-top:60px; }
+/* Brand on one side, the social row on the other — they stack on a phone, where
+   two columns would leave both of them squeezed. */
+.tsd-footer .tsd-wrap { padding:36px 40px; display:flex; align-items:center;
+  justify-content:space-between; gap:24px; flex-wrap:wrap; }
+.tsd-footer-logo { display:block; height:46px; width:auto; margin-bottom:14px; }
+.tsd-footer p { font-family:var(--f-disp); font-size:11px; color:rgba(255,255,255,.35); margin:0; }
+
+/* Square buttons, not circles: everything else in this design has hard corners,
+   and a row of circles reads as a different system bolted on. */
+.tsd-social { display:flex; gap:8px; flex-wrap:wrap; }
+/* Scoped to .tsd-footer on purpose: `.tsd-sport a { color:inherit }` is a
+   (0,1,1) selector and would out-specify a bare `.tsd-social-btn`, leaving the
+   marks the body's near-black — invisible on this footer. */
+.tsd-footer .tsd-social-btn { display:flex; align-items:center; justify-content:center;
+  width:42px; height:42px; flex:0 0 auto;
+  border:1px solid rgba(255,255,255,.22); color:rgba(255,255,255,.72);
+  transition:color .16s, border-color .16s, background .16s; }
+.tsd-footer .tsd-social-btn:hover { background:var(--accent); border-color:var(--accent); color:var(--on-accent); }
+.tsd-footer .tsd-social-btn:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+.tsd-social-btn svg { display:block; }
+@media (max-width:768px) {
+  .tsd-footer .tsd-wrap { padding:28px 16px; }
+}
+
+/* ── Bento — the category and tag index ─────────────────────
+   Five stories to a group: one plate two columns wide and two rows tall, four
+   ordinary tiles around it. The page reads as pictures first — which is the
+   whole point of the pattern, and why it collapses to two columns rather than
+   one on a phone: two small pictures still say more than one headline stacked
+   on another.
+
+   No cover is ever cropped here. A bento cell has a shape the grid decides, so
+   the picture is scaled to fit inside it (`contain`) and the slack around it is
+   filled by the same photograph, blurred past legibility, rather than by grey
+   bars. The row heights below are tuned to the house 1200x628 cover so that on
+   an ordinary story there is barely any slack to fill.
+
+   The headline sits under the picture, not on it: type over a contained cover
+   would hide the part of it the contain was there to save. */
+.tsd-bento { display:grid; grid-template-columns:repeat(4,1fr); gap:16px;
+  grid-auto-rows:clamp(182px,17.2vw,220px); }
+.tsd-bento + .tsd-bento { margin-top:16px; }
+/* Hard corners and no plate behind the headline: the tile is a picture with a
+   caption under it on the page itself, the same way every other card in this
+   skin is built. Only the picture carries a frame. */
+.tsd-bento-card { position:relative; display:flex; flex-direction:column; }
+.tsd-bento-card.is-lead { grid-column:span 2; grid-row:span 2; }
+/* The lead swaps to the right on every other group. It is placed explicitly,
+   the four tiles auto-flow around it, so no extra markup is needed. */
+.tsd-bento.is-alt .tsd-bento-card.is-lead { grid-column:3 / span 2; grid-row:1 / span 2; }
+/* Short groups — the tail of the last page. Each count gets the arrangement
+   that closes its block exactly, because an empty cell under a big picture
+   reads as a fault rather than as emphasis. Three still earns a lead, on three
+   columns instead of four; four is a clean strip of equal tiles, since no
+   lead-plus-three arrangement fills a rectangle.
+
+   Their tiles are wider than a fifth-of-a-group tile, so the row height tuned
+   for those would be far too short for the picture. These rows size themselves
+   instead — each tile is its own cover plus its plate. */
+.tsd-bento.is-trio, .tsd-bento.is-row,
+.tsd-bento.is-pair, .tsd-bento.is-solo { grid-auto-rows:auto; }
+.tsd-bento.is-trio { grid-template-columns:repeat(3,1fr); }
+.tsd-bento.is-pair { grid-template-columns:repeat(2,1fr); }
+.tsd-bento.is-solo .tsd-bento-card { grid-column:span 2; grid-row:span 1; }
+/* The tile's own cover ratio arrives inline, measured on the very file being
+   drawn, so `contain` fills this box exactly. `0 1 auto` so the picture keeps
+   that ratio whenever there is room and only gives way when the tile is
+   genuinely too short for it.
+
+   The ground behind it is the page's own off-white, never a dark fill: the
+   frame and the image agree to well under a pixel, and at that size anything
+   darker than the page reads as a hairline drawn down the edge of the picture
+   rather than as a background. */
+.tsd-bento-media { position:relative; z-index:1; flex:0 1 auto; min-height:0;
+  overflow:hidden; background:var(--bg-alt); box-shadow:var(--sh-1);
+  transition:box-shadow .35s ease; }
+/* `contain`, so the whole cover is on screen. This is the rule the rest of the
+   tile is built around — nothing here may be changed to `cover`. */
+.tsd-bento-pic { position:absolute; inset:0; display:block;
+  background-size:contain; background-position:center; background-repeat:no-repeat; }
+.tsd-bento-chip { position:absolute; top:12px; left:12px; z-index:2;
+  display:inline-block; padding:5px 12px; background:var(--accent); color:var(--on-accent);
+  font-family:var(--f-disp); font-size:10px; font-weight:700; letter-spacing:.14em;
+  text-transform:uppercase; }
+/* The caption. Flush to the picture's left edge and sitting directly under it,
+   with any height the tile has left over falling away below — so the headlines
+   of a row start on one line instead of each floating at its own height. */
+.tsd-bento-copy { position:relative; z-index:2; flex:1 1 auto;
+  display:flex; flex-direction:column; justify-content:flex-start; gap:4px;
+  padding:11px 0 0; }
+.tsd-bento-meta { font-family:var(--f-disp); font-size:11px; font-weight:600;
+  letter-spacing:.06em; color:var(--txt-3); }
+.tsd-bento-title { font-family:var(--f-head); font-weight:700; font-size:15px;
+  line-height:1.32; color:var(--txt); transition:color .2s ease;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.tsd-bento-card.is-lead .tsd-bento-copy { padding:14px 0 0; gap:6px; }
+.tsd-bento-ex { font-size:14px; line-height:1.66; color:var(--txt-2); max-width:62ch;
+  display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+.tsd-bento-card.is-lead .tsd-bento-title { font-size:clamp(19px,2vw,27px); line-height:1.16;
+  letter-spacing:-.01em; -webkit-line-clamp:3; }
+.tsd-bento-card:focus-visible { outline:2px solid var(--accent); outline-offset:3px; }
+/* Hover is gated so a tap on a phone does not leave a tile stuck lit. The
+   picture deliberately does not zoom: a contained cover that scales up is a
+   cropped cover again. The blurred ground moves instead. */
+@media (hover: hover) {
+  .tsd-bento-card:hover .tsd-bento-media { box-shadow:var(--sh-2); }
+  .tsd-bento-card:hover .tsd-bento-title { color:var(--accent-ink); }
+}
+.tsd-bento-card:active .tsd-bento-title { color:var(--accent-ink); }
+
+@media (max-width:1024px) {
+  .tsd-bento { gap:12px; grid-auto-rows:clamp(150px,18vw,184px); }
+  .tsd-bento + .tsd-bento { margin-top:12px; }
+  .tsd-bento-copy { padding:10px 0 0; }
+  .tsd-bento-title { font-size:14px; }
+  .tsd-bento-card.is-lead .tsd-bento-copy { padding:12px 0 0; }
+}
+/* Phone and tablet: two columns, the lead across both. Tiles are given no shape
+   at all here — each one is as tall as its own cover plus its headline plate,
+   so the picture fits exactly at every screen width. A fixed shape cannot: the
+   plate is a roughly constant height while the tile's width is not, so any
+   ratio that fits a 375px phone pillarboxes a 320px one. Rows are sized by
+   their tallest tile, and a shorter neighbour spends the difference on a deeper
+   plate rather than on bars around its picture. */
+@media (max-width:768px) {
+  .tsd-bento { grid-template-columns:repeat(2,1fr); grid-auto-rows:auto; gap:10px; }
+  /* The short-group arrangements collapse here too: two columns is already the
+     narrowest the pattern goes. */
+  .tsd-bento.is-trio, .tsd-bento.is-pair { grid-template-columns:repeat(2,1fr); }
+  .tsd-bento + .tsd-bento { margin-top:10px; }
+  .tsd-bento-card { grid-column:span 1; grid-row:span 1; }
+  .tsd-bento.is-solo .tsd-bento-card { grid-column:1 / span 2; }
+  .tsd-bento-card.is-lead,
+  .tsd-bento.is-alt .tsd-bento-card.is-lead { grid-column:1 / span 2; grid-row:auto; }
+  .tsd-bento-copy { padding:8px 0 0; }
+  .tsd-bento-title { font-size:13px; line-height:1.28; }
+  .tsd-bento-card.is-lead .tsd-bento-copy { padding:10px 0 0; }
+  .tsd-bento-card.is-lead .tsd-bento-title { font-size:19px; }
+  /* On two columns the lead is full width and its picture is no longer twice
+     the height of its neighbours', so there is no shortfall to fill. */
+  .tsd-bento-ex { display:none; }
+  .tsd-bento-chip { top:10px; left:10px; padding:4px 9px; font-size:9px; }
+}
+/* Tablet portrait runs the same two-column pattern, on a tile wide enough to
+   carry the desktop type scale. */
+@media (min-width:521px) and (max-width:768px) {
+  .tsd-bento-title { font-size:15px; }
+  .tsd-bento-card.is-lead .tsd-bento-title { font-size:22px; }
+}
+
+/* ── News card system (ported from the Vercel design) ────────
+   One card everywhere on the front page. Three parts stacked in a fixed order —
+   date row, picture, words — and the only thing that changes between a lead and
+   a filler is the size class. The old page had four card shapes that happened to
+   look similar; this is one shape at four sizes, which is why a row of them
+   lines up without anything being told to.
+
+   The date sits ABOVE the picture, under a hairline, day on the left and year on
+   the right. It reads as a running index down the page rather than as a caption
+   under each photograph. */
+.tsd-ncard { display:block; text-decoration:none; cursor:pointer; min-width:0; }
+.tsd-ncard-rowbody { min-width:0; }
+.tsd-ncard-frame { position:relative; overflow:hidden; background:var(--bg-alt); }
+.tsd-ncard-frame > i { position:absolute; inset:0; display:block;
+  background-size:cover !important; background-position:center !important;
+  transition:transform .7s cubic-bezier(.16,1,.3,1); }
+.tsd-ncard:hover .tsd-ncard-frame > i { transform:scale(1.06); }
+/* A pink rule draws itself along the bottom of the picture on hover — the one
+   piece of colour the card spends, and it lands on the boundary between the
+   picture and its headline. */
+.tsd-ncard-frame::after { content:""; position:absolute; left:0; right:0; bottom:0; height:3px;
+  background:var(--accent); transform:scaleX(0); transform-origin:left; z-index:2;
+  transition:transform .45s cubic-bezier(.16,1,.3,1); }
+.tsd-ncard:hover .tsd-ncard-frame::after { transform:scaleX(1); }
+.tsd-ncard-body { min-width:0; }
+.tsd-ncard-kicker { display:flex; align-items:center; gap:10px; margin:18px 0 10px;
+  font-family:var(--f-disp); font-size:9.5px; font-weight:500; letter-spacing:.16em;
+  text-transform:uppercase; color:var(--accent-ink); }
+.tsd-ncard h3 { font-family:var(--f-head); font-weight:700; color:var(--txt); margin:0;
+  line-height:1.32; text-wrap:pretty; transition:color .18s ease; }
+.tsd-ncard:hover h3 { color:var(--accent-ink); }
+.tsd-ncard:focus-visible { outline:2px solid var(--accent-ink); outline-offset:4px; }
+
+/* XL — the card that leads a block. Display face, tight and uppercase. */
+/* No uppercase: the theme's display face carries Thai, which has no case, so
+   uppercasing only ever affected the Latin words in a mixed headline. */
+.tsd-ncard.is-xl h3 { font-family:var(--f-head); font-weight:800;
+  font-size:clamp(22px,2.1vw,32px); line-height:1.16; letter-spacing:-.01em; }
+.tsd-ncard.is-xl .tsd-ncard-kicker { font-size:10px; margin-top:24px; }
+/* L — the card in a main grid. */
+.tsd-ncard.is-l h3 { font-size:21px; }
+/* M — a tighter grid, and the Shorts strip. */
+.tsd-ncard.is-m h3 { font-size:17px; }
+/* Row — date across the top, then a small picture beside the headline. The
+   kicker goes: the category is already on the row above it. */
+.tsd-ncard.is-row { padding-bottom:26px; }
+.tsd-ncard.is-row .tsd-ncard-rowbody { display:grid; grid-template-columns:150px minmax(0,1fr);
+  gap:20px; align-items:start; }
+.tsd-ncard.is-row .tsd-ncard-kicker { display:none; }
+.tsd-ncard.is-row h3 { font-size:15px; line-height:1.42; }
+
+/* A block led by one big card with a stack of rows beside it.
+   The rows pack from the top at a fixed rhythm (no rules between them — a
+   line over every picture was taken out before). They used
+   to be spread with space-between over the lead's full height, and because
+   the lead is its cover plus a two-line headline, that left a band of empty
+   page between every row. Packed, three rows end at about the foot of the
+   lead's cover, with the lead's headline carrying on below. */
+.tsd-leadrow { display:grid; grid-template-columns:minmax(0,1.72fr) minmax(0,1fr);
+  gap:48px; align-items:start; }
+.tsd-leadlist { display:flex; flex-direction:column; justify-content:flex-start; gap:clamp(24px,2.2vw,36px); min-width:0; }
+.tsd-leadlist .tsd-ncard.is-row { padding-bottom:0; }
+/* The main news grid: three across, the first card spanning two of them. */
+.tsd-newsgrid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:56px 36px; }
+/* A short block's stories, all at the same weight. `auto-fit` rather than a
+   fixed three: two stories should be two halves, not two thirds and a hole. */
+.tsd-newsgrid.is-even { grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); }
+.tsd-newsgrid > .is-wide { grid-column:span 2; }
+.tsd-newsgrid > .is-wide h3 { font-family:var(--f-head); font-weight:800;
+  font-size:clamp(20px,1.8vw,28px); line-height:1.18; letter-spacing:-.01em; }
+
+@media (max-width:1280px) {
+  .tsd-leadrow { grid-template-columns:minmax(0,1.45fr) minmax(0,1fr); gap:40px; }
+  .tsd-newsgrid { gap:48px 28px; }
+}
+@media (max-width:1100px) {
+  .tsd-sport { --gutter:36px; }
+}
+@media (max-width:900px) {
+  .tsd-leadrow { grid-template-columns:1fr; gap:48px; }
+  .tsd-newsgrid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:44px 24px; }
+  .tsd-newsgrid > .is-wide { grid-column:span 2; }
+}
+@media (max-width:768px) {
+  .tsd-sport { --gutter:18px; }
+  .tsd-sportblock + .tsd-sportblock { margin-top:36px; padding-top:36px; }
+  /* Burger, logo and toggle have to share 320px at the narrowest. The lockup
+     is the only one of the three that can give ground. */
+  .tsd-nav-top { gap:10px; padding:6px 14px 0; height:80px; }
+  .tsd-logo img { height:24px; }
+  .tsd-burger, .tsd-theme-btn { width:36px; height:36px; }
+  .tsd-head { margin-bottom:28px; padding-bottom:16px; }
+  .tsd-newsgrid { grid-template-columns:1fr; gap:40px; }
+  .tsd-newsgrid > .is-wide { grid-column:span 1; }
+  .tsd-ncard.is-row .tsd-ncard-rowbody { grid-template-columns:118px minmax(0,1fr); gap:14px; }
+  .tsd-ncard.is-row { padding-bottom:20px; }
+}
+
+/* ── Special Column ──────────────────────────────────────────
+   The section's own mark: a second slash, in ink, behind the pink one. */
+.tsd-head.is-double .tsd-headline { padding-left:clamp(34px,3vw,50px); }
+.tsd-head.is-double .tsd-headline::after { content:""; position:absolute;
+  left:clamp(13px,1.2vw,20px); top:.08em; bottom:.08em;
+  width:clamp(7px,.78vw,12px); background:var(--txt);
+  transform:skewX(-14deg); transform-origin:bottom left; }
+
+/* Promo-pack heading (EA FC TOTY banner): centred, SPECIAL in an obsidian
+   hex-prism ribbon with a CI-pink edge, COLUMN in holographic foil. The pink
+   edge is the outer layer showing round an inset obsidian ::before cut to the
+   same prism, so the outline follows every facet. */
+.tsd-toty-head { position:relative; display:flex; flex-direction:column; align-items:center;
+  gap:14px; margin:0 0 34px; text-align:center; isolation:isolate; }
+/* Light rays out to both sides, the "pack opening" flare behind the title. */
+.tsd-toty-head::before { content:""; position:absolute; z-index:-1; left:0; right:0;
+  top:calc(clamp(52px,5vw,76px) / 2); height:2px;
+  background:linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--accent) 70%, transparent) 30%,
+    transparent 46%, transparent 54%, color-mix(in srgb, var(--accent) 70%, transparent) 70%, transparent 100%); }
+.tsd-toty-head::after { content:""; position:absolute; z-index:-2; left:50%; top:calc(clamp(52px,5vw,76px) / 2);
+  width:min(560px,90%); height:150px; transform:translate(-50%,-50%);
+  background:radial-gradient(closest-side, color-mix(in srgb, var(--accent) 28%, transparent), transparent);
+  pointer-events:none; }
+.tsd-toty { display:flex; flex-wrap:wrap; align-items:center; justify-content:center;
+  gap:6px clamp(12px,1.4vw,20px); margin:0; line-height:1;
+  font-family:var(--f-head); font-weight:800; font-style:italic; text-transform:uppercase; }
+.tsd-toty-rib { --hx:clamp(14px,1.4vw,22px); position:relative; display:inline-flex; align-items:center;
+  height:clamp(52px,5vw,76px); padding:0 calc(var(--hx) + clamp(14px,1.4vw,22px));
+  background:var(--accent); transform:skewX(-12deg);
+  clip-path:polygon(var(--hx) 0, calc(100% - var(--hx)) 0, 100% 50%, calc(100% - var(--hx)) 100%, var(--hx) 100%, 0 50%);
+  box-shadow:0 0 0 0 transparent; }
+.tsd-toty-rib::before { content:""; position:absolute; inset:2px;
+  clip-path:polygon(calc(var(--hx) - 1px) 0, calc(100% - var(--hx) + 1px) 0, 100% 50%, calc(100% - var(--hx) + 1px) 100%, calc(var(--hx) - 1px) 100%, 0 50%);
+  /* Obsidian glass: a dark base with a lit upper bevel. */
+  background:
+    linear-gradient(to bottom, rgba(255,255,255,.14) 0%, rgba(255,255,255,.03) 48%, rgba(0,0,0,0) 52%, rgba(255,255,255,.04) 100%),
+    linear-gradient(135deg, #1b1b22 0%, #07070a 55%, #121218 100%); }
+.tsd-toty-rib > span { position:relative; display:block; transform:skewX(12deg);
+  font-size:clamp(24px,2.5vw,38px); letter-spacing:.06em; color:#fff;
+  text-shadow:0 0 18px color-mix(in srgb, var(--accent) 55%, transparent); }
+/* Holographic foil: a rainbow band slides across the letters, a white glint
+   crosses on top of it. */
+/* Light ground: deeper foil so the letters hold up on white. Dark ground:
+   the pale pearlescent set. */
+.tsd-toty-holo { --holo-band:linear-gradient(100deg, #e04fd6 0%, #6a4dff 16%, #0fb5e0 32%, #19b86a 48%, #e0a800 62%, #ff4fa8 78%, #8a4dff 100%); }
+html[data-tsd-theme="dark"] .tsd-toty-holo {
+  --holo-band:linear-gradient(100deg, #ffa5f7 0%, #9b8cff 16%, #5ee7ff 32%, #9dffb0 48%, #fff27a 62%, #ff9ad5 78%, #b48cff 100%); }
+@media (prefers-color-scheme: dark) { html:not([data-tsd-theme="light"]) .tsd-toty-holo {
+  --holo-band:linear-gradient(100deg, #ffa5f7 0%, #9b8cff 16%, #5ee7ff 32%, #9dffb0 48%, #fff27a 62%, #ff9ad5 78%, #b48cff 100%); } }
+.tsd-toty-holo { position:relative; display:inline-block; padding:0 .08em;
+  font-size:clamp(40px,4.4vw,68px); letter-spacing:.01em;
+  background:
+    linear-gradient(105deg, transparent 0 40%, rgba(255,255,255,.95) 48%, transparent 56% 100%),
+    var(--holo-band);
+  background-size:250% 100%, 220% 100%; background-repeat:no-repeat, repeat;
+  -webkit-background-clip:text; background-clip:text; color:transparent; -webkit-text-fill-color:transparent;
+  filter:drop-shadow(0 2px 0 rgba(0,0,0,.18));
+  animation:tsdHolo 5s linear infinite; }
+@keyframes tsdHolo {
+  0%   { background-position:160% 0, 0% 0; }
+  45%  { background-position:-60% 0, 100% 0; }
+  100% { background-position:-60% 0, 200% 0; } }
+.tsd-toty-head .tsd-headnote span { border:0; width:auto; height:auto; }
+@media (max-width:768px) {
+  .tsd-toty-head { margin-bottom:26px; gap:12px; }
+  .tsd-toty-rib { height:44px; --hx:12px; padding:0 24px; }
+  .tsd-toty-rib > span { font-size:21px; }
+  .tsd-toty-holo { font-size:36px; }
+  .tsd-toty-head::before, .tsd-toty-head::after { top:22px; }
+}
+@media (prefers-reduced-motion: reduce) { .tsd-toty-holo { animation:none; background-position:160% 0, 30% 0; } }
+
+/* Three columns, cards stretched to the tallest so the writer rows line up. */
+.tsd-spc-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:30px; align-items:stretch; }
+.tsd-spc { min-width:0; display:flex; }
+.tsd-spc-media { position:relative; }
+
+/*
+ * Modern gaming card (Sorare x Apple Sports). An acrylic slab of smoked glass
+ * (#0f121d at 85%, blurred behind), rounded 24px, with a 14px F1-style
+ * micro-chamfer at the top right. The edge is a 1px hairline of soft
+ * iridescent foil: the card's own background (a slowly turning conic rainbow)
+ * showing through a 1px gap round the glass panel, which is cut to the same
+ * shape — so the foil follows the chamfer as well as the curves.
+ *
+ * On hover or touch the card tilts toward the pointer in 3D and a holographic
+ * sheen follows it across the face (sport.js feeds --rx/--ry/--mx/--my).
+ */
+@property --spc-ang { syntax:'<angle>'; inherits:false; initial-value:0deg; }
+.tsd-spc { perspective:1100px; }
+.tsd-spc-link { --gold:var(--accent); --ch:14px; --r:24px; --rx:0deg; --ry:0deg; --mx:50%; --my:50%;
+  --slab:polygon(0 0, calc(100% - var(--ch)) 0, 100% var(--ch), 100% 100%, 0 100%);
+  position:relative; isolation:isolate; display:flex; flex-direction:column; width:100%;
+  padding:18px 18px 20px; color:#eef0f6;
+  border-radius:var(--r) 0 var(--r) var(--r); clip-path:var(--slab);
+  background:conic-gradient(from var(--spc-ang),
+    rgba(255,165,247,.85), rgba(150,170,255,.7), rgba(120,235,255,.7),
+    rgba(190,255,210,.55), rgba(255,240,170,.6), rgba(255,165,247,.85));
+  transform:rotateX(var(--rx)) rotateY(var(--ry));
+  transform-style:preserve-3d; will-change:transform;
+  transition:transform .45s cubic-bezier(.2,.8,.2,1);
+  animation:tsdSpcFoil 9s linear infinite; }
+@keyframes tsdSpcFoil { to { --spc-ang:360deg; } }
+.tsd-spc-link.is-tilting { transition:transform .08s linear; }
+/* The glass. */
+.tsd-spc-link::before { content:""; position:absolute; inset:1px; z-index:-1; pointer-events:none;
+  border-radius:calc(var(--r) - 1px) 0 calc(var(--r) - 1px) calc(var(--r) - 1px);
+  clip-path:polygon(0 0, calc(100% - var(--ch) + .6px) 0, 100% calc(var(--ch) - .6px), 100% 100%, 0 100%);
+  background:
+    radial-gradient(120% 60% at 0% 0%, rgba(255,255,255,.07), transparent 60%),
+    linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,0) 40%),
+    rgba(15,18,29,.85);
+  -webkit-backdrop-filter:blur(24px) saturate(140%); backdrop-filter:blur(24px) saturate(140%); }
+/* The holographic sheen: a rainbow band and a soft specular spot that follow
+   the pointer; invisible at rest. */
+.tsd-spc-link::after { content:""; position:absolute; inset:0; z-index:3; pointer-events:none;
+  border-radius:inherit; opacity:0; transition:opacity .35s ease;
+  background:
+    radial-gradient(circle at var(--mx) var(--my), rgba(255,255,255,.28), rgba(255,255,255,0) 42%),
+    linear-gradient(115deg, transparent 20%, rgba(255,165,247,.22) 36%, rgba(120,235,255,.22) 46%,
+      rgba(190,255,210,.18) 54%, rgba(255,240,170,.18) 62%, transparent 78%);
+  background-size:100% 100%, 220% 220%;
+  background-position:0 0, var(--mx) var(--my);
+  mix-blend-mode:screen; }
+.tsd-spc-link:hover::after, .tsd-spc-link.is-tilting::after, .tsd-spc-link:focus-visible::after { opacity:1; }
+.tsd-spc-frame { position:relative; overflow:hidden; background:#1a1e2c; border-radius:16px; }
+.tsd-spc-frame > i { position:absolute; inset:0; display:block;
+  background-size:cover !important; background-position:center !important;
+  transition:transform .7s cubic-bezier(.16,1,.3,1); }
+
+.tsd-spc-link:hover .tsd-spc-frame > i { transform:scale(1.035); }
+.tsd-spc-link:hover h3 { color:var(--gold); }
+.tsd-spc-link:focus-visible { outline:2px solid var(--gold); outline-offset:3px; }
+
+.tsd-spc-body { padding:18px 0 16px; }
+.tsd-spc-body h3 { margin:0; font-family:var(--f-head); font-weight:700;
+  font-size:clamp(18px,1.45vw,22px); line-height:1.4; color:#f1f3f8;
+  transition:color .18s ease;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+
+/* The writer. margin-top:auto pins the row to the foot of the column, so a
+   row of three lines up whatever the length of the headlines above. No band
+   behind it — a tinted strip here was a box by another name. */
+.tsd-spc-foot { margin-top:auto; display:flex; align-items:center; gap:14px; padding:0; }
+.tsd-spc-avatar { flex:0 0 auto; width:48px; height:48px; border-radius:50%;
+  padding:2px; border:1.5px solid var(--gold); background:#0f121d; object-fit:cover; }
+.tsd-spc-who { flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:2px; }
+.tsd-spc-name { font-family:var(--f-head); font-weight:700; font-size:15px; line-height:1.3;
+  color:#f1f3f8; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.tsd-spc-role { font-family:var(--f-body); font-size:13px; line-height:1.35; color:#9aa1b4;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.tsd-spc-go { flex:0 0 auto; width:38px; height:38px; border-radius:0;
+  display:flex; align-items:center; justify-content:center;
+  background:color-mix(in srgb, var(--gold) 12%, transparent); border:1px solid color-mix(in srgb, var(--gold) 55%, transparent); color:var(--gold); font-size:15px;
+  transition:background .2s ease, color .2s ease, transform .2s ease; }
+.tsd-spc-link:hover .tsd-spc-go { background:var(--gold); color:#141417;
+  transform:translateX(3px); }
+
+@media (max-width:1024px) {
+  .tsd-spc-grid { row-gap:24px; }
+}
+/* Phone: one card per row, stacked — no sideways strip. */
+@media (max-width:768px) {
+  .tsd-spc-grid { grid-template-columns:minmax(0,1fr); gap:18px; }
+  .tsd-spc-link { --r:20px; padding:16px 16px 18px; }
+}
+@media (max-width:600px) {
+  .tsd-spc-body { padding:14px 0 12px; }
+  .tsd-spc-foot { gap:12px; }
+  .tsd-spc-avatar { width:42px; height:42px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tsd-spc-link { animation:none; transform:none !important; }
+  .tsd-spc-frame > i { transition:none; }
+  .tsd-spc-link:hover .tsd-spc-frame > i { transform:none; }
+}
+
+/* ── Sport hub (F1-style) ────────────────────────────────────
+   A sport's own front page. Always on black, whatever the reader's
+   light/dark choice elsewhere: the page is built around a full-window artwork
+   and the standings, and both are designed to sit on dark. The selector is
+   heavier than the site's own light and dark palettes so it wins over both.
+   The accent is F1 red here, not CI pink — this page wears the sport's
+   colours; the SPORT logo image keeps its own. */
+html body.tsd-sport.tsd-hub-page {
+  --bg:#000000; --bg-alt:#0e0e0e; --card:#141414; --bg-row:#1a1a1a;
+  --txt:#ffffff; --txt-2:rgba(255,255,255,.76); --txt-3:rgba(255,255,255,.55); --txt-4:rgba(255,255,255,.34);
+  --bdr:rgba(255,255,255,.14); --bdr-2:rgba(255,255,255,.08);
+  --accent:#e10600; --accent-ink:#e10600; --on-accent:#ffffff;
+  background:var(--bg); color:var(--txt);
+}
+
+/* The artwork fills the window and is left clear; the sport's name and the
+   newest stories run along its foot, on the fade into the page. The hero runs
+   a little past the fold so the cards start low, the way F1's own hub does —
+   their tops peek in and invite the scroll without sitting on the car. */
+.tsd-hub-hero { position:relative; min-height:clamp(640px,calc(100svh + 150px),1110px);
+  display:flex; flex-direction:column; justify-content:flex-end; overflow:hidden; background:#000; }
+.tsd-hub-art { position:absolute; inset:0; display:block; }
+/* No artwork set: the hero's own night backdrop rather than a story's cover —
+   a borrowed cover would make one article look like the sport's poster.
+   Floodlight glow in F1 red, speed lines at the F1 angle. */
+.tsd-hub-hero.is-noart {
+  background:
+    radial-gradient(ellipse 70% 60% at 78% 28%, rgba(225,6,0,.22), transparent 70%),
+    repeating-linear-gradient(115deg, rgba(225,6,0,.08) 0 2px, transparent 2px 46px),
+    linear-gradient(160deg, #141414 0%, #070707 55%, #000 100%); }
+.tsd-hub-noart-hint { position:absolute; z-index:3; top:calc(104px + 18px); right:clamp(18px,2.6vw,40px);
+  font-family:var(--f-disp); font-size:12px; font-weight:700; letter-spacing:.06em;
+  padding:9px 14px; background:rgba(225,6,0,.14); border:1px solid var(--accent); color:var(--accent); }
+.tsd-hub-noart-hint:hover { background:var(--accent); color:var(--on-accent); }
+.tsd-hub-art img { width:100%; height:100%; object-fit:cover; object-position:center; display:block; }
+/* Night fade: only the bottom band, where the strip sits, runs into the
+   page's navy; the top darkens a touch for the floating masthead. */
+.tsd-hub-shade { position:absolute; inset:0; pointer-events:none;
+  background:
+    linear-gradient(to bottom, rgba(0,0,0,.55) 0%, transparent 18%),
+    linear-gradient(to top, var(--bg) 0%, rgba(0,0,0,.94) 30%, rgba(0,0,0,.45) 44%, transparent 56%); }
+/* Edge to edge on the masthead's own side padding. */
+.tsd-hub-hero .tsd-hub-hero-in { position:relative; z-index:2; width:100%;
+  padding:0 clamp(18px,2.6vw,40px) clamp(28px,4vh,44px); }
+
+/* Name bar: the sport on the left, view-all and arrows on the right. */
+/* Ghost kinetic watermark: the sport's name in outline only, stretched to
+   the full width of the strip under it, so the artwork shows through the
+   letters. sport.js fits the size to the width exactly and lets it drift a
+   little against the scroll; this clamp is the no-JS fallback. */
+.tsd-hub-bar { display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:flex-end; gap:12px 24px; margin-bottom:clamp(38px,5.5vh,60px); }
+.tsd-hub-title { flex:1 0 100%; margin:0; min-width:0; overflow:visible; white-space:nowrap;
+  font-family:var(--f-head); font-weight:800; font-style:italic; text-transform:uppercase;
+  font-size:clamp(56px,14.6vw,240px); line-height:.86; letter-spacing:-.005em; }
+.tsd-hub-ghost { display:inline-block; padding-right:.08em; color:transparent;
+  -webkit-text-stroke:1.5px rgba(255,255,255,.6); text-stroke:1.5px rgba(255,255,255,.6);
+  transform:translate3d(var(--ghost-x,0px),0,0); will-change:transform;
+  animation:tsdGhostIn 1.1s cubic-bezier(.16,1,.3,1) both; }
+.tsd-hub-ghost em { font-style:inherit; -webkit-text-stroke-color:var(--accent); }
+@keyframes tsdGhostIn { from { opacity:0; transform:translate3d(8%,0,0); } to { opacity:1; } }
+@media (prefers-reduced-motion:reduce) { .tsd-hub-ghost { animation:none; transform:none; } }
+.tsd-hub-bar-end { flex:0 0 auto; display:flex; align-items:center; gap:10px; }
+.tsd-hub-bar-end:not(:has(> :not([hidden]))) { display:none; }
+.tsd-hub-all { margin-right:8px; font-family:var(--f-head); font-size:14px; font-weight:700;
+  letter-spacing:.06em; color:#fff; transition:color .15s; }
+.tsd-hub-all:hover { color:var(--accent); }
+
+/* The strip: picture on top, label and headline under it. */
+.tsd-hub-track { min-width:0; display:grid; grid-auto-flow:column;
+  /* --n is the number of stories: three fill the row as three. */
+  --cols:min(var(--n,4),4); --gap:32px;
+  grid-auto-columns:calc((100% - (var(--cols) - 1) * var(--gap)) / var(--cols)); gap:var(--gap); overflow-x:auto;
+  scroll-snap-type:x mandatory; scrollbar-width:none; }
+.tsd-hub-track::-webkit-scrollbar { display:none; }
+.tsd-hub-card { display:block; min-width:0; scroll-snap-align:start; color:#fff; }
+/* A red rule under every picture — the F1 team-colour bar. */
+.tsd-hub-card-img { position:relative; display:block; overflow:hidden; background:var(--card);
+  border-bottom:4px solid var(--accent); margin-bottom:18px; }
+.tsd-hub-card-img > i { position:absolute; inset:0; display:block;
+  background-size:cover !important; background-position:center !important;
+  transition:transform .6s cubic-bezier(.16,1,.3,1); }
+.tsd-hub-card:hover .tsd-hub-card-img > i { transform:scale(1.05); }
+.tsd-hub-card-title { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+  font-family:var(--f-head); font-weight:700; font-size:clamp(15px,1.25vw,19px); line-height:1.5; transition:color .18s ease; }
+.tsd-hub-card:hover .tsd-hub-card-title { color:var(--accent); }
+.tsd-hub-arr { flex:0 0 auto; width:40px; height:40px; border-radius:0;
+  display:flex; align-items:center; justify-content:center; cursor:pointer;
+  background:none; border:1px solid rgba(255,255,255,.3); color:#fff; transition:border-color .15s, color .15s; }
+.tsd-hub-arr:hover { border-color:var(--accent); color:var(--accent); }
+.tsd-hub-arr[disabled] { opacity:.25; pointer-events:none; }
+.tsd-hub-arr[hidden] { display:none; }
+
+/* The standings panel keeps its own design; on navy it only needs its card
+   surfaces to follow the page instead of the light grey they use on paper. */
+.tsd-hub-page .tsd-hub-standings .tsd-rankcard { background:var(--bg-alt); }
+
+/* Desktop and tablet: one lead and three beside it — the newest (or first
+   pinned) story large on the left, the next three as compact rows stacked on
+   the right, their tops and bottoms lined up with the lead's. No sideways
+   scroll any more, so the arrows never appear. */
+@media (min-width:769px) {
+  /* The artwork is a fixed, window-high block that fades out at its foot —
+     it no longer stretches with the strip under it. The name sits on the
+     fade, below the car, wherever the strip ends; the strip runs on black. */
+  .tsd-hub-hero { display:block; min-height:0; --hub-art-h:clamp(560px,100svh,1000px); }
+  .tsd-hub-art { position:relative; inset:auto; height:var(--hub-art-h);
+    -webkit-mask-image:linear-gradient(to bottom,#000 58%,transparent 100%); mask-image:linear-gradient(to bottom,#000 58%,transparent 100%); }
+  .tsd-hub-shade { background:linear-gradient(to bottom, rgba(0,0,0,.55) 0%, transparent 160px); }
+  .tsd-hub-hero .tsd-hub-hero-in { margin-top:calc(var(--hub-art-h) * -.38); padding-bottom:clamp(40px,5vh,64px); }
+  .tsd-hub-hero.is-noart .tsd-hub-hero-in { margin-top:0; padding-top:calc(104px + 30vh); }
+  .tsd-hub-track { grid-auto-flow:row; grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);
+    grid-auto-columns:auto; grid-auto-rows:1fr; gap:18px 26px; overflow:visible; scroll-snap-type:none; }
+  .tsd-hub-card:first-child { grid-column:1; grid-row:1 / span 3; }
+  .tsd-hub-track:not(:has(> .tsd-hub-card:nth-child(2))) { grid-template-columns:minmax(0,1fr); }
+  .tsd-hub-card:first-child .tsd-hub-card-title { font-size:clamp(18px,1.6vw,24px); }
+  .tsd-hub-card:not(:first-child) { grid-column:2; display:grid; grid-template-columns:minmax(0,42%) minmax(0,1fr);
+    column-gap:16px; align-items:center; --dfa:14px; --dfb:24px; --dfc:12px; padding:14px 18px 16px; }
+  .tsd-hub-card:not(:first-child) .tsd-hub-card-img { margin-bottom:0; border-bottom-width:3px; }
+  .tsd-hub-card:not(:first-child) .tsd-hub-card-title { font-size:clamp(14px,1.1vw,16px); -webkit-line-clamp:3; }
+}
+/* Phone: no sideways strip. The artwork keeps its own window-high block and
+   fades out at its foot; the name sits on that fade, and the stories stack
+   under it — the newest as a full card, the next three as compact rows
+   (picture left, headline right), so four fit without a very long column. */
+@media (max-width:768px) {
+  .tsd-hub-hero { display:block; min-height:0; }
+  .tsd-hub-art { position:relative; inset:auto; height:clamp(380px,68svh,600px);
+    -webkit-mask-image:linear-gradient(to bottom,#000 58%,transparent 100%); mask-image:linear-gradient(to bottom,#000 58%,transparent 100%); }
+  .tsd-hub-shade { background:linear-gradient(to bottom, rgba(0,0,0,.55) 0%, transparent 110px); }
+  .tsd-hub-hero .tsd-hub-hero-in { padding:0 14px 36px; margin-top:-128px; }
+  .tsd-hub-hero.is-noart .tsd-hub-hero-in { margin-top:0; padding-top:calc(80px + 120px); }
+  .tsd-hub-bar { margin-bottom:28px; }
+  .tsd-hub-ghost { -webkit-text-stroke-width:1px; }
+  .tsd-hub-arr, .tsd-hub-bar-end { display:none; }
+  .tsd-hub-track { display:grid; grid-auto-flow:row; grid-template-columns:minmax(0,1fr); grid-auto-columns:auto;
+    gap:22px; overflow:visible; scroll-snap-type:none; }
+  .tsd-hub-card:not(:first-child) { display:grid; grid-template-columns:minmax(0,40%) minmax(0,1fr);
+    column-gap:14px; align-items:center; }
+  .tsd-hub-card:not(:first-child) { --dfa:12px; --dfb:20px; --dfc:10px; padding:12px 14px 16px; }
+  .tsd-hub-card:not(:first-child) .tsd-hub-card-img { margin-bottom:0; border-bottom-width:3px; }
+  .tsd-hub-card:not(:first-child) .tsd-hub-card-title { font-size:15px; -webkit-line-clamp:3; }
+}
+
+/* ── Checkered Diffuser (sport hub article cards) ─────────────
+   Each card on a hub sits in a frame cut like the underside of an F1 car: a
+   small chamfer at the top right, the rear corner taken away deep (44px) like
+   the diffuser tunnel, and a shallow rake at the front-left. The picture
+   inside is untouched — the frame is the shape, not the photo.
+   The red line is a plain 2px border on the card's own box, clipped by the
+   same polygon: it survives on the straight edges and is sliced off at every
+   cut, so the cuts read as cuts through the frame, as in the reference.
+   --dfa / --dfb / --dfc are the three cuts. */
+.tsd-hub-card,
+.tsd-hub-page .tsd-ncard {
+  --dfa:26px; --dfb:44px; --dfc:22px;
+  --df-shape:polygon(0% 0%, calc(100% - var(--dfa)) 0%, 100% var(--dfa), 100% calc(100% - var(--dfb)),
+    calc(100% - var(--dfb)) 100%, var(--dfb) 100%, 0% calc(100% - var(--dfc)));
+  position:relative; isolation:isolate; overflow:hidden; padding:22px 22px 34px;
+  background:linear-gradient(180deg, #121219 0%, #0a0a10 100%); clip-path:var(--df-shape); }
+.tsd-hub-card::after,
+.tsd-hub-page .tsd-ncard::after {
+  content:""; position:absolute; inset:0; z-index:2; pointer-events:none;
+  border:2px solid color-mix(in srgb, var(--accent) 80%, #000); }
+/* Hover: a streak of reflected light sweeps across the card at the 14° lean
+   — white at its core, edged in the accent — and is gone. Replaces the
+   picture zoom and the brightening frame. */
+.tsd-hub-card::before,
+.tsd-hub-page .tsd-ncard::before {
+  content:""; position:absolute; z-index:3; pointer-events:none; top:-20%; bottom:-20%; left:0; width:45%;
+  background:linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--accent) 30%, transparent) 28%,
+    rgba(255,255,255,.5) 46%, rgba(255,255,255,.62) 50%, rgba(255,255,255,.16) 60%, transparent 100%);
+  mix-blend-mode:screen;
+  transform:translateX(-130%) skewX(-14deg); opacity:0; }
+.tsd-hub-card:hover::before, .tsd-hub-card:focus-visible::before,
+.tsd-hub-page .tsd-ncard:hover::before, .tsd-hub-page .tsd-ncard:focus-within::before {
+  animation:tsdDiffuserSheen .75s cubic-bezier(.3,.6,.2,1) both; }
+@keyframes tsdDiffuserSheen {
+  0%   { transform:translateX(-130%) skewX(-14deg); opacity:0; }
+  15%  { opacity:1; }
+  100% { transform:translateX(330%) skewX(-14deg); opacity:0; }
+}
+.tsd-hub-card:hover .tsd-hub-card-img > i,
+.tsd-hub-page .tsd-ncard:hover .tsd-ncard-frame > i { transform:none; }
+.tsd-hub-page .tsd-ncard:hover .tsd-ncard-frame::after { transform:scaleX(0); }
+.tsd-hub-card-img { margin-bottom:18px; }
+.tsd-hub-page .tsd-ncard .tsd-ncard-kicker { margin-top:16px; }
+/* List rows and phone rows are small: the same shape, tighter. */
+.tsd-hub-page .tsd-ncard.is-row { --dfa:12px; --dfb:20px; --dfc:10px; padding:12px 14px 16px; }
+@media (prefers-reduced-motion:reduce) {
+  .tsd-hub-card:hover::before, .tsd-hub-page .tsd-ncard:hover::before { animation:none; }
+}
+
+/* ── Podium standings board (sport hubs, F1 season page) ─────
+   Top three as cards in their team colours — second, first, third, the
+   winner raised in the middle — then the whole order as a table that opens
+   past the seventh row on "Show all". */
+.tsd-board-tabs { display:flex; gap:30px; margin:-8px 0 8px; border-bottom:1px solid var(--bdr-2); }
+.tsd-board-tab { position:relative; padding:0 0 14px; background:none; border:0; cursor:pointer;
+  font-family:var(--f-disp); font-size:14px; font-weight:700; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--txt-3); transition:color .15s; }
+.tsd-board-tab:hover { color:var(--txt); }
+.tsd-board-tab.is-active { color:var(--txt); }
+.tsd-board-tab.is-active::after { content:""; position:absolute; left:0; right:0; bottom:-1px; height:3px; background:var(--accent); }
+
+.tsd-podium { list-style:none; margin:0; padding:26px 0 0; display:grid; grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:clamp(14px,1.6vw,22px); align-items:end; }
+.tsd-podium-card { position:relative; display:flex; flex-direction:column; min-height:250px; overflow:hidden;
+  background:linear-gradient(165deg, color-mix(in srgb, var(--team) 16%, #1c1c1c) 0%, #121212 55%);
+  /* The top-right corner cut off on the diagonal, like an F1 standings
+     graphic — it slices through the team-colour band. */
+  --pcut:clamp(18px,2vw,30px);
+  clip-path:polygon(0 0, calc(100% - var(--pcut)) 0, 100% var(--pcut), 100% 100%, 0 100%); }
+.tsd-podium-card.is-p1 { order:2; min-height:282px; }
+.tsd-podium-card.is-p2 { order:1; min-height:256px; }
+.tsd-podium-card.is-p3 { order:3; min-height:236px; }
+/* A big outlined position behind everything — what the card shows when the
+   sheet's photo cannot be loaded. The photo sits over it when it can. */
+.tsd-podium-card::after { content:attr(data-pos); position:absolute; right:14px; bottom:-18px; z-index:0;
+  font-family:var(--f-head); font-weight:800; font-style:italic; font-size:170px; line-height:1;
+  color:transparent; -webkit-text-stroke:1.5px rgba(255,255,255,.12); pointer-events:none; }
+.tsd-podium-band { position:relative; z-index:1; display:flex; align-items:flex-start; gap:3px; height:58px; padding:12px 20px 0;
+  background:linear-gradient(90deg, color-mix(in srgb, var(--team) 58%, #000) 0%, var(--team) 100%); color:#fff; }
+.tsd-podium-band b { font-family:var(--f-head); font-weight:800; font-size:30px; line-height:1; }
+.tsd-podium-band sup { font-family:var(--f-disp); font-size:12px; font-weight:700; line-height:1; margin-top:2px; }
+.tsd-podium-body { position:relative; z-index:3; flex:1 1 auto; display:flex; flex-direction:column;
+  padding:18px 20px 20px; max-width:58%; }
+.tsd-podium-name { font-family:var(--f-head); font-weight:800; font-size:clamp(20px,1.9vw,27px); line-height:1.15; color:#fff; }
+.tsd-podium-team { margin-top:8px; font-family:var(--f-head); font-weight:600; font-size:14px; color:var(--txt-2); }
+.tsd-podium-pts { margin-top:auto; padding-top:18px; font-family:var(--f-disp); font-weight:500; font-size:clamp(22px,2vw,28px); color:#fff; }
+.tsd-podium-pts small { font-size:.72em; font-weight:500; }
+.tsd-podium-flag { margin-top:10px; font-size:26px; line-height:1; }
+/* The sheet's portraits are photos, not cut-outs, so each gets a panel on the
+   right of the card under the colour band, its left edge fading into the card
+   so the name side stays clean. */
+.tsd-podium .tsd-podium-pic { position:absolute; z-index:2; top:58px; right:0; bottom:0; width:46%; height:calc(100% - 58px); max-width:none;
+  object-fit:cover; object-position:center top; pointer-events:none;
+  -webkit-mask-image:linear-gradient(to right, transparent 0%, #000 34%); mask-image:linear-gradient(to right, transparent 0%, #000 34%); }
+.tsd-podium .tsd-podium-pic.is-logo { top:auto; bottom:22%; right:8%; width:36%; height:40%; object-fit:contain; object-position:center;
+  -webkit-mask-image:none; mask-image:none; }
+
+.tsd-board-table { margin-top:48px; }
+.tsd-board-row { display:grid; grid-template-columns:96px minmax(0,2fr) minmax(0,1.5fr) 72px; align-items:center; gap:0 16px;
+  min-height:60px; border-bottom:1px solid var(--bdr-2); font-family:var(--f-disp); font-size:14px; font-weight:500;
+  letter-spacing:.04em; text-transform:uppercase; color:var(--txt); }
+.tsd-board-row.has-nation { grid-template-columns:96px minmax(0,2fr) minmax(0,1.6fr) minmax(0,1.5fr) 72px; }
+.tsd-board-row.is-teams { grid-template-columns:96px minmax(0,1fr) 72px; }
+.tsd-board-row.is-head { min-height:44px; border-bottom-color:var(--bdr); font-size:12px; font-weight:700; letter-spacing:.1em; color:var(--txt-3); }
+.tsd-board-pos { font-family:var(--f-head); font-weight:700; font-size:15px; }
+.tsd-board-who { display:flex; align-items:center; gap:14px; min-width:0; }
+/* Square, and as wide as the picture wants: the sheet's portraits are
+   landscape photos, so the box follows their own shape instead of cropping
+   them into a circle. An empty box keeps a square placeholder. */
+.tsd-board-face-box { flex:0 0 auto; display:flex; min-width:40px; height:40px; overflow:hidden;
+  background:linear-gradient(160deg, color-mix(in srgb, var(--team) 45%, #1c1c1c), #1c1c1c); }
+.tsd-board-face-box img, .tsd-board-face-box img.tsd-avatar-img.is-sm { display:block; width:auto; height:100%; max-width:none; aspect-ratio:auto; object-fit:contain; border-radius:0; margin:0; padding:0; border:0; box-shadow:none; }
+.tsd-board-row.is-teams .tsd-board-face-box img { object-fit:contain; padding:5px; }
+.tsd-board-name { min-width:0; display:flex; flex-direction:column; }
+.tsd-board-name b { font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.tsd-board-name i { display:none; font-style:normal; font-size:12px; color:var(--txt-3); text-transform:none; letter-spacing:0; }
+.tsd-board-c-nat, .tsd-board-c-team { display:flex; align-items:center; gap:10px; min-width:0; }
+.tsd-board-c-nat em { font-style:normal; font-size:22px; line-height:1; }
+.tsd-board-bar { flex:0 0 auto; width:5px; height:22px; background:var(--team); transform:skewX(-14deg); }
+.tsd-board-logo { width:26px; height:26px; object-fit:contain; margin:0; }
+.tsd-board-c-pts { text-align:right; font-family:var(--f-head); font-weight:800; font-size:15px; }
+/* Closed: six rows, the seventh fading out under the button. */
+.tsd-board-table.is-long:not(.is-open) .tsd-board-row.is-more { display:none; }
+.tsd-board-table.is-long:not(.is-open) .tsd-board-row.is-peek { opacity:.3; pointer-events:none; border-bottom-color:transparent;
+  -webkit-mask-image:linear-gradient(to bottom,#000,transparent); mask-image:linear-gradient(to bottom,#000,transparent); }
+.tsd-board-more { display:flex; align-items:center; gap:10px; margin:18px auto 0; padding:10px 18px; background:none; border:0; cursor:pointer;
+  font-family:var(--f-head); font-size:15px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--txt); }
+.tsd-board-more:hover { color:var(--accent); }
+.tsd-board-more svg { transition:transform .2s; }
+.tsd-board-table.is-open .tsd-board-more svg { transform:rotate(180deg); }
+
+@media (max-width:1100px) {
+  .tsd-board-row.has-nation { grid-template-columns:72px minmax(0,2fr) minmax(0,1.5fr) 64px; }
+  .tsd-board-row .tsd-board-c-nat { display:none; }
+  .tsd-board-row { grid-template-columns:72px minmax(0,2fr) minmax(0,1.5fr) 64px; }
+  .tsd-board-row.is-teams { grid-template-columns:72px minmax(0,1fr) 64px; }
+  .tsd-podium-body { max-width:64%; padding:16px; }
+  .tsd-podium-band { padding:12px 16px 0; }
+  .tsd-podium-team { font-size:13px; }
+}
+@media (max-width:768px) {
+  /* Stacked, winner first. */
+  .tsd-podium { grid-template-columns:minmax(0,1fr); gap:14px; padding-top:18px; }
+  .tsd-podium-card.is-p1, .tsd-podium-card.is-p2, .tsd-podium-card.is-p3 { order:0; min-height:190px; }
+  .tsd-podium-card::after { font-size:130px; }
+  .tsd-board-tabs { gap:22px; }
+  .tsd-board-row, .tsd-board-row.has-nation { grid-template-columns:34px minmax(0,1fr) 52px; gap:0 10px; }
+  .tsd-board-row.is-teams { grid-template-columns:34px minmax(0,1fr) 52px; }
+  .tsd-board-row .tsd-board-c-team { display:none; }
+  .tsd-board-row.is-head span:first-child { font-size:0; }
+  .tsd-board-row.is-head span:first-child::before { content:"#"; font-size:12px; }
+  .tsd-board-name i { display:block; }
+}
+
+/* ── Section banner (front-page news blocks) ─────────────────
+   A title strip, not a card: short, with the top-left and bottom-right
+   corners cut off and the picture meeting the name panel on a 14° slash —
+   so it reads as the heading of the cards under it, never as one of them.
+   --cut is the corner chamfer; --lean how far the slash leans across. */
+.tsd-banner { --cut:clamp(14px,1.6vw,26px); --lean:clamp(26px,3vw,48px);
+  position:relative; display:grid; grid-template-columns:minmax(0,40%) minmax(0,1fr);
+  height:clamp(118px,11vw,164px); margin-bottom:28px; background:var(--bg-alt);
+  clip-path:polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut)); }
+.tsd-banner-art { position:relative; overflow:hidden; background:#1b1b1d;
+  /* The picture runs a little under the panel and is cut on the slant. */
+  margin-right:calc(var(--lean) * -1);
+  clip-path:polygon(0 0, 100% 0, calc(100% - var(--lean)) 100%, 0 100%); }
+.tsd-banner-art > i { position:absolute; inset:0; display:block; background-size:cover; background-position:center;
+  transition:transform .6s cubic-bezier(.16,1,.3,1); }
+/* A borrowed story cover goes black and white, like the reference poster. */
+.tsd-banner-art.is-auto > i { filter:grayscale(1) contrast(1.08); }
+.tsd-banner:hover .tsd-banner-art > i { transform:scale(1.04); }
+.tsd-banner-panel { position:relative; overflow:hidden; isolation:isolate; container-type:inline-size;
+  display:flex; align-items:center; justify-content:space-between; gap:12px 24px; flex-wrap:wrap;
+  padding:0 clamp(22px,3vw,44px) 0 calc(var(--lean) + clamp(14px,2vw,28px)); min-width:0; }
+/* Watermark: the name again, far bigger, outline only and faint (the ink
+   colour at low strength), behind the real title and running off the edge. */
+.tsd-banner-ghost { position:absolute; z-index:-1; left:calc(var(--lean) - .06em); top:50%; transform:translateY(-50%);
+  white-space:nowrap; pointer-events:none; user-select:none;
+  font-family:var(--f-head); font-weight:800; font-style:italic; text-transform:uppercase;
+  font-size:clamp(90px,10vw,170px); line-height:1; letter-spacing:-.01em;
+  color:transparent; -webkit-text-stroke:1.5px color-mix(in srgb, var(--txt) 13%, transparent); }
+.tsd-banner-panel > :not(.tsd-banner-ghost) { position:relative; z-index:1; }
+
+/* The sport's name: heavy italic, set tight — the slant of a race number. */
+.tsd-banner-title { margin:0; padding-right:.06em; font-family:var(--f-head); font-weight:800; font-style:italic;
+  text-transform:uppercase; font-size:clamp(28px,3.3vw,54px); line-height:.95; letter-spacing:-.015em;
+  color:var(--txt); overflow-wrap:anywhere; }
+.tsd-banner-title em { font-style:inherit; color:var(--accent-ink); }
+/* "ดูทั้งหมด" under the frame's bottom-right corner — the same link as the
+   other section heads (Top Stories and the rest), kept off the watermark. */
+.tsd-banner:has(+ .tsd-banner-foot) { margin-bottom:0; }
+.tsd-banner-foot { display:flex; justify-content:flex-end; margin:12px 0 26px; }
+/* Here the arrow stands on its own, without the square box around it. */
+.tsd-banner-foot .tsd-headnote span { border:0; width:auto; height:auto; }
+.tsd-banner-foot .tsd-headnote:hover span { background:none; color:var(--accent-ink); }
+/* Beside the standings the news column is half the page: shorter again. */
+.tsd-scoreduo:not(.is-newsonly):not(.is-solo) .tsd-banner { height:clamp(104px,8.5vw,132px); }
+.tsd-scoreduo:not(.is-newsonly):not(.is-solo) .tsd-banner-title { font-size:clamp(24px,2.3vw,40px); }
+@media (max-width:768px) {
+  /* Phone: still a strip — a small picture left, the name right, the same
+     cut corners — rather than a full-width block the size of a card. */
+  .tsd-banner { --cut:12px; --lean:18px; grid-template-columns:minmax(0,34%) minmax(0,1fr);
+    height:92px; margin-bottom:20px; }
+  .tsd-banner-panel { padding:0 14px 0 calc(var(--lean) + 10px); gap:4px 10px; flex-direction:column;
+    align-items:flex-start; justify-content:center; flex-wrap:nowrap; }
+  .tsd-banner-title { font-size:clamp(22px,6.6vw,30px); }
+  .tsd-banner-ghost { font-size:74px; -webkit-text-stroke-width:1px; }
+  .tsd-banner-foot { margin:10px 0 18px; }
+}
+
+/* ── Responsive ───────────────────────────────────────────── */
+@media (max-width:1024px) {
+  /* The table and the rail each need most of the width before they stop
+     working — the table to hold its columns, the rail to keep a headline off
+     three lines — so they stack rather than share a narrower row. */
+  .tsd-scoreduo { grid-template-columns:1fr; gap:34px; }
+  /* Two zones side by side still, but the video column needs more of the width
+     than it does on a desktop. */
+  .watch-hub { grid-template-columns:minmax(0,1fr) minmax(0,1.2fr); gap:24px; }
+  .tsd-slide-copy { max-width:64%; }
+  .tsd-slidenav { width:44px; height:44px; }
+}
+@media (max-width:1024px) {
+  /*
+   * Below this width the row of categories no longer fits, and a strip that
+   * has to be swiped is easy to miss half of. It becomes a list behind the
+   * burger instead — the arrangement readers already expect on a phone.
+   *
+   * The cut-off is 1024px, not 768px: with ten sports the strip needs the room,
+   * and a touch tablet between the two had neither the swiped strip nor the
+   * list, so its sub-topics were unreachable (the mega panel needs hover).
+   *
+   * Kept in this late block on purpose: an override of the same specificity
+   * placed before the base rule loses, however deep the media query.
+   */
+  .tsd-burger { display:flex; }
+  /* Burger left, toggle right, the SPORT lockup centred between them. The two
+     buttons are the same width, so letting the logo take the space between
+     them and centring it inside puts it on the true middle of the screen. */
+  .tsd-logo { flex:1 1 auto; display:flex; justify-content:center; }
+  /*
+   * The strip is a flex child of the one-row bar now, so when it opens it has
+   * to come out of that row entirely — left in flow it would try to be a
+   * column inside a 76px-tall row. Absolute against .tsd-nav, which is the
+   * fixed element, so it hangs directly under the bar at any scroll position.
+   */
+  .tsd-nav-menu { display:none; flex:0 0 auto; flex-direction:column; overflow:visible;
+    border-top:1px solid rgba(255,255,255,.1); }
+  .tsd-nav-menu.is-open { display:flex; position:absolute; left:0; right:0; top:100%;
+    z-index:99; background:#0d0d0d; max-height:calc(100svh - 104px); overflow-y:auto;
+    box-shadow:0 18px 38px rgba(0,0,0,.42); }
+  /* The bar has to stop being see-through the moment the list is showing,
+     otherwise the list hangs off a transparent strip over the cover. */
+  .tsd-nav:has(.tsd-nav-menu.is-open) { background:#0d0d0d;
+    border-bottom-color:rgba(255,255,255,.1); }
+  /* The centring spacers are for a horizontal strip; in a column they would
+     just add dead height. */
+  .tsd-nav-menu::before, .tsd-nav-menu::after { content:none; }
+  .tsd-nav-menu li { width:100%; }
+  .tsd-nav-menu a { padding:0 18px; min-height:50px; font-size:14px;
+    border-bottom:1px solid rgba(255,255,255,.07); border-left:3px solid transparent; }
+  .tsd-nav-menu li:last-child a { border-bottom:none; }
+  /* The underline marker does not read in a vertical list — move it to the
+     leading edge, where a stack of rows is actually scanned. */
+  .tsd-nav-menu .current-menu-item > a,
+  .tsd-nav-menu .current-menu-ancestor > a,
+  .tsd-nav-menu .current-category-ancestor > a,
+  .tsd-nav-menu .current-menu-parent > a { border-bottom-color:rgba(255,255,255,.07);
+    border-left-color:var(--accent); background:rgba(255,255,255,.04); }
+  .tsd-nav-menu a:hover { border-bottom-color:rgba(255,255,255,.07); }
+
+  /*
+   * The submenu, on the phone. There is no hover here, so the mega panel never
+   * opens and this list is the only way to the sub-topics — it is shown rather
+   * than hidden behind a second affordance the reader has to discover.
+   *
+   * Without JavaScript every group is simply open: a long list, but nothing
+   * unreachable. sport.js then collapses them and adds the toggle.
+   */
+  .tsd-nav-menu .sub-menu { display:block; margin:0; padding:0; list-style:none;
+    background:rgba(255,255,255,.04); }
+  .tsd-nav-menu .sub-menu a { padding-left:34px; min-height:44px; font-size:13px;
+    color:rgba(255,255,255,.62); letter-spacing:.04em;
+    border-bottom:1px solid rgba(255,255,255,.05); }
+  .tsd-nav-menu .sub-menu a::before { content:"—"; margin-right:9px; opacity:.4; }
+  .tsd-nav-menu .sub-menu a:hover { color:#fff; }
+  /* Same state as the mega panel's greyed rows: visible in the list, but not
+     a tap that goes nowhere. */
+  .tsd-nav-menu .sub-menu a[href="#"],
+  .tsd-nav-menu .sub-menu a:not([href]) { color:rgba(255,255,255,.3); pointer-events:none; }
+
+  /* A parent and its toggle share one row: the label keeps the whole width it
+     had, the chevron is a separate 52px target beside it. */
+  .tsd-nav-menu .tsd-navrow { display:flex; align-items:stretch; width:100%;
+    border-bottom:1px solid rgba(255,255,255,.07); }
+  .tsd-nav-menu .tsd-navrow > a { flex:1 1 auto; min-width:0; border-bottom:none; }
+  .tsd-navsub { display:flex; flex:0 0 auto; align-items:center; justify-content:center;
+    width:52px; background:none; border:0; border-left:1px solid rgba(255,255,255,.07);
+    color:rgba(255,255,255,.55); cursor:pointer; transition:color .15s, background .15s; }
+  .tsd-navsub:hover { color:#fff; background:rgba(255,255,255,.05); }
+  .tsd-navsub svg { transition:transform .18s ease; }
+  .tsd-navsub[aria-expanded="true"] { color:var(--accent); }
+  .tsd-navsub[aria-expanded="true"] svg { transform:rotate(180deg); }
+  /* Collapsed by default, but only once the script is there to open them. */
+  .tsd-nav-menu.tsd-nav-js .menu-item-has-children > .sub-menu { display:none; }
+  .tsd-nav-menu.tsd-nav-js .menu-item-has-children.is-open > .sub-menu { display:block; }
+}
+
+/* Everything below is phone-only again: the burger list above now reaches to
+   1024px, but the single-column page layout still starts at 768px. */
+@media (max-width:768px) {
+
+  /*
+   * Phone hero. Stretching a 1.9:1 cover over a full-height portrait screen
+   * showed about a third of the photograph, blown up. Here the cover keeps a
+   * 4:3 window across the top (under the floating masthead) and fades out at
+   * its foot; the words sit on black beneath it, lined up with the masthead's
+   * own 14px edge rather than indented a further 34px.
+   */
+  .tsd-slides { aspect-ratio:auto !important; height:calc(75vw + 330px); min-height:540px; max-height:none; }
+  .tsd-slide { align-items:flex-end; }
+  .tsd-slide-bg { bottom:auto; height:calc(75vw + 40px); transform:scale(1.03);
+    -webkit-mask-image:linear-gradient(to bottom,#000 62%,transparent 100%); mask-image:linear-gradient(to bottom,#000 62%,transparent 100%); }
+  .tsd-slide::before { background:linear-gradient(180deg, rgba(0,0,0,.55) 0%, transparent 110px); }
+  .tsd-slide .tsd-slide-in { padding:0 14px 64px; }
+  .tsd-slide-copy { max-width:100%; padding-left:0; }
+  .tsd-slide-kicker { font-size:12px; margin-bottom:12px; letter-spacing:.18em; }
+  .tsd-slide-title { font-size:clamp(20px,5.8vw,24px); line-height:1.3; margin-bottom:16px;
+    display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden; }
+  .tsd-slide-meta { margin-bottom:20px; }
+  .tsd-slide .tsd-btn { padding:12px 22px; font-size:15px; }
+  /* Over the picture, not the words. Vertically centred they landed on top of
+     the headline, which starts 16px from the same edge the arrows sit on; the
+     photograph is ~200px tall at every phone width, so 90px puts them in the
+     middle of it with nothing underneath. */
+  .tsd-slidenav { width:38px; height:38px; top:90px; }
+  .tsd-slidenav.is-prev { left:8px; }
+  .tsd-slidenav.is-next { right:8px; }
+  /* The count drops under the name rather than sitting beside it — side by
+     side, a long sport name and a four-digit count each get half a phone. */
+  .tsd-termhead-in { align-items:flex-start; gap:18px; padding-top:26px; padding-bottom:24px; }
+  .tsd-termcount { align-items:baseline; }
+  .tsd-rankcard { padding:4px 14px 16px; }
+  .tsd-label { font-size:11px; letter-spacing:.14em; }
+  .tsd-row { grid-template-columns:38px 46px 1fr 56px; min-height:50px; }
+  .tsd-row.is-flat { grid-template-columns:38px 1fr 56px; }
+  .tsd-pos, .tsd-pts { font-size:17px; }
+  .tsd-pos { --slant:14px; }
+  .tsd-name { padding:0 12px; }
+  .tsd-name b { font-size:14px; }
+  .tsd-name i { font-size:9.5px; }
+  /*
+   * A phone cannot hold two zones in one row, so the Shorts go back to being a
+   * swipeable rail under the videos — at their true 9:16, since height is no
+   * longer being shared with anything.
+   */
+  .watch-hub,
+  .watch-hub:not(.has-shorts) > .hub-left { grid-template-columns:minmax(0,1fr); gap:26px; }
+  .watch-hub:not(.has-shorts) .hub-rows { grid-template-columns:1fr 1fr; margin-top:22px; }
+  .hub-side { height:auto; }
+  .hub-shorts { display:flex; flex-wrap:nowrap; overflow-x:auto; gap:12px; padding-bottom:12px;
+    -webkit-overflow-scrolling:touch; scrollbar-width:thin; scrollbar-color:var(--accent) transparent; }
+  .hub-shorts::-webkit-scrollbar { height:6px; }
+  .hub-shorts::-webkit-scrollbar-track { background:transparent; }
+  .hub-shorts::-webkit-scrollbar-thumb { background:var(--accent); border-radius:3px; }
+  .hub-shorts .tsd-short { flex:0 0 104px; }
+  .hub-shorts .tsd-short-img { flex:none; height:auto; padding-bottom:177.7%; }
+  .tsd-yt-row { grid-template-columns:88px minmax(0,1fr); }
+  .tsd-yt-thumb-sm { height:50px; }
+
+  /*
+   * A ten-column league table cannot fit a phone, and scrolling it sideways
+   * used to carry the club name off-screen with everything else — leaving a row
+   * of bare numbers with nothing to say whose they were. Position and club
+   * freeze against the left edge instead, so the stats scroll past a row that
+   * still identifies itself. Only for tables that lead with a position number:
+   * a fixtures list leads with "Matchday 4" and would be sliced by the narrow
+   * frozen column.
+   */
+  .tsd-rankcard .tsd-tbl.is-ranked th:nth-child(1),
+  .tsd-rankcard .tsd-tbl.is-ranked td:nth-child(1),
+  .tsd-rankcard .tsd-tbl.is-ranked th:nth-child(2),
+  .tsd-rankcard .tsd-tbl.is-ranked td:nth-child(2) {
+    position:sticky; z-index:2; background:var(--card);
+  }
+  .tsd-rankcard .tsd-tbl.is-ranked th:nth-child(1),
+  .tsd-rankcard .tsd-tbl.is-ranked td:nth-child(1) { left:0; width:30px; padding-left:0; padding-right:4px; }
+  /* Same 30px the column above is pinned to — the two must agree or the club
+     name sits on top of the position. */
+  .tsd-rankcard .tsd-tbl.is-ranked th:nth-child(2),
+  .tsd-rankcard .tsd-tbl.is-ranked td:nth-child(2) { left:30px; box-shadow:1px 0 0 var(--bdr); }
+
+  /* Tighter gutters buy back nearly a column's worth of width. */
+  .tsd-rankcard .tsd-tbl th, .tsd-rankcard .tsd-tbl td { padding-left:5px; padding-right:5px; }
+  /* A fixtures list is all words, so let them wrap rather than scroll. */
+  .tsd-rankcard .tsd-tbl:not(.is-ranked) th,
+  .tsd-rankcard .tsd-tbl:not(.is-ranked) td { white-space:normal; }
+}
+
+/* ── Reduced motion ───────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .tsd-zoom-img, .tsd-reveal,
+  .tsd-bento-media, .tsd-bento-title { transition:none !important; }
+  .tsd-slide, .tsd-slide-bg, .tsd-slide-copy { transition:none !important; }
+  .tsd-slide-bg { transform:none; }
+  .tsd-slide-copy { opacity:1; transform:none; }
+  .tsd-reveal { opacity:1; transform:none; }
+}
+
+/* ── Sport hub · Index layout (Football) ─────────────────────
+   Big italic title, sub-desk filters, three top stories, then the news grid
+   beside the standings and Most Read. Always on the dark graphite of the
+   reference, CI pink as the accent; the skin's own masthead and footer.
+   Headlines in the theme's display face, labels in Chakra Petch, buttons
+   square as everywhere else on SPORT. */
+html body.tsd-sport.tsd-fbhub {
+  --bg:#141416; --bg-alt:#1b1b1e; --card:#232326; --bg-row:#2c2c30;
+  --txt:#f4f4f4; --txt-2:rgba(244,244,244,.8); --txt-3:rgba(244,244,244,.58); --txt-4:rgba(244,244,244,.34);
+  --bdr:rgba(255,255,255,.1); --bdr-2:rgba(255,255,255,.06);
+  --panel:#232326; --panel-2:#2c2c30;
+  background:var(--bg); color:var(--txt); }
+.tsd-fb { padding-bottom:20px; }
+.tsd-fb a { color:inherit; text-decoration:none; }
+
+.tsd-fb-head { display:flex; align-items:flex-end; gap:20px; flex-wrap:wrap;
+  padding:34px 0 18px; border-bottom:1px solid var(--bdr); }
+.tsd-fb-crumb { font-family:var(--f-disp); font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--txt-3); }
+.tsd-fb-crumb a:hover { color:var(--accent); }
+.tsd-fb-title { font-family:var(--f-head); font-weight:800; font-style:italic; text-transform:uppercase;
+  font-size:clamp(44px,7vw,92px); line-height:.9; letter-spacing:-.02em; margin:10px 0 0; color:var(--txt); }
+.tsd-fb-title em, .tsd-fb-title span { font-style:italic; color:var(--accent); }
+.tsd-fb-count { margin-left:auto; font-family:var(--f-disp); font-size:12px; color:var(--txt-3); }
+.tsd-fb-count b { color:#fff; }
+
+/* Filters stick under the masthead. */
+.tsd-fb-filters { position:sticky; top:104px; z-index:90; background:rgba(20,20,22,.94);
+  -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px); border-bottom:1px solid var(--bdr); }
+.tsd-fb-filters .tsd-wrap { display:flex; gap:8px; overflow-x:auto; scrollbar-width:none; padding-top:12px; padding-bottom:12px; }
+.tsd-fb-filters .tsd-wrap::-webkit-scrollbar { display:none; }
+.tsd-fb-filters button { flex:0 0 auto; padding:8px 16px; border-radius:0; border:1px solid var(--bdr); background:none;
+  font-family:var(--f-disp); font-size:12.5px; font-weight:600; color:var(--txt-2); white-space:nowrap; cursor:pointer;
+  transition:border-color .15s, color .15s, background .15s; }
+.tsd-fb-filters button:hover { border-color:rgba(255,255,255,.35); color:#fff; }
+.tsd-fb-filters button.is-on { background:var(--accent); border-color:var(--accent); color:#141416; font-weight:700; }
+
+.tsd-fb-chip { display:inline-block; padding:3px 8px; border:1px solid var(--bdr); font-family:var(--f-disp);
+  font-size:10px; font-weight:700; letter-spacing:.04em; color:var(--txt-2); line-height:1.4; }
+.tsd-fb-chip.is-pk { border-color:var(--accent); color:var(--accent); }
+.tsd-fb-meta { display:flex; gap:8px; align-items:center; flex-wrap:wrap; font-family:var(--f-disp); font-size:11px; color:var(--txt-3); }
+
+/* Top stories: the lead on its cover, two beside it. */
+.tsd-fb-top { display:grid; grid-template-columns:minmax(0,1.9fr) minmax(0,1fr); gap:16px; padding:28px 0 8px; }
+.tsd-fb-top.is-solo { grid-template-columns:minmax(0,1fr); }
+.tsd-fb-lead { position:relative; display:block; min-height:clamp(420px,38vw,560px); overflow:hidden;
+  background:radial-gradient(90% 80% at 50% 30%,#3a3a44 0%,#1c1c21 70%); container-type:inline-size; }
+.tsd-fb-lead-img { position:absolute; inset:0; background-size:cover !important; background-position:center !important;
+  transition:transform .6s cubic-bezier(.2,.7,.2,1); }
+.tsd-fb-lead:hover .tsd-fb-lead-img { transform:scale(1.03); }
+.tsd-fb-lead::before { content:""; position:absolute; inset:0; z-index:1; pointer-events:none;
+  background:linear-gradient(115deg,transparent 60%,rgba(255,165,247,.16) 60% 65%,transparent 65%); }
+.tsd-fb-lead::after { content:""; position:absolute; inset:0; z-index:1; pointer-events:none;
+  background:linear-gradient(to top,rgba(12,12,14,.95) 8%,rgba(12,12,14,.4) 48%,transparent 72%); }
+.tsd-fb-big { position:absolute; z-index:2; left:clamp(16px,3cqw,28px); top:clamp(14px,3cqw,26px); pointer-events:none;
+  font-family:var(--f-head); font-weight:800; font-style:italic; text-transform:uppercase;
+  font-size:clamp(28px,8cqw,76px); line-height:.9; letter-spacing:-.02em; color:rgba(255,255,255,.88);
+  text-shadow:0 2px 24px rgba(0,0,0,.35); }
+.tsd-fb-big em { font-style:italic; color:var(--accent); }
+.tsd-fb-cap { position:absolute; z-index:2; left:clamp(16px,3cqw,28px); right:clamp(16px,3cqw,28px); bottom:clamp(16px,3cqw,26px);
+  display:flex; flex-direction:column; align-items:flex-start; }
+.tsd-fb-lead-title { display:block; font-family:var(--f-head); font-weight:700; font-size:clamp(19px,3.1cqw,30px);
+  line-height:1.38; margin:10px 0 8px; max-width:26em; color:#fff; transition:color .15s; }
+.tsd-fb-lead:hover .tsd-fb-lead-title { color:var(--accent); }
+.tsd-fb-lead-sum { font-size:clamp(13px,1.6cqw,15px); line-height:1.6; color:var(--txt-2); max-width:40em;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; margin-bottom:10px; }
+.tsd-fb-stack { display:grid; grid-template-rows:1fr 1fr; gap:16px; min-height:0; }
+.tsd-fb-scard { min-height:0; display:flex; flex-direction:column; background:var(--panel); overflow:hidden;
+  border:1px solid transparent; transition:border-color .15s; }
+.tsd-fb-scard:hover { border-color:var(--accent); }
+.tsd-fb-scard-img { flex:1 1 0; min-height:120px; position:relative; background:var(--panel-2); overflow:hidden; }
+.tsd-fb-scard-img i, .tsd-fb-card-img i { position:absolute; inset:0; background-size:cover !important; background-position:center !important; }
+.tsd-fb-scard-b { padding:12px 14px 14px; display:flex; flex-direction:column; align-items:flex-start; gap:6px; }
+.tsd-fb-scard-title { font-family:var(--f-head); font-size:15px; font-weight:700; line-height:1.45;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+
+/* Grid + sidebar. */
+.tsd-fb-body { display:grid; grid-template-columns:minmax(0,1fr) 360px; gap:clamp(24px,3.4vw,44px); align-items:start; padding:30px 0 20px; }
+.tsd-fb-body.is-full { grid-template-columns:minmax(0,1fr); }
+.tsd-fb-sh { display:flex; align-items:center; gap:14px; margin-bottom:18px; }
+.tsd-fb-sh h2 { font-family:var(--f-head); font-weight:800; font-size:clamp(20px,2.2vw,26px); margin:0; color:var(--txt); }
+.tsd-fb-sh-r { margin-left:auto; font-family:var(--f-disp); font-size:12px; color:var(--txt-3); }
+.tsd-fb-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:22px 18px; }
+.tsd-fb-card { display:flex; flex-direction:column; overflow:hidden; background:var(--panel); border:1px solid transparent;
+  transition:border-color .15s, transform .15s; }
+.tsd-fb-card:hover { border-color:var(--accent); transform:translateY(-3px); }
+.tsd-fb-card[hidden] { display:none; }
+.tsd-fb-card-img { position:relative; aspect-ratio:1200/628; background:var(--panel-2); overflow:hidden; }
+.tsd-fb-card-b { padding:14px 16px 18px; display:flex; flex-direction:column; gap:8px; flex:1; }
+.tsd-fb-chips { display:flex; gap:6px; }
+.tsd-fb-card-title { font-family:var(--f-head); font-size:16px; font-weight:700; line-height:1.45; color:var(--txt); transition:color .15s; }
+.tsd-fb-card:hover .tsd-fb-card-title { color:var(--accent); }
+.tsd-fb-card-sum { font-size:13.5px; line-height:1.65; color:var(--txt-2);
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.tsd-fb-card-sum:empty { display:none; }
+.tsd-fb-card .tsd-fb-meta { margin-top:auto; padding-top:4px; }
+.tsd-fb-empty { grid-column:1/-1; padding:40px 0; text-align:center; color:var(--txt-3); font-size:14px; margin:0; }
+.tsd-fb-empty[hidden] { display:none; }
+.tsd-fb-more { display:flex; justify-content:center; margin-top:28px; }
+.tsd-fb-btn { display:inline-flex; align-items:center; gap:8px; padding:10px 24px; border-radius:0; background:none; cursor:pointer;
+  border:1px solid var(--bdr); color:#fff; font-family:var(--f-disp); font-weight:700; font-size:13px; transition:border-color .15s, color .15s; }
+.tsd-fb-btn:hover { border-color:var(--accent); color:var(--accent); }
+.tsd-fb-btn[hidden] { display:none; }
+.tsd-fb .tsd-pager:empty { display:none; }
+
+.tsd-fb-side { position:sticky; top:170px; display:flex; flex-direction:column; gap:22px; }
+.tsd-fb-mr { background:var(--panel); padding:18px 18px 8px; }
+.tsd-fb-mr h3 { font-family:var(--f-head); font-weight:800; font-size:15px; text-transform:uppercase; margin:0 0 6px; color:var(--txt); }
+.tsd-fb-mr a { display:grid; grid-template-columns:34px minmax(0,1fr); gap:10px; padding:12px 0; border-top:1px solid var(--bdr); }
+.tsd-fb-mr a:first-of-type { border-top:0; }
+.tsd-fb-mr b { font-family:var(--f-head); font-weight:800; font-style:italic; font-size:26px; line-height:1;
+  color:transparent; -webkit-text-stroke:1.4px rgba(255,255,255,.45); }
+.tsd-fb-mr a:hover b { -webkit-text-stroke-color:var(--accent); }
+.tsd-fb-mr span { font-family:var(--f-head); font-size:14px; font-weight:600; line-height:1.45; }
+.tsd-fb-mr a:hover span { color:var(--accent); }
+.tsd-fb-mr small { display:block; font-family:var(--f-disp); font-size:11px; font-weight:400; color:var(--txt-3); margin-top:4px; }
+
+/* Standings panel. */
+.tsd-fb-tbl { position:relative; overflow:hidden; border:1px solid rgba(255,165,247,.25);
+  background:linear-gradient(150deg,#3a2f3a 0%,#1d1a1f 46%,#121214 100%); }
+.tsd-fb-tbl::before { content:""; position:absolute; inset:0; pointer-events:none;
+  background:linear-gradient(115deg,transparent 20%,rgba(255,165,247,.1) 20% 24%,transparent 24% 62%,rgba(255,255,255,.05) 62% 70%,transparent 70%); }
+.tsd-fb-tbl > * { position:relative; }
+.tsd-fb-tbl-banner { padding:18px 16px 6px; }
+.tsd-fb-tbl-banner small { display:block; font-family:var(--f-disp); font-size:10px; letter-spacing:.3em; color:var(--txt-3); text-transform:uppercase; }
+.tsd-fb-tbl-banner b { display:block; font-family:var(--f-head); font-weight:800; font-style:italic; font-size:clamp(24px,3vw,32px);
+  line-height:1.1; text-transform:uppercase; margin-top:6px; color:#fff; }
+.tsd-fb-tbl-banner b em { font-style:italic; color:var(--accent); }
+.tsd-fb-tbl-hd { padding:10px 16px 12px; border-bottom:1px solid var(--bdr); }
+.tsd-fb-tabs { display:flex; gap:4px; flex-wrap:wrap; }
+.tsd-fb-tabs button { padding:5px 11px; border-radius:0; background:none; cursor:pointer; font-family:var(--f-disp); font-size:11px; font-weight:700;
+  color:var(--txt-3); border:1px solid transparent; }
+.tsd-fb-tabs button.is-on { border-color:var(--accent); color:var(--accent); }
+.tsd-fb-tbl table { width:100%; border-collapse:collapse; margin:0; }
+.tsd-fb-tbl th { font-family:var(--f-disp); font-size:10px; font-weight:700; letter-spacing:.1em; color:var(--txt-3);
+  text-align:right; padding:9px 12px; text-transform:uppercase; border:0; background:none; }
+.tsd-fb-tbl th:nth-child(2) { text-align:left; }
+.tsd-fb-tbl td { padding:9px 12px; font-family:var(--f-disp); font-size:13px; text-align:right; color:var(--txt-2);
+  border:0; border-top:1px solid var(--bdr); font-variant-numeric:tabular-nums; background:none; }
+.tsd-fb-tbl td:first-child { width:40px; text-align:center; font-weight:700; color:var(--txt-3); }
+.tsd-fb-tbl td:nth-child(2) { text-align:left; font-weight:600; color:var(--txt); }
+.tsd-fb-tbl td:last-child { font-weight:800; color:#fff; }
+.tsd-fb-tbl tr.is-ucl td:first-child { box-shadow:inset 3px 0 0 var(--accent); color:var(--accent); }
+.tsd-fb-tbl tr.is-rel td:first-child { box-shadow:inset 3px 0 0 #ff5a5a; color:#ff8a8a; }
+.tsd-fb-tbl .is-form, .tsd-fb-side .tsd-fb-tbl .is-form { display:none; }
+.tsd-fb-tbl-pane:not(.is-open) tr.is-more { display:none; }
+.tsd-fb-team { display:inline-flex; align-items:center; gap:10px; min-width:0; }
+.tsd-fb-crest { width:20px; height:20px; object-fit:contain; flex:0 0 20px; margin:0; }
+.tsd-fb-crest.is-dot { width:16px; height:16px; flex-basis:16px; border-radius:50%; }
+.tsd-fb-form { display:inline-flex; gap:3px; }
+.tsd-fb-form i { width:16px; height:16px; font-style:normal; font-size:9px; font-weight:700; display:inline-flex;
+  align-items:center; justify-content:center; color:#141416; }
+.tsd-fb-form .is-w { background:#6ee7a0; } .tsd-fb-form .is-d { background:#c9c9cf; } .tsd-fb-form .is-l { background:#ff7a7a; }
+.tsd-fb-tbl-all { display:block; width:100%; padding:11px; background:none; border:0; border-top:1px solid var(--bdr); cursor:pointer;
+  font-family:var(--f-disp); font-size:12px; font-weight:700; letter-spacing:.06em; color:var(--txt-2); }
+.tsd-fb-tbl-all:hover { color:var(--accent); }
+.tsd-fb-tbl-ft { display:flex; gap:18px; padding:12px 16px; border-top:1px solid var(--bdr); font-family:var(--f-disp); font-size:11px; color:var(--txt-3); flex-wrap:wrap; }
+.tsd-fb-tbl-ft span { display:inline-flex; align-items:center; gap:6px; }
+.tsd-fb-tbl-ft span::before { content:""; width:8px; height:8px; background:var(--c); }
+
+@media (max-width:1100px) {
+  .tsd-fb-body { grid-template-columns:minmax(0,1fr) 320px; }
+  .tsd-fb-top { grid-template-columns:minmax(0,1fr); }
+  .tsd-fb-lead { min-height:0; aspect-ratio:16/9; }
+  .tsd-fb-stack { grid-template-rows:none; grid-template-columns:1fr 1fr; }
+  .tsd-fb-scard-img { flex:none; aspect-ratio:1200/628; min-height:0; }
+}
+@media (max-width:900px) {
+  .tsd-fb-body { grid-template-columns:minmax(0,1fr); }
+  .tsd-fb-side { position:static; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); align-items:start; }
+}
+@media (max-width:768px) {
+  .tsd-fb-filters { top:80px; }
+}
+@media (max-width:640px) {
+  .tsd-fb-grid, .tsd-fb-stack, .tsd-fb-side { grid-template-columns:minmax(0,1fr); }
+  .tsd-fb-count { margin-left:0; width:100%; }
+  .tsd-fb-lead { aspect-ratio:4/5; }
+  .tsd-fb-big { font-size:clamp(34px,13cqw,60px); }
+  .tsd-fb-lead-title { font-size:20px; }
+}
+
+/* ── Index hub cover (Football) ─────────────────────────────
+   The artwork full-bleed, up under the masthead like the Motorsport hub, on
+   black, with only the sport's name on it. A cut-out PNG stands on the black;
+   a full photo fills the frame. The foot fades into the page. */
+.tsd-fbc { position:relative; overflow:hidden; isolation:isolate; height:clamp(600px, 100svh, 1000px);
+  background:#000; color:#fff; }
+.tsd-fbc .tsd-hub-art { position:absolute; z-index:0; inset:0; display:block; margin:0; pointer-events:none;
+  mask-image:none; -webkit-mask-image:none; }
+.tsd-fbc .tsd-hub-art img { width:100%; height:100%; object-fit:cover; object-position:center 30%; display:block; }
+.tsd-fbc.is-cutout .tsd-hub-art { top:auto; height:92%; }
+.tsd-fbc.is-cutout .tsd-hub-art img { object-fit:contain; object-position:center bottom; }
+.tsd-fbc-shade { position:absolute; inset:0; z-index:1; pointer-events:none;
+  background:
+    linear-gradient(to bottom, rgba(0,0,0,.55) 0%, rgba(0,0,0,0) 22%),
+    linear-gradient(90deg, rgba(0,0,0,.55) 0%, rgba(0,0,0,0) 20%, rgba(0,0,0,0) 80%, rgba(0,0,0,.55) 100%),
+    linear-gradient(to top, var(--bg) 0%, rgba(20,20,22,.7) 22%, rgba(0,0,0,0) 52%); }
+.tsd-fbc-title { position:absolute; z-index:2; left:50%; bottom:clamp(36px,7vh,80px); transform:translateX(-50%);
+  width:min(1240px, calc(100% - 2 * var(--gutter))); margin:0; display:flex; justify-content:center; gap:.04em;
+  container-type:inline-size; font-family:var(--f-head); font-weight:800; text-transform:uppercase;
+  line-height:.8; letter-spacing:-.045em; color:#fff; text-align:center; text-shadow:0 8px 40px rgba(0,0,0,.45); }
+.tsd-fbc-title span { display:block; font-size:min(calc(100cqw / (var(--len) * .64)), 240px); }
+.tsd-fbc-title .is-2 { color:#fff; }
+.tsd-fbc-hint { position:absolute; z-index:3; left:50%; top:130px; transform:translateX(-50%);
+  font-family:var(--f-disp); font-size:12px; color:#141416; background:rgba(255,255,255,.8); padding:6px 12px; }
+@media (max-width:768px) {
+  /* A landscape artwork in a tall phone frame left a long empty foot; the
+     frame is kept close to the picture's own height instead. A portrait
+     Mobile artwork (SPORT → Sport Hub) can use more of the screen. */
+  .tsd-fbc { height:clamp(440px, 128vw, 640px); }
+  .tsd-fbc .tsd-hub-art img { object-position:center top; }
+  .tsd-fbc-title { bottom:28px; }
+}
+.tsd-fb-top, .tsd-fb-body { scroll-margin-top:170px; }
+/* Page two on: the phone masthead is 80px, not 104px. */
+@media (max-width:768px) { body.tsd-fbhub.tsd-navpad { padding-top:80px; } }
+
+/* Football hub stories: the Motorsport strip's sizes (one lead, three rows
+   beside it) and the same news cards in the grid — but no Diffuser frame:
+   no cut shape, no red border, no sheen; the picture zoom comes back. */
+.tsd-fb-top { display:block; padding:8px 0 10px; }
+.tsd-fbhub .tsd-hub-card { clip-path:none; background:none; padding:0; overflow:visible; }
+.tsd-fbhub .tsd-hub-card::before, .tsd-fbhub .tsd-hub-card::after { content:none; }
+.tsd-fbhub .tsd-hub-card:hover .tsd-hub-card-img > i { transform:scale(1.05); }
+.tsd-fbhub .tsd-hub-card-title { color:var(--txt); }
+.tsd-fbhub .tsd-hub-card:hover .tsd-hub-card-title { color:var(--accent); }
+@media (min-width:769px) {
+  .tsd-fbhub .tsd-hub-card:not(:first-child) { padding:0; }
+}
+@media (max-width:768px) {
+  .tsd-fbhub .tsd-hub-card:not(:first-child) { padding:0; }
+}
+.tsd-fb-cell { min-width:0; }
+.tsd-fb-cell[hidden] { display:none; }
+.tsd-fb-grid { gap:40px 26px; }
+
+/* ── Football hub intro ──────────────────────────────────────
+   On arrival: the artwork comes up out of the dark — blurred, dim and a
+   touch zoomed — and settles; FOOTBALL rises in letter by letter; a beam of
+   light runs across the word; the masthead drops in; the story cards follow.
+   Plays once per load. Nothing moves under reduced motion. */
+.screen-reader-text { position:absolute !important; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+.tsd-fbc .tsd-hub-art img { animation:tsdFbcArt 1.8s cubic-bezier(.2,.7,.2,1) both; }
+@keyframes tsdFbcArt {
+  0%   { opacity:0; transform:scale(1.14); filter:blur(10px) brightness(.35) saturate(.6); }
+  45%  { opacity:1; }
+  100% { opacity:1; transform:scale(1); filter:none; } }
+.tsd-fbc-title .ch { display:inline-block; animation:tsdFbcCh .9s cubic-bezier(.16,1,.3,1) both;
+  animation-delay:calc(.45s + var(--i) * .07s); }
+@keyframes tsdFbcCh {
+  0%   { opacity:0; transform:translateY(55%) scaleY(1.25); filter:blur(8px); }
+  60%  { opacity:1; filter:blur(0); }
+  100% { opacity:1; transform:none; filter:none; } }
+/* The beam: a slanted band of light crossing the word once, after the letters land. */
+.tsd-fbc-title::after { content:""; position:absolute; inset:-10% -5%; pointer-events:none; z-index:1;
+  background:linear-gradient(105deg, transparent 38%, rgba(255,255,255,.0) 42%, rgba(255,255,255,.55) 49%,
+    color-mix(in srgb, var(--accent) 45%, transparent) 52%, rgba(255,255,255,0) 58%, transparent 62%);
+  mix-blend-mode:overlay; transform:translateX(-110%); opacity:0;
+  animation:tsdFbcBeam 1.1s cubic-bezier(.4,0,.2,1) 1.45s both; }
+@keyframes tsdFbcBeam {
+  0%   { transform:translateX(-110%); opacity:0; }
+  15%  { opacity:1; }
+  100% { transform:translateX(110%); opacity:0; } }
+.tsd-fbc-title { overflow:visible; }
+.tsd-fbhub .tsd-nav { animation:tsdFbcNav .7s cubic-bezier(.2,.8,.2,1) .15s both; }
+@keyframes tsdFbcNav { from { transform:translateY(-100%); opacity:0; } to { transform:none; opacity:1; } }
+.tsd-fb-track > .tsd-hub-card { animation:tsdFbcCard .8s cubic-bezier(.16,1,.3,1) backwards;
+  animation-delay:1.2s; }
+.tsd-fb-track > .tsd-hub-card:nth-child(2) { animation-delay:1.32s; }
+.tsd-fb-track > .tsd-hub-card:nth-child(3) { animation-delay:1.44s; }
+.tsd-fb-track > .tsd-hub-card:nth-child(4) { animation-delay:1.56s; }
+@keyframes tsdFbcCard { from { opacity:0; transform:translateY(28px); } to { opacity:1; transform:none; } }
+@media (prefers-reduced-motion: reduce) {
+  .tsd-fbc .tsd-hub-art img, .tsd-fbc-title .ch, .tsd-fbhub .tsd-nav, .tsd-fb-track > .tsd-hub-card { animation:none; }
+  .tsd-fbc-title::after { display:none; }
+}
+
+/* ── Football hub cards: rounded pink-edged frame ───────────
+   The frame only, after the "Match Kit Spec" reference: a near-black panel
+   with a faint dot grid, rounded 24px, edged in a 2px soft CI-pink line; the
+   cover inside rounded to match with a hairline rim. The contents stay the
+   same — picture and headline. Hover lifts the card a little and brightens
+   the edge. */
+.tsd-fbhub .tsd-hub-card,
+.tsd-fbhub .tsd-ncard {
+  position:relative; isolation:isolate; overflow:hidden; padding:22px 22px 24px;
+  border-radius:24px; border:2px solid color-mix(in srgb, var(--accent) 78%, transparent);
+  background:
+    radial-gradient(circle, rgba(255,255,255,.055) 1px, transparent 1.4px) 0 0 / 22px 22px,
+    linear-gradient(180deg, #121217 0%, #0c0c10 100%);
+  box-shadow:0 0 0 1px rgba(0,0,0,.4), 0 18px 34px -20px rgba(0,0,0,.8);
+  transition:transform .3s cubic-bezier(.2,.8,.2,1), border-color .25s ease, box-shadow .3s ease; }
+.tsd-fbhub .tsd-hub-card::before, .tsd-fbhub .tsd-hub-card::after,
+.tsd-fbhub .tsd-ncard::before, .tsd-fbhub .tsd-ncard::after { content:none; }
+.tsd-fbhub .tsd-hub-card:hover,
+.tsd-fbhub .tsd-ncard:hover { transform:translateY(-4px); border-color:var(--accent);
+  box-shadow:0 0 0 1px rgba(0,0,0,.4), 0 0 26px -6px color-mix(in srgb, var(--accent) 45%, transparent), 0 22px 38px -20px rgba(0,0,0,.85); }
+.tsd-fbhub .tsd-hub-card-img,
+.tsd-fbhub .tsd-ncard .tsd-ncard-frame { border-radius:16px; border:1px solid rgba(255,255,255,.22); border-bottom-width:1px;
+  overflow:hidden; background:#000; }
+.tsd-fbhub .tsd-ncard .tsd-ncard-kicker { margin-top:16px; }
+@media (min-width:769px) {
+  .tsd-fbhub .tsd-hub-card:not(:first-child) { padding:14px; border-radius:20px; }
+  .tsd-fbhub .tsd-hub-card:not(:first-child) .tsd-hub-card-img { border-radius:12px; border-bottom-width:1px; }
+}
+@media (max-width:768px) {
+  .tsd-fbhub .tsd-hub-card { padding:16px 16px 18px; border-radius:20px; }
+  .tsd-fbhub .tsd-hub-card:not(:first-child) { padding:12px; border-radius:18px; }
+  .tsd-fbhub .tsd-hub-card:not(:first-child) .tsd-hub-card-img { border-radius:12px; border-bottom-width:1px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tsd-fbhub .tsd-hub-card:hover, .tsd-fbhub .tsd-ncard:hover { transform:none; }
+}
