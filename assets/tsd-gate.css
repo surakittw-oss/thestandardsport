@@ -1,0 +1,15 @@
+/* Access gate (Google sign-in, @thestandard.co only). Kept from the earlier
+   build; uses the SPORT tokens from sport.css. */
+html.tsd-locked #root { display:none; }
+#tsd-gate { display:none; position:fixed; inset:0; z-index:999999; background:var(--bg,#faf9f7);
+  align-items:center; justify-content:center; flex-direction:column; gap:18px; padding:24px; text-align:center; }
+html.tsd-locked #tsd-gate { display:flex; }
+#tsd-gate-logo img { height:38px; width:auto; display:block; }
+#tsd-gate p { color:var(--txt-3); font-family:var(--f-disp); font-size:11px; letter-spacing:.08em;
+  line-height:2; max-width:360px; text-transform:uppercase; }
+#tsd-gate-err { color:var(--accent-ink); font-size:12px; display:none; max-width:340px; text-transform:none; }
+#tsd-logout { display:none; position:fixed; right:14px; bottom:14px; z-index:999998;
+  font-family:var(--f-disp); font-size:9px; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--txt-3); background:var(--bg); border:1px solid var(--bdr); padding:8px 12px; cursor:pointer; }
+#tsd-logout:hover { color:var(--txt); border-color:var(--accent); }
+html:not(.tsd-locked) #tsd-logout { display:block; }

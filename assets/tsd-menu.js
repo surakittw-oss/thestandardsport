@@ -1,6 +1,8 @@
-/* เมนูบาร์ของ THE STANDARD SPORT — ข้อมูลชุดเดียวที่หน้าแรกและหน้าบทความใช้ร่วมกัน
-   (แยกออกมาเป็นไฟล์ .js ธรรมดา เพราะ Babel โหลดไฟล์ .jsx ภายนอกผ่าน file:// ไม่ได้)
+/* เมนูบาร์ของ THE STANDARD SPORT — ชุดเดียวกับเมนู "SPORT" ใน WordPress
+   (Appearance → Menus ของธีม / ปลั๊กอิน tsd-sport-skin) ทั้งลำดับ ชื่อ และเมนูย่อย
+   หน้าแรกและทุกหน้าในเว็บนี้อ่านจากไฟล์นี้ไฟล์เดียว (assets/tsd-render.js)
 
+<<<<<<< HEAD
    โครงสร้าง 11 ช่อง (8 ช่องเดิม + 3 ช่องจากแผนผัง Site Map ที่เพิ่มเข้ามา):
      Home · Football · Volleyball · Thai Sport · Active · Motorsport
      Tennis & Golf · Other Sports · Gadgets · Long Reads · ● Asian Games (ช่องอีเวนต์)
@@ -15,24 +17,35 @@
    - divider: true = เส้นคั่นก่อนกลุ่ม "เครื่องมือ" (tool) ท้ายเมนู ซึ่งเป็นหน้าเฉพาะ
      ไม่ใช่รายการโพสต์ → แสดงเป็นสีชมพูเพื่อแยกออกจากรายการข่าว
 */
+=======
+   href: หมวดที่มีหน้าในเว็บนี้ (football.html / motorsport.html) ลิงก์ไปหน้านั้น
+   หมวดอื่นยังไม่มีหน้า จึงชี้ไปหน้าแรกพร้อม ?cat= ไว้ก่อน
+   href "#" = รายการที่ไม่มีหน้าของตัวเอง (MORE SPORTS) คลิกแล้วเปิดเมนูย่อยแทน */
+>>>>>>> 93b7e4e24a4651f844bf08b0af3fe2c0e17edb0d
 window.__TSD_MENU__ = [
   { key: "home", label: "Home", href: "index.html" },
   {
-    key: "football", label: "Football", href: "index.html?cat=football",
+    key: "football", label: "FOOTBALL", href: "football.html",
     items: [
+<<<<<<< HEAD
       { label: "FIFA World Cup 2026",          href: "index.html?cat=world-cup-2026" },
       { label: "Thailand / Thai League",       href: "index.html?cat=thai-football" },
       { label: "La Liga & European Leagues",   href: "index.html?cat=la-liga-europe" },
       { label: "UEFA",                         href: "index.html?cat=uefa" },
       { label: "Other National Teams",         href: "index.html?cat=national-teams" },
       { label: "Premier League",               href: "index.html?cat=premier-league" },
+=======
+      { label: "Premier League", href: "index.html?cat=premier-league" },
+      { label: "UEFA",           href: "index.html?cat=uefa" },
+      { label: "World Cup",      href: "index.html?cat=world-cup" },
+>>>>>>> 93b7e4e24a4651f844bf08b0af3fe2c0e17edb0d
     ],
   },
-  // ไม่มีดรอปดาวน์ — กดแล้วเข้าหน้ารวมของวอลเลย์บอลเลย
-  { key: "volleyball", label: "Volleyball", href: "index.html?cat=volleyball" },
+  { key: "motorsport", label: "MOTORSPORT", href: "motorsport.html" },
   {
-    key: "thai-sport", label: "Thai Sport", href: "index.html?cat=thai-sport",
+    key: "thai-team", label: "THAI TEAM", href: "index.html?cat=thai-team",
     items: [
+<<<<<<< HEAD
       { label: "Thai National Teams (every sport)", href: "index.html?cat=thai-national-teams" },
       { label: "FA Thai",                            href: "index.html?cat=fa-thai" },
       { label: "Thai Football / Thai League",       href: "index.html?cat=thai-football-league" },
@@ -41,11 +54,20 @@ window.__TSD_MENU__ = [
       { label: "Boxing",                             href: "index.html?cat=thai-boxing" },
       { label: "Muay Thai / Combat Sports",          href: "index.html?cat=muay-thai-combat" },
       { label: "Thai Sports Industry / Policy",      href: "index.html?cat=thai-sports-policy" },
+=======
+      { label: "Volleyball", href: "index.html?cat=volleyball" },
+      { label: "Badminton",  href: "index.html?cat=badminton" },
+      { label: "FA Thai",    href: "index.html?cat=fa-thai" },
+>>>>>>> 93b7e4e24a4651f844bf08b0af3fe2c0e17edb0d
     ],
   },
+  { key: "tennis",  label: "TENNIS",  href: "index.html?cat=tennis" },
+  { key: "golf",    label: "GOLF",    href: "index.html?cat=golf" },
+  { key: "gadgets", label: "GADGETS", href: "index.html?cat=shoes-gadgets" },
   {
-    key: "active", label: "Active", href: "index.html?cat=active",
+    key: "more-sports", label: "MORE SPORTS", href: "#",
     items: [
+<<<<<<< HEAD
       { label: "Shoes & Gadgets",           href: "index.html?cat=shoes-gadgets" },
       { label: "HYROX & Competitive Fitness", href: "index.html?cat=hyrox-fitness" },
       { label: "Training & Health",         href: "index.html?cat=training-health" },
@@ -106,6 +128,10 @@ window.__TSD_MENU__ = [
     items: [
       { label: "Asian Games News",     href: "index.html?cat=asian-games-news" },
       { label: "PLAYER Profile",       href: "index.html?cat=player-profile" },
+=======
+      { label: "Running", href: "index.html?cat=running" },
+      { label: "Hyrox",   href: "index.html?cat=hyrox" },
+>>>>>>> 93b7e4e24a4651f844bf08b0af3fe2c0e17edb0d
     ],
   },
 ];
