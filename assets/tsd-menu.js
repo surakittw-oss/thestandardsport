@@ -1,9 +1,11 @@
 /* เมนูบาร์ของ THE STANDARD SPORT — ข้อมูลชุดเดียวที่หน้าแรกและหน้าบทความใช้ร่วมกัน
    (แยกออกมาเป็นไฟล์ .js ธรรมดา เพราะ Babel โหลดไฟล์ .jsx ภายนอกผ่าน file:// ไม่ได้)
 
-   โครงสร้าง 8 ช่องตาม IA ที่กำหนดไว้:
-     1 Football   2 Volleyball   3 Thai Sport   4 Active
-     5 Motorsport  6 Other Sports  7 Long Reads  8 ● Asian Games (ช่องอีเวนต์)
+   โครงสร้าง 11 ช่อง (8 ช่องเดิม + 3 ช่องจากแผนผัง Site Map ที่เพิ่มเข้ามา):
+     Home · Football · Volleyball · Thai Sport · Active · Motorsport
+     Tennis & Golf · Other Sports · Gadgets · Long Reads · ● Asian Games (ช่องอีเวนต์)
+   "Thai Sport" คือช่อง "Thai Team" ในแผนผัง (เก็บชื่อเดิมไว้)
+   หัวข้อรองที่ซ้ำกันข้ามเมนู (เช่น Tennis, Running) ใช้ href เดียวกัน = ปลายทางเดียว
 
    หมายเหตุ
    - เมนูไม่แสดงจำนวนบทความ เพื่อให้แถบอ่านง่ายและไม่ผูกกับตัวเลขที่เปลี่ยนตามข้อมูล
@@ -14,12 +16,14 @@
      ไม่ใช่รายการโพสต์ → แสดงเป็นสีชมพูเพื่อแยกออกจากรายการข่าว
 */
 window.__TSD_MENU__ = [
+  { key: "home", label: "Home", href: "index.html" },
   {
     key: "football", label: "Football", href: "index.html?cat=football",
     items: [
       { label: "FIFA World Cup 2026",          href: "index.html?cat=world-cup-2026" },
       { label: "Thailand / Thai League",       href: "index.html?cat=thai-football" },
       { label: "La Liga & European Leagues",   href: "index.html?cat=la-liga-europe" },
+      { label: "UEFA",                         href: "index.html?cat=uefa" },
       { label: "Other National Teams",         href: "index.html?cat=national-teams" },
       { label: "Premier League",               href: "index.html?cat=premier-league" },
     ],
@@ -30,8 +34,11 @@ window.__TSD_MENU__ = [
     key: "thai-sport", label: "Thai Sport", href: "index.html?cat=thai-sport",
     items: [
       { label: "Thai National Teams (every sport)", href: "index.html?cat=thai-national-teams" },
+      { label: "FA Thai",                            href: "index.html?cat=fa-thai" },
       { label: "Thai Football / Thai League",       href: "index.html?cat=thai-football-league" },
+      { label: "Volleyball",                         href: "index.html?cat=thai-volleyball" },
       { label: "Badminton",                          href: "index.html?cat=badminton" },
+      { label: "Boxing",                             href: "index.html?cat=thai-boxing" },
       { label: "Muay Thai / Combat Sports",          href: "index.html?cat=muay-thai-combat" },
       { label: "Thai Sports Industry / Policy",      href: "index.html?cat=thai-sports-policy" },
     ],
@@ -59,6 +66,13 @@ window.__TSD_MENU__ = [
     ],
   },
   {
+    key: "tennis-golf", label: "Tennis & Golf", href: "index.html?cat=tennis-golf",
+    items: [
+      { label: "Tennis", href: "index.html?cat=tennis" },
+      { label: "Golf",   href: "index.html?cat=golf" },
+    ],
+  },
+  {
     key: "other-sports", label: "Other Sports", href: "index.html?cat=other-sports",
     items: [
       { label: "Tennis",            href: "index.html?cat=tennis" },
@@ -66,11 +80,15 @@ window.__TSD_MENU__ = [
       { label: "Boxing & Combat",   href: "index.html?cat=boxing" },
       { label: "Basketball",        href: "index.html?cat=basketball" },
       { label: "Esports",           href: "index.html?cat=esports" },
+      { label: "Running & Marathon", href: "index.html?cat=running-marathon" },
+      { label: "HYROX",             href: "index.html?cat=hyrox-fitness" },
+      { label: "Training & Health", href: "index.html?cat=training-health" },
       { divider: true },
       // ยังไม่มีเนื้อหา — เปิดช่องไว้รอทดลอง
       { label: "Padel & Pickleball", href: "index.html?cat=padel-pickleball", tool: true, note: "soon" },
     ],
   },
+  { key: "gadgets", label: "Gadgets", href: "index.html?cat=gadgets" },
   {
     // แกนตัดขวาง ไม่ใช่ชนิดกีฬา
     key: "long-reads", label: "Long Reads", href: "index.html?cat=long-reads",

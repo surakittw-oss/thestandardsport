@@ -116,7 +116,7 @@ html:not(.tsd-locked) #tsd-logout { display:block; }
 /* nav อยู่บนภาพ hero เสมอ ตัวหนังสือจึงขาวตลอดจนกว่าจะ stuck ในโหมดกระดาษ
    แถบนี้กินเต็มความกว้างจอ ไม่หุบตามคอลัมน์อ่าน โลโก้จึงชิดขอบซ้ายจริง ๆ
    และเมนูมีที่พอให้วางกลางโดยไม่ต้องบีบตัวอักษร */
-.tsdx-navrow { display:flex; align-items:center; gap:20px; height:92px; padding:0 40px; }
+.tsdx-navrow { display:flex; align-items:center; gap:20px; height:92px; padding:0 32px; }
 .tsdx-navlogo { line-height:0; flex:0 0 auto; }
 .tsdx-navlogo img { height:52px; }
 .tsdx-navtools { margin-left:auto; display:flex; align-items:center; gap:6px; }
@@ -127,9 +127,9 @@ html:not(.tsd-locked) #tsd-logout { display:block; }
 .nav-bar { display:flex; align-items:center; flex:1; min-width:0; }
 .nav-items { display:flex; align-items:center; margin:0 auto; }
 .nav-dd { position:static; }
-.nav-dd-top { display:flex; align-items:center; gap:8px; height:92px; padding:0 18px;
+.nav-dd-top { display:flex; align-items:center; gap:8px; height:92px; padding:0 clamp(8px,.85vw,14px);
               text-decoration:none; white-space:nowrap; color:#fff;
-              font-family:var(--f-body); font-size:16px; font-weight:400; letter-spacing:0;
+              font-family:var(--f-body); font-size:clamp(13px,1.04vw,16px); font-weight:400; letter-spacing:0;
               transition:color .15s, opacity .15s; }
 .nav-dd-top:hover, .nav-dd.open .nav-dd-top { color:var(--accent); }
 .nav-caret { font-size:8px; line-height:1; opacity:.45; transition:transform .15s; }
@@ -140,7 +140,7 @@ html:not(.tsd-locked) #tsd-logout { display:block; }
 
 .nav-dd-panel { display:none; position:absolute; top:100%; left:0; right:0; z-index:300;
                 grid-template-columns:repeat(4,minmax(0,1fr)); gap:0 24px;
-                padding:30px 40px 36px;
+                padding:30px 32px 36px;
                 background:#08080a; border-top:1px solid rgba(255,255,255,.1); }
 .nav-dd.open .nav-dd-panel { display:grid; }
 .nav-dd-note { grid-column:1/-1; padding:0 0 14px; margin:0 0 10px; border-bottom:1px solid rgba(255,255,255,.1);
@@ -350,16 +350,11 @@ html:not(.tsd-locked) #tsd-logout { display:block; }
 }
 
 /* ── Responsive ──────────────────────────────────────────────── */
-@media (max-width:1340px) {
-  .nav-dd-top { padding:0 14px; font-size:15px; }
-  .tsdx-navrow { padding:0 28px; }
-  .nav-dd-panel { padding-left:28px; padding-right:28px; }
-}
 @media (max-width:1280px) {
   .tsdx-lead { grid-template-columns:minmax(0,1.45fr) minmax(0,1fr); gap:40px; }
   .tsdx-grid { gap:48px 28px; }
 }
-@media (max-width:1180px) {
+@media (max-width:1320px) {
   .nav-mob { display:flex; }
   .tsdx-navrow { height:64px; gap:12px; padding:0 18px; }
   .tsdx-navpad { padding-top:64px; }
