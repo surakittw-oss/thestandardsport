@@ -2,7 +2,7 @@
    (Appearance → Menus ของธีม / ปลั๊กอิน tsd-sport-skin) ทั้งลำดับ ชื่อ และเมนูย่อย
    หน้าแรกและทุกหน้าในเว็บนี้อ่านจากไฟล์นี้ไฟล์เดียว (assets/tsd-render.js)
 
-   href: หมวดที่มีหน้าในเว็บนี้ (football.html / motorsport.html) ลิงก์ไปหน้านั้น
+   href: หมวดที่มีหน้าในเว็บนี้ (football.html / motorsport.html / thai-team.html) ลิงก์ไปหน้านั้น
    หมวดอื่นยังไม่มีหน้า จึงชี้ไปหน้าแรกพร้อม ?cat= ไว้ก่อน
    href "#" = รายการที่ไม่มีหน้าของตัวเอง (MORE SPORTS) คลิกแล้วเปิดเมนูย่อยแทน */
 window.__TSD_MENU__ = [
@@ -17,16 +17,20 @@ window.__TSD_MENU__ = [
   },
   { key: "motorsport", label: "MOTORSPORT", href: "motorsport.html" },
   {
-    key: "thai-team", label: "THAI TEAM", href: "index.html?cat=thai-team",
+    key: "thai-team", label: "THAI TEAM", href: "thai-team.html",
     items: [
       { label: "Volleyball", href: "index.html?cat=volleyball" },
       { label: "Badminton",  href: "index.html?cat=badminton" },
       { label: "FA Thai",    href: "index.html?cat=fa-thai" },
     ],
   },
-  { key: "tennis",  label: "TENNIS",  href: "index.html?cat=tennis" },
-  { key: "golf",    label: "GOLF",    href: "index.html?cat=golf" },
-  { key: "gadgets", label: "GADGETS", href: "index.html?cat=shoes-gadgets" },
+  {
+    key: "tennis", label: "COUNTRY CLUB", href: "index.html?cat=tennis",
+    items: [
+      { label: "Tennis", href: "index.html?cat=tennis" },
+    ],
+  },
+  { key: "gadgets", label: "GADGETS", href: "index.html?cat=gadgets" },
   {
     key: "more-sports", label: "MORE SPORTS", href: "#",
     items: [

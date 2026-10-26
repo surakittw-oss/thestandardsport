@@ -881,3 +881,241 @@
 		card.addEventListener('pointerup', function (e) { if ('mouse' !== e.pointerType) { reset(); } });
 	});
 })();
+
+/* ── Special Column: deal the cards when the row comes into view ─────── */
+(function () {
+	var grids = document.querySelectorAll('.tsd-spc-grid');
+	if (!grids.length) { return; }
+	var deal = function (g) { g.classList.add('is-dealt'); };
+	if (!('IntersectionObserver' in window) ||
+		(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) {
+		Array.prototype.forEach.call(grids, deal);
+		return;
+	}
+	var io = new IntersectionObserver(function (entries) {
+		entries.forEach(function (e) {
+			if (e.isIntersecting) { deal(e.target); io.unobserve(e.target); }
+		});
+	}, { threshold: 0.25 });
+	Array.prototype.forEach.call(grids, function (g) { io.observe(g); });
+})();
+
+/* ── Showcase carousel (Thai Team featured, Motorsport strip) ───────────
+ * The current slide is centred with its neighbours peeking. A clone of the
+ * last slide sits before the first and a clone of the first after the last,
+ * so the row loops and an edge never shows empty space. Auto-advances unless
+ * paused, hovered, or the tab is hidden; dots, swipe, and a click on a side
+ * slide all move it.
+ */
+(function () {
+	Array.prototype.forEach.call(document.querySelectorAll('[data-tsd-thcar], [data-tsd-car]'), function (car) {
+		var view = car.querySelector('.tsd-thcar-view, [data-car-view]');
+		var track = car.querySelector('.tsd-thcar-track, [data-car-track]');
+		var real = Array.prototype.slice.call(track.querySelectorAll('.tsd-thcar-slide, [data-car-slide]'));
+		var n = real.length;
+		if (n < 2) { return; }
+		var dots = Array.prototype.slice.call(car.querySelectorAll('.tsd-thcar-dots button, [data-car-dots] button'));
+		var steps = Array.prototype.slice.call(car.querySelectorAll('[data-car-step]'));
+		var playBtn = car.querySelector('[data-tsd-thcar-play]');
+		var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		// data-interval="0" turns auto-advance off (manual only).
+		var every = car.hasAttribute('data-interval') ? parseFloat(car.getAttribute('data-interval')) * 1000 : 6000;
+
+		// data-bounds: no loop — the first slide sits on the left edge, the last on
+		// the right, the ones between centred (the Motorsport strip). Otherwise the
+		// row loops through a clone at each end (Thai Team).
+		var bounded = car.hasAttribute('data-bounds');
+		var mkClone = function (el) {
+			var c = el.cloneNode(true);
+			c.classList.remove('is-on');
+			c.classList.add('is-clone');
+			c.setAttribute('aria-hidden', 'true');
+			c.setAttribute('tabindex', '-1');
+			return c;
+		};
+		if (!bounded) {
+			track.insertBefore(mkClone(real[n - 1]), real[0]);
+			track.appendChild(mkClone(real[0]));
+		}
+		var all = Array.prototype.slice.call(track.children);
+		var base = bounded ? 0 : 1; // index in `all` of the first real slide
+		car.classList.add('is-js');
+
+		var pos = base, paused = reduce, hover = false, timer = 0;
+
+		var layout = function (animate) {
+			var sw = real[0].getBoundingClientRect().width;
+			var gap = parseFloat(getComputedStyle(track).columnGap) || 0;
+			var x = (view.clientWidth - sw) / 2 - pos * (sw + gap);
+			if (bounded) {
+				// Same inset as the hub's own content (clamp(18px, 2.6vw, 40px)).
+				var pad = Math.min(40, Math.max(18, window.innerWidth * 0.026));
+				var maxX = pad;
+				var minX = view.clientWidth - pad - (n * sw + (n - 1) * gap);
+				x = Math.min(maxX, Math.max(minX, x));
+			}
+			track.style.transition = animate && !reduce ? 'transform .75s cubic-bezier(.25,.8,.3,1)' : 'none';
+			track.style.transform = 'translate3d(' + x + 'px,0,0)';
+		};
+		var mark = function () {
+			var cur = (pos - base + n) % n;
+			all.forEach(function (s, k) { s.classList.toggle('is-on', k === pos); });
+			dots.forEach(function (d, k) {
+				d.classList.toggle('is-on', k === cur);
+				d.setAttribute('aria-selected', k === cur ? 'true' : 'false');
+			});
+		};
+		var go = function (p, animate) {
+			if (bounded) { p = (p + n) % n; }
+			pos = p;
+			layout(animate !== false);
+			mark();
+		};
+		track.addEventListener('transitionend', function (e) {
+			if (e.target !== track || bounded) { return; }
+			if (pos === n + 1) { go(1, false); }
+			else if (pos === 0) { go(n, false); }
+		});
+
+		var tick = function () {
+			window.clearTimeout(timer);
+			if (!every) { return; }
+			timer = window.setTimeout(function () {
+				if (!paused && !hover && !document.hidden) { go(pos + 1); }
+				tick();
+			}, every);
+		};
+
+		dots.forEach(function (d, k) { d.addEventListener('click', function () { go(k + base); tick(); }); });
+		steps.forEach(function (b) {
+			b.addEventListener('click', function () { go(pos + (parseInt(b.getAttribute('data-car-step'), 10) || 1)); tick(); });
+		});
+		if (playBtn) {
+			playBtn.setAttribute('aria-pressed', paused ? 'true' : 'false');
+			playBtn.addEventListener('click', function () {
+				paused = !paused;
+				playBtn.setAttribute('aria-pressed', paused ? 'true' : 'false');
+				tick();
+			});
+		}
+		car.addEventListener('mouseenter', function () { hover = true; });
+		car.addEventListener('mouseleave', function () { hover = false; });
+
+		// A side slide is a step, not a link; a swipe moves one either way.
+		var downX = null, dragged = false;
+		view.addEventListener('pointerdown', function (e) { downX = e.clientX; dragged = false; });
+		view.addEventListener('pointerup', function (e) {
+			if (null === downX) { return; }
+			var dx = e.clientX - downX;
+			downX = null;
+			if (Math.abs(dx) > 40) { dragged = true; go(pos + (dx < 0 ? 1 : -1)); tick(); }
+		});
+		all.forEach(function (s, k) {
+			s.addEventListener('click', function (e) {
+				if (dragged) { e.preventDefault(); dragged = false; return; }
+				if (k !== pos) { e.preventDefault(); go(k); tick(); }
+			});
+		});
+		window.addEventListener('resize', function () { layout(false); });
+
+		go(base, false);
+		tick();
+	});
+})();
+
+/* ── Motorsport hub: cover flow ────────────────────────────────────────
+ * Every cover is placed from its distance d to the current one, taken round
+ * the ring (so the row has stories on both sides): d = 0 faces front; the
+ * others turn ±55° and stack outward, a little further back each step, and
+ * fade past the third. The headline under the floor follows the current one.
+ */
+(function () {
+	Array.prototype.forEach.call(document.querySelectorAll('[data-tsd-cflow]'), function (flow) {
+		var items = Array.prototype.slice.call(flow.querySelectorAll('.tsd-cflow-item'));
+		var n = items.length;
+		if (!n) { return; }
+		var dots = Array.prototype.slice.call(flow.querySelectorAll('[data-cflow-to]'));
+		var kicker = flow.querySelector('.tsd-cflow-kicker');
+		var title = flow.querySelector('.tsd-cflow-title');
+		var cur = 0;
+		flow.classList.add('is-js');
+
+		var layout = function () {
+			var w = items[0].getBoundingClientRect().width || 1;
+			items.forEach(function (it, i) {
+				var d = i - cur;
+				if (d > n / 2) { d -= n; }
+				if (d < -n / 2) { d += n; }
+				var a = Math.abs(d), s = d < 0 ? -1 : 1;
+				var x = 0, z = 0, ry = 0, o = 1;
+				if (a) {
+					x = s * (w * 0.58 + (a - 1) * w * 0.2);
+					z = -180 - (a - 1) * 70;
+					ry = -s * 55;
+					o = a > 3 ? 0 : 1;
+				}
+				it.style.setProperty('--x', x + 'px');
+				it.style.setProperty('--z', z + 'px');
+				it.style.setProperty('--ry', ry + 'deg');
+				it.style.setProperty('--o', o);
+				it.style.setProperty('--zi', String(100 - a));
+				it.style.setProperty('--shade-l', d > 0 ? '.55' : '0');
+				it.style.setProperty('--shade-r', d < 0 ? '.55' : '0');
+				it.classList.toggle('is-on', !a);
+				it.setAttribute('tabindex', a ? '-1' : '0');
+			});
+			dots.forEach(function (b, k) { b.classList.toggle('is-on', k === cur); });
+			if (kicker) { kicker.textContent = items[cur].getAttribute('data-kicker') || ''; }
+			if (title) {
+				title.textContent = items[cur].getAttribute('data-title') || '';
+				title.setAttribute('href', items[cur].getAttribute('href'));
+			}
+		};
+		// Auto-advance every 8 s (data-interval), held while hovered or focused,
+		// while the tab is hidden, and for readers who prefer reduced motion; any
+		// manual turn restarts the count.
+		var every = (parseFloat(flow.getAttribute('data-interval')) || 8) * 1000;
+		var still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		var hold = false, timer = 0;
+		var tick = function () {
+			window.clearTimeout(timer);
+			if (still || n < 2) { return; }
+			timer = window.setTimeout(function () {
+				if (!hold && !document.hidden) { cur = (cur + 1) % n; layout(); }
+				tick();
+			}, every);
+		};
+		var go = function (i) { cur = (i + n) % n; layout(); tick(); };
+		flow.addEventListener('mouseenter', function () { hold = true; });
+		flow.addEventListener('mouseleave', function () { hold = false; });
+		flow.addEventListener('focusin', function () { hold = true; });
+		flow.addEventListener('focusout', function () { hold = false; });
+
+		items.forEach(function (it, i) {
+			it.addEventListener('click', function (e) {
+				if (dragged) { e.preventDefault(); dragged = false; return; }
+				if (i !== cur) { e.preventDefault(); go(i); }
+			});
+		});
+		dots.forEach(function (b, k) { b.addEventListener('click', function () { go(k); }); });
+		Array.prototype.forEach.call(flow.querySelectorAll('[data-cflow-step]'), function (b) {
+			b.addEventListener('click', function () { go(cur + (parseInt(b.getAttribute('data-cflow-step'), 10) || 1)); });
+		});
+		flow.addEventListener('keydown', function (e) {
+			if ('ArrowRight' === e.key) { go(cur + 1); e.preventDefault(); }
+			if ('ArrowLeft' === e.key) { go(cur - 1); e.preventDefault(); }
+		});
+		var downX = null, dragged = false;
+		var stage = flow.querySelector('.tsd-cflow-stage');
+		stage.addEventListener('pointerdown', function (e) { downX = e.clientX; dragged = false; });
+		stage.addEventListener('pointerup', function (e) {
+			if (null === downX) { return; }
+			var dx = e.clientX - downX;
+			downX = null;
+			if (Math.abs(dx) > 40) { dragged = true; go(cur + (dx < 0 ? 1 : -1)); }
+		});
+		window.addEventListener('resize', layout);
+		layout();
+		tick();
+	});
+})();

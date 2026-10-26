@@ -39,7 +39,7 @@
 
 /* ── Byline ───────────────────────────────────────────────── */
 .tsd-byline { display:flex; align-items:center; gap:14px; flex-wrap:wrap;
-  margin:26px 0 0; padding:18px 0; border-top:1px solid var(--bdr); border-bottom:1px solid var(--bdr); }
+  margin:26px 0 0; padding:0 0 6px; }
 .tsd-avatar { width:40px; height:40px; border-radius:50%; flex-shrink:0;
   background:var(--accent);
   display:flex; align-items:center; justify-content:center;
@@ -52,8 +52,32 @@
   display:flex; align-items:center; justify-content:center; color:var(--txt-3);
   background:none; padding:0; transition:color .15s, border-color .15s; }
 .tsd-share a:hover, .tsd-copy:hover { border-color:var(--accent); color:var(--accent-ink); }
+/* Each network in its own brand colour: a solid square, white mark.
+   Copy link stays neutral (it is not a network). */
+.tsd-share a[aria-label="Facebook"] { background:#1877f2; border-color:#1877f2; color:#fff; }
+.tsd-share a[aria-label="X"]        { background:#000; border-color:#000; color:#fff; }
+.tsd-share a[aria-label="LINE"]     { background:#06c755; border-color:#06c755; color:#fff; }
+.tsd-share a[aria-label="Facebook"]:hover, .tsd-share a[aria-label="X"]:hover, .tsd-share a[aria-label="LINE"]:hover {
+  color:#fff; filter:brightness(1.12); }
+.tsd-share a[aria-label="Facebook"]:hover { border-color:#1877f2; }
+.tsd-share a[aria-label="X"]:hover { border-color:#000; }
+.tsd-share a[aria-label="LINE"]:hover { border-color:#06c755; }
+/* X is black: on the dark theme give it a hairline so it does not vanish. */
+html[data-tsd-theme="dark"] .tsd-share a[aria-label="X"] { border-color:rgba(255,255,255,.28); }
+@media (prefers-color-scheme: dark) { html:not([data-tsd-theme="light"]) .tsd-share a[aria-label="X"] { border-color:rgba(255,255,255,.28); } }
 /* Swapped in by article.js for a moment after a successful copy. */
 .tsd-copy.is-done { border-color:var(--accent); background:var(--accent); color:var(--on-accent); }
+
+/* ── Article head: full width above body + sidebar ────────── */
+.tsd-arthead { padding:36px 0 0; }
+/* The desk chip and the date, a weight heavier than the theme's kicker. */
+.tsd-arthead .tsd-kicker .tsd-label { font-weight:700; font-size:11px; text-decoration:none; transition:background .15s ease, color .15s ease; }
+.tsd-sport .tsd-arthead .tsd-kicker a.tsd-label:hover { background:var(--txt); color:var(--bg); }
+.tsd-arthead .tsd-kicker a.tsd-label:focus-visible { outline:2px solid var(--accent); outline-offset:3px; }
+.tsd-arthead .tsd-kicker-date { font-weight:700; font-size:12px; color:var(--txt); }
+.tsd-arthead .tsd-lead-img { margin:28px 0 0; }
+/* The body column starts a step below the full-width cover. */
+.tsd-arthead + .tsd-shell { padding-top:44px; }
 
 /* ── Lead image ───────────────────────────────────────────── */
 .tsd-lead-img { margin:28px 0; }
@@ -345,6 +369,9 @@ html.tsd-lb-open { overflow:hidden; }
 }
 @media (max-width:768px) {
   .tsd-shell { grid-template-columns:minmax(0,1fr); gap:44px; padding-top:24px; }
+  .tsd-arthead { padding-top:24px; }
+  .tsd-arthead .tsd-lead-img { margin-left:calc(-1 * var(--gutter)); margin-right:calc(-1 * var(--gutter)); }
+  .tsd-arthead + .tsd-shell { padding-top:28px; }
   .tsd-aside { position:static; }
   .tsd-title { font-size:29px; }
   .tsd-body p, .tsd-body li { font-size:16px; }

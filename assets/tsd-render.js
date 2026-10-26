@@ -3,7 +3,8 @@
  * Prints the same markup as the WordPress SPORT plugin (tsd-sport-skin) so the
  * plugin's own sport.css / sport.js / article.css / article.js drive this site
  * unchanged: masthead + mega menu, hero slider, Special Column, Top Stories,
- * sport banners, video hub, the Motorsport and Football hubs, and the article.
+ * sport banners, video hub, the Motorsport, Football and Thai Team hubs, and
+ * the article.
  *
  * Data comes from the files this site already ships:
  *   data/sport-posts.js     window.__TSD_POSTS__    (300 real posts)
@@ -35,6 +36,8 @@
 		CYCLING: 'Cycling', BADMINTON: 'Badminton', ESPORTS: 'Esports', BASKETBALL: 'Basketball', SWIMMING: 'Swimming' };
 	function label(p) { return LABELS[p.cat] || (p.cat ? p.cat.charAt(0) + p.cat.slice(1).toLowerCase() : ''); }
 	function link(p) { return 'article.html?id=' + p.id; }
+	var CATPAGE = { F1: 'motorsport.html', FOOTBALL: 'football.html' };
+	function catHref(p) { return CATPAGE[p.cat] || ('index.html?cat=' + encodeURIComponent(String(p.cat).toLowerCase())); }
 	function bg(p, small) { return "url('" + (small ? (p.thumb || p.img) : p.img) + "') center/cover no-repeat"; }
 	function ratio(p) { return p.ratio || '52.3%'; }
 	function dotDate(p) {
@@ -117,6 +120,12 @@
 		['TikTok', 'https://www.tiktok.com/@thestandardsport', '<path d="M14.1 3.2v10.2a3.4 3.4 0 1 1-2.9-3.36" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M14.1 3.2c.35 2.5 1.95 4.1 4.6 4.35" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>'],
 		['YouTube', 'https://www.youtube.com/@THESTANDARDSPORT', '<path d="M21.6 7.2a2.6 2.6 0 0 0-1.8-1.8C18.2 5 12 5 12 5s-6.2 0-7.8.4A2.6 2.6 0 0 0 2.4 7.2 27 27 0 0 0 2 12a27 27 0 0 0 .4 4.8 2.6 2.6 0 0 0 1.8 1.8c1.6.4 7.8.4 7.8.4s6.2 0 7.8-.4a2.6 2.6 0 0 0 1.8-1.8A27 27 0 0 0 22 12a27 27 0 0 0-.4-4.8zM10 15V9l5.2 3z" fill="currentColor"/>']
 	];
+	var STANDARD = [
+		['THE STANDARD', 'https://thestandard.co/'],
+		['THE STANDARD WEALTH', 'https://thestandard.co/wealth/'],
+		['THE STANDARD LIFE', 'https://thestandard.co/life/'],
+		['THE STANDARD POP', 'https://thestandard.co/pop/']
+	];
 	function footer() {
 		return '<footer class="tsd-footer"><div class="tsd-wrap"><div class="tsd-footer-brand">' +
 			'<img class="tsd-footer-logo" src="uploads/logo-sport-lockup.png" alt="THE STANDARD SPORT" height="46">' +
@@ -124,7 +133,14 @@
 			'<nav class="tsd-social" aria-label="ช่องทางโซเชียล">' + SOCIAL.map(function (s) {
 				return '<a class="tsd-social-btn" href="' + s[1] + '" target="_blank" rel="noopener noreferrer" aria-label="' + s[0] + '">' +
 					'<svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true" focusable="false">' + s[2] + '</svg></a>';
-			}).join('') + '</nav></div></footer>';
+			}).join('') + '</nav>' +
+			'<div class="tsd-footer-cols"><nav class="tsd-footer-col" aria-label="Sections"><h5>Sections</h5><ul>' +
+			MENU.filter(function (m) { return m.key !== 'home' && m.href && m.href !== '#'; }).map(function (m) {
+				return '<li><a href="' + esc(m.href) + '">' + esc(m.label) + '</a></li>';
+			}).join('') + '</ul></nav>' +
+			'<nav class="tsd-footer-col" aria-label="THE STANDARD"><h5>THE STANDARD</h5><ul>' + STANDARD.map(function (l) {
+				return '<li><a href="' + l[1] + '" target="_blank" rel="noopener">' + l[0] + '</a></li>';
+			}).join('') + '</ul></nav></div></div></footer>';
 	}
 
 	/* ── shared pieces ───────────────────────────────────────────────── */
@@ -135,8 +151,8 @@
 			'<div class="tsd-ncard-body"><div class="tsd-ncard-kicker"><span>' + esc(label(p)) + '</span></div><h3>' + esc(p.title) + '</h3></div>' +
 			'</div></a></article>';
 	}
-	function sectionHead(l1, l2, more, href) {
-		return '<div class="tsd-head"><h2 class="tsd-headline">' + esc(l1) + (l2 ? ' <em>' + esc(l2) + '</em>' : '') + '</h2>' +
+	function sectionHead(l1, l2, more, href, variant) {
+		return '<div class="tsd-head' + (variant ? ' ' + variant : '') + '"><h2 class="tsd-headline">' + esc(l1) + (l2 ? ' <em>' + esc(l2) + '</em>' : '') + '</h2>' +
 			(more ? '<a class="tsd-headnote" href="' + esc(href) + '">' + esc(more) + ' ' + ARROW + '</a>' : '') + '</div>';
 	}
 	function leadRow(list) {
@@ -165,7 +181,7 @@
 				return '<div class="tsd-slide' + (i ? '' : ' is-active') + '" data-tsd-slide="' + i + '"' + (i ? ' aria-hidden="true"' : '') + '>' +
 					'<div class="tsd-slide-bg" style="background-image:url(\'' + esc(p.img) + '\')" aria-hidden="true"></div>' +
 					'<div class="tsd-wrap tsd-slide-in"><div class="tsd-slide-copy">' +
-					'<p class="tsd-slide-kicker"><a href="index.html?cat=' + encodeURIComponent(String(p.cat).toLowerCase()) + '">' + esc(label(p)) + '</a></p>' +
+					'<p class="tsd-slide-kicker"><a href="' + esc(catHref(p)) + '">' + esc(label(p)) + '</a></p>' +
 					'<h1 class="tsd-slide-title"><a href="' + link(p) + '">' + esc(p.title) + '</a></h1>' +
 					'<p class="tsd-slide-meta">เรื่อง <b>' + esc(p.author) + '</b></p>' +
 					'<a class="tsd-btn" href="' + link(p) + '">อ่านเรื่องนี้ ' + ARROW + '</a>' +
@@ -191,8 +207,9 @@
 					'<span class="tsd-spc-go" aria-hidden="true">&rarr;</span></div></a></article>';
 			}).join('') + '</div></section>';
 
-		var top = take(POSTS, 4, used);
-		var topStories = '<section>' + sectionHead('Top', 'Stories', 'ดูข่าวกีฬาทั้งหมด', 'https://thestandard.co/category/news/sport/') + leadRow(top) + '</section>';
+		var top = take(POSTS, 6, used);
+		var topStories = '<section>' + sectionHead('Top', 'Stories', 'ดูข่าวกีฬาทั้งหมด', 'https://thestandard.co/category/news/sport/') +
+			'<div class="tsd-newsgrid tsd-top4">' + top.map(function (p) { return newsCard(p, 'l'); }).join('') + '</div></section>';
 
 		// One block per sport, alternating the lead row and the three-up grid.
 		var blocks = [
@@ -232,25 +249,110 @@
 				'<span class="tsd-short-img"><img class="tsd-zoom-img" src="' + thumb + '" data-fallback="' + esc(s.thumbnail || thumb) + '" alt="" loading="lazy" width="720" height="1280"><span class="tsd-play tsd-play-sm" aria-hidden="true"></span></span>' +
 				'<span class="tsd-short-title">' + esc(s.title) + '</span></a>';
 		}).join('') + '</div></div>' : '';
-		return '<section class="tsd-yt">' + sectionHead('Video', '', 'ดูทั้งหมด', (YT.channel && YT.channel.url ? YT.channel.url : 'https://www.youtube.com/@THESTANDARDSPORT') + '/videos') +
+		return '<section class="tsd-yt">' + sectionHead('Video', '', 'ดูทั้งหมด', (YT.channel && YT.channel.url ? YT.channel.url : 'https://www.youtube.com/@THESTANDARDSPORT') + '/videos', 'is-video') +
 			'<div class="watch-hub' + (left ? ' has-videos' : '') + (side ? ' has-shorts' : '') + '">' + left + side + '</div></section>';
 	}
 
 	/* ── Motorsport hub (Race layout) ────────────────────────────────── */
+	var CHEV = {
+		prev: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>',
+		next: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>'
+	};
+	function coverFlow(list) {
+		return '<div class="tsd-cflow" data-tsd-cflow data-interval="8" tabindex="0" aria-roledescription="carousel"><div class="tsd-cflow-stage">' +
+			list.map(function (p, i) {
+				return '<a class="tsd-cflow-item' + (i ? '' : ' is-on') + '" href="' + link(p) + '" data-title="' + esc(p.title) + '" data-kicker="' + esc(label(p)) + '">' +
+					'<i style="background:' + esc(bg(p)) + '"></i><span class="tsd-cflow-ov"><b>' + esc(label(p)) + '</b><span>' + esc(p.title) + '</span></span></a>';
+			}).join('') + '</div>' +
+			(list.length > 1 ?
+				'<button type="button" class="tsd-cflow-arr is-prev" data-cflow-step="-1" aria-label="ก่อนหน้า">' + CHEV.prev + '</button>' +
+				'<button type="button" class="tsd-cflow-arr is-next" data-cflow-step="1" aria-label="ถัดไป">' + CHEV.next + '</button>' +
+				'<div class="tsd-cflow-dots" role="tablist">' + list.map(function (p, i) {
+					return '<button type="button" class="' + (i ? '' : 'is-on') + '" data-cflow-to="' + i + '" role="tab" aria-label="' + esc(p.title) + '"></button>';
+				}).join('') + '</div>' : '') + '</div>';
+	}
 	function motorsport() {
 		var list = byCat('F1');
-		var strip = list.slice(0, 4), rest = list.slice(4, 16);
+		var strip = list.slice(0, 7), latest = list.slice(0, 12);
 		return '<main class="tsd-hub"><header class="tsd-hub-hero">' +
 			'<picture class="tsd-hub-art"><source media="(max-width: 767px)" srcset="uploads/hub/motorsport-mobile.jpg"><img src="uploads/hub/motorsport.jpg" alt="" fetchpriority="high" decoding="async"></picture>' +
 			'<div class="tsd-hub-shade" aria-hidden="true"></div><div class="tsd-hub-hero-in"><div class="tsd-hub-strip" data-tsd-hub-strip>' +
-			'<div class="tsd-hub-bar"><h1 class="tsd-hub-title" data-tsd-hub-ghost><span class="tsd-hub-ghost">Motorsport</span></h1>' +
-			'<div class="tsd-hub-bar-end">' +
-			'<button type="button" class="tsd-hub-arr is-prev" data-tsd-hub-step="-1" aria-label="ก่อนหน้า" hidden><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg></button>' +
-			'<button type="button" class="tsd-hub-arr is-next" data-tsd-hub-step="1" aria-label="ถัดไป" hidden><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></button>' +
-			'</div></div>' + hubTrack(strip) + '</div></div></header>' +
-			'<div class="tsd-wrap tsd-wrap-flow">' + (STANDINGS.f1 || '') +
-			(rest.length ? '<section id="tsd-hub-all">' + sectionHead('All', 'Articles') + grid(rest, true) + '</section>' : '') +
-			'</div></main>';
+			'<div class="tsd-hub-bar"><h1 class="tsd-hub-title" data-tsd-hub-ghost><span class="tsd-hub-ghost">MOTORSPORT</span></h1></div>' +
+			coverFlow(strip) + '</div></div></header>' +
+			'<div class="tsd-wrap tsd-wrap-flow">' +
+			(latest.length ? '<section id="tsd-hub-all">' + sectionHead('Latest', 'Stories', 'ดูทั้งหมด', 'motorsport.html#all') + grid(latest, true) + '</section>' : '') +
+			(STANDINGS.f1 || '') + '</div></main>';
+	}
+
+	/* ── one sport, every story (a hub's "ดูทั้งหมด") ─────────────────── */
+	function bentoCard(p, lead) {
+		return '<a class="tsd-bento-card' + (lead ? ' is-lead' : '') + ' tsd-reveal" href="' + link(p) + '">' +
+			'<span class="tsd-bento-media" style="aspect-ratio:1200 / 628"><span class="tsd-bento-pic" style="background-image:url(\'' + esc(lead ? p.img : (p.thumb || p.img)) + '\')"></span>' +
+			(lead ? '<span class="tsd-bento-chip">' + esc(label(p)) + '</span>' : '') + '</span><span class="tsd-bento-copy">' +
+			(lead ? '<span class="tsd-bento-meta">' + esc(shortDate(p)) + '</span>' : '') +
+			'<span class="tsd-bento-title">' + esc(p.title) + '</span>' +
+			(lead && p.excerpt ? '<span class="tsd-bento-ex">' + esc(String(p.excerpt).slice(0, 190)) + '</span>' : '') + '</span></a>';
+	}
+	function archive(name, list) {
+		var shapes = { 1: ' is-solo', 2: ' is-pair', 3: ' is-trio', 4: ' is-row' }, groups = [];
+		for (var i = 0; i < list.length; i += 5) { groups.push(list.slice(i, i + 5)); }
+		return '<main><header class="tsd-termhead"><div class="tsd-wrap tsd-termhead-in"><div class="tsd-termhead-copy">' +
+			'<a class="tsd-label" href="index.html">Sport</a><h1 class="tsd-display">' + esc(name) + '</h1></div>' +
+			'<div class="tsd-termcount"><b>' + list.length + '</b><i>บทความ</i></div></div></header>' +
+			'<div class="tsd-wrap tsd-wrap-flow"><section>' + sectionHead('Latest', 'Stories') + groups.map(function (g, n) {
+				var lead = g.length === 3 || g.length >= 5;
+				return '<div class="tsd-bento' + (shapes[g.length] || (n % 2 ? ' is-alt' : '')) + '">' +
+					g.map(function (p, k) { return bentoCard(p, lead && !k); }).join('') + '</div>';
+			}).join('') + '</section></div></main>';
+	}
+
+	/* ── Thai Team hub (Team layout) ─────────────────────────────────── */
+	var THAI_TAGS = ['ทีมชาติไทย', 'นักกีฬาทีมชาติไทย', 'วอลเลย์บอลหญิงทีมชาติไทย', 'Thailand'];
+	// The desk's sections on the WP hub, in its order: a tag or a category each.
+	var THAI_SECTIONS = [
+		['Football', { tag: 'กีฬาฟุตบอล', cat: 'FOOTBALL' }],
+		['Volleyball', { tag: 'กีฬาวอลเลย์บอล', cat: 'VOLLEYBALL' }],
+		['Badminton', { tag: 'แบดมินตัน', cat: 'BADMINTON' }],
+		['Boxing', { tag: 'กีฬามวย', cat: 'BOXING' }],
+		['Tennis', { tag: 'กีฬาเทนนิส', cat: 'TENNIS' }],
+		['Athletics', { tag: 'กีฬากรีฑา', cat: 'ATHLETICS' }],
+		['Swimming', { tag: 'กีฬาว่ายน้ำ', cat: 'SWIMMING' }],
+		['Taekwondo', { tag: 'กีฬาเทควันโด' }],
+		['Futsal', { tag: 'ฟุตซอล' }],
+		['Sepak Takraw', { tag: 'กีฬาเซปักตะกร้อ' }],
+		['Basketball', { tag: 'กีฬาบาสเกตบอล', cat: 'BASKETBALL' }]
+	];
+	function isThai(p) {
+		return p.cat === 'ASIAN GAMES' || (p.tags || []).some(function (t) { return THAI_TAGS.indexOf(t) > -1; });
+	}
+	function thaiTeam() {
+		var list = POSTS.filter(isThai);
+		var strip = list.slice(0, 6), shown = strip.map(function (p) { return p.id; });
+		var car = '<section class="tsd-thcar" id="tsd-th-stories" data-tsd-thcar data-interval="6"><div class="tsd-thcar-view"><div class="tsd-thcar-track">' +
+			strip.map(function (p, i) {
+				return '<a class="tsd-thcar-slide' + (i ? '' : ' is-on') + '" href="' + link(p) + '" data-i="' + i + '"><i style="background:' + esc(bg(p)) + '"></i>' +
+					'<span class="tsd-thcar-cap"><span class="tsd-thcar-txt"><b>' + esc(label(p)) + '</b> <em aria-hidden="true">•</em> ' + esc(p.title) + '</span></span></a>';
+			}).join('') + '</div></div>' +
+			(strip.length > 1 ? '<div class="tsd-thcar-ui"><div class="tsd-thcar-dots" role="tablist" aria-label="เลือกบทความเด่น">' + strip.map(function (p, i) {
+				return '<button type="button" class="' + (i ? '' : 'is-on') + '" data-to="' + i + '" role="tab" aria-label="' + esc(p.title) + '" aria-selected="' + (i ? 'false' : 'true') + '"></button>';
+			}).join('') + '</div><button type="button" class="tsd-thcar-play" data-tsd-thcar-play aria-label="หยุด/เล่น" aria-pressed="false">' +
+				'<svg class="is-pause" viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/></svg>' +
+				'<svg class="is-play" viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><path d="M7 5l12 7-12 7z"/></svg></button></div>' : '') +
+			'</section>';
+		var sections = THAI_SECTIONS.map(function (sec) {
+			var rule = sec[1];
+			var posts = list.filter(function (p) {
+				return shown.indexOf(p.id) < 0 && ((rule.cat && p.cat === rule.cat) || (p.tags || []).indexOf(rule.tag) > -1);
+			}).slice(0, 3);
+			if (!posts.length) { return ''; }
+			return '<section class="tsd-hub-section">' +
+				sectionHead(sec[0], '', 'ดูทั้งหมด', 'https://thestandard.co/tag/' + encodeURIComponent(rule.tag) + '/') +
+				grid(posts) + '</section>';
+		}).join('');
+		return '<main class="tsd-th"><section class="tsd-thc"><picture class="tsd-hub-art"><img src="uploads/hub/thai-team.jpg" alt="" fetchpriority="high" decoding="async"></picture>' +
+			'<span class="tsd-thc-shade" aria-hidden="true"></span><h1 class="tsd-thc-title"><span class="is-a">Thai</span> <span class="is-b">Team</span></h1>' +
+			'<a class="tsd-thc-down" href="#tsd-th-stories"><span>Scroll down</span><svg viewBox="0 0 24 48" width="16" height="32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v40M5 36l7 7 7-7"/></svg></a></section>' +
+			(strip.length ? car : '') + '<div class="tsd-wrap tsd-wrap-flow">' + sections + '</div></main>';
 	}
 	function hubTrack(list, extra) {
 		return '<div class="tsd-hub-track' + (extra ? ' ' + extra : '') + '" style="--n:' + list.length + '">' + list.map(function (p) {
@@ -263,12 +365,12 @@
 	function football() {
 		var list = byCat('FOOTBALL');
 		var top = list.slice(0, 4), rest = list.slice(4, 40);
-		var letters = 'Football'.split('').map(function (c, i) { return '<span class="ch" style="--i:' + i + '">' + esc(c) + '</span>'; }).join('');
+		var letters = 'FOOTBALL'.split('').map(function (c, i) { return '<span class="ch" style="--i:' + i + '">' + esc(c) + '</span>'; }).join('');
 		var mr = list.slice(0, 5);
 		return '<main class="tsd-fb"><section class="tsd-fbc is-photo">' +
 			'<picture class="tsd-hub-art"><img src="uploads/hub/Champions-League-Legends-Under-Lights.jpg" alt="" fetchpriority="high" decoding="async"></picture>' +
 			'<span class="tsd-fbc-shade" aria-hidden="true"></span>' +
-			'<h1 class="tsd-fbc-title is-one" style="--len:8"><span class="is-1" aria-hidden="true">' + letters + '</span> <span class="screen-reader-text">Football</span></h1></section>' +
+			'<h1 class="tsd-fbc-title is-one" style="--len:8"><span class="is-1" aria-hidden="true">' + letters + '</span> <span class="screen-reader-text">FOOTBALL</span></h1></section>' +
 			'<div class="tsd-wrap">' +
 			'<section id="tsd-fb-news" class="tsd-fb-top">' + hubTrack(top, 'tsd-fb-track') + '</section>' +
 			'<section id="tsd-fb-all" class="tsd-fb-body"><div class="tsd-fb-main">' +
@@ -315,9 +417,8 @@
 		}
 		related = related.slice(0, 3);
 
-		return '<div class="tsd-wrap"><nav class="tsd-crumb" aria-label="เส้นทาง"><a href="index.html">SPORT</a><span>/</span><span class="tsd-crumb-now">' + esc(label(p)) + '</span></nav>' +
-			'<div class="tsd-shell"><article class="tsd-article">' +
-			'<div class="tsd-kicker"><span class="tsd-label">' + esc(label(p)) + '</span><span class="tsd-kicker-date">' + esc(dotDate(p)) + '</span></div>' +
+		return '<div class="tsd-wrap"><header class="tsd-arthead">' +
+			'<div class="tsd-kicker"><a class="tsd-label" href="' + esc(catHref(p)) + '">' + esc(label(p)) + '</a><span class="tsd-kicker-date">' + esc(dotDate(p)) + '</span></div>' +
 			'<h1 class="tsd-title">' + esc(p.title) + '</h1>' +
 			'<div class="tsd-byline"><span class="tsd-avatar" aria-hidden="true">' + esc(String(p.author || '?').charAt(0).toUpperCase()) + '</span>' +
 			'<div><div class="tsd-byline-name">' + esc(p.author) + '</div></div><div class="tsd-share">' +
@@ -326,8 +427,8 @@
 			'<a href="https://social-plugins.line.me/lineit/share?url=' + url + '" target="_blank" rel="noopener" aria-label="LINE">' + SHARE.line + '</a>' +
 			'<button type="button" class="tsd-copy" data-tsd-copy="' + esc(p.link || location.href) + '" aria-label="คัดลอกลิงก์">' + SHARE.copy + '</button>' +
 			'</div></div>' +
-			'<figure class="tsd-lead-img"><img src="' + esc(p.img) + '" alt="" loading="eager" decoding="async"></figure>' +
-			'<div class="tsd-body">' + bodyHtml + '</div>' +
+			'<figure class="tsd-lead-img"><img src="' + esc(p.img) + '" alt="" loading="eager" decoding="async"></figure></header>' +
+			'<div class="tsd-shell"><article class="tsd-article"><div class="tsd-body">' + bodyHtml + '</div>' +
 			(tags.length ? '<div class="tsd-posttags">' + tags.map(function (t) {
 				return '<a href="https://thestandard.co/tag/' + encodeURIComponent(t) + '/" target="_blank" rel="noopener">#' + esc(t) + '</a>';
 			}).join('') + '</div>' : '') +
@@ -346,7 +447,15 @@
 	/* ── entry ───────────────────────────────────────────────────────── */
 	var PAGES = {
 		home: function () { return masthead() + home() + footer(); },
-		motorsport: function () { return masthead({ current: 'motorsport' }) + motorsport() + footer(); },
+		motorsport: function () {
+			// #all, not ?view=all: a host's clean-URL redirect keeps the hash but can drop the query.
+			if (location.hash === '#all') {
+				document.body.className = 'tsd-sport tsd-navpad';
+				return masthead({ current: 'motorsport', solid: true }) + archive('Motorsport', byCat('F1')) + footer();
+			}
+			return masthead({ current: 'motorsport' }) + motorsport() + footer();
+		},
+		'thai-team': function () { return masthead({ current: 'thai-team' }) + thaiTeam() + footer(); },
 		football: function () { return masthead({ current: 'football' }) + football() + footer(); },
 		article: function () { return masthead({ solid: true, progress: true }) + article() + footer(); }
 	};
@@ -358,6 +467,10 @@
 				return;
 			}
 			root.innerHTML = (PAGES[page] || PAGES.home)();
+			// Same document, different view (motorsport.html ↔ motorsport.html#all).
+			window.addEventListener('hashchange', function (e) {
+				if (/#all$/.test(e.oldURL) !== /#all$/.test(e.newURL)) { location.reload(); }
+			});
 		}
 	};
 })();
